@@ -1,0 +1,10 @@
+# Gemeinsame Lint-Regeln. Jedes Paket bindet diese Datei ein.
+include: package:very_good_analysis/analysis_options.yaml
+
+linter:
+  rules:
+    # Doku-Kommentare an jeder öffentlichen API wären hier mehr Lärm als Nutzen.
+    public_member_api_docs: false
+    # Schnittstellen mit einer Methode sind gewollt: Sie trennen Domäne und
+    # Plattform (zum Beispiel LocationSource, MapMatcher).
+    one_member_abstracts: false

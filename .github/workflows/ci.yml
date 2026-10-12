@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Formatierung
+        run: dart format --output=none --set-exit-if-changed .
+      - name: Architekturregeln
+        run: dart tool/check_architecture.dart
+      - name: Analyse
+        run: flutter analyze
+      - name: Tests geo_engine
+        working-directory: packages/geo_engine
+        run: dart test
+      - name: Tests App
+        working-directory: app
+        run: flutter test

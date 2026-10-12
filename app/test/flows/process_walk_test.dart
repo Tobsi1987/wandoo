@@ -1,0 +1,50 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:geo_engine/geo_engine.dart';
+import 'package:wandoo/core/map_data/map_data_source.dart';
+import 'package:wandoo/features/creature/creature.dart';
+import 'package:wandoo/features/creature/data/in_memory_creature_repository.dart';
+import 'package:wandoo/features/discovery/data/in_memory_known_segments_repository.dart';
+import 'package:wandoo/features/discovery/discovery.dart';
+import 'package:wandoo/features/environment/environment.dart';
+import 'package:wandoo/flows/process_walk/process_walk.dart';
+
+class _ForestPath implements MapDataSource {
+  @override
+  Future<List<RoadSegment>> segmentsNear(List<GeoPoint> points) async => [
+    const RoadSegment(
+      id: 'waldweg',
+      start: GeoPoint(50, 8),
+      end: GeoPoint(50, 8.002),
+      areaTags: {'landuse': 'forest'},
+    ),
+  ];
+}
+
+void main() {
+  final track = Track(
+    id: 'gang-1',
+    points: const [GeoPoint(50.00002, 8.0005), GeoPoint(50.00003, 8.0015)],
+    startedAt: DateTime(2026, 10, 12),
+  );
+
+  test(
+    'ein neuer Waldweg füttert das Wesen, derselbe Weg nicht nochmal',
+    () async {
+      final process = ProcessWalk(
+        mapData: _ForestPath(),
+        discover: DiscoverSegments(
+          repository: InMemoryKnownSegmentsRepository(),
+        ),
+        classify: const ClassifySegments(),
+        creatures: InMemoryCreatureRepository(),
+      );
+      final first = await process(track);
+      expect(first.newSegmentCount, 1);
+      expect(first.creature.traitPoints, {Trait.moss: 1});
+
+      final second = await process(track);
+      expect(second.newSegmentCount, 0);
+      expect(second.creature.food, 1);
+    },
+  );
+}
