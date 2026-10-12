@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="wandoo">
+  <trk><name>drive_through</name><trkseg>
+    <trkpt lat="49.9999931" lon="8.0000494"><time>2026-10-12T08:00:00.000Z</time></trkpt>
+    <trkpt lat="49.9999854" lon="8.0010198"><time>2026-10-12T08:00:05.000Z</time></trkpt>
+    <trkpt lat="50.0000328" lon="8.0020239"><time>2026-10-12T08:00:10.000Z</time></trkpt>
+    <trkpt lat="50.0000632" lon="8.0028986"><time>2026-10-12T08:00:15.000Z</time></trkpt>
+    <trkpt lat="49.9999740" lon="8.0039161"><time>2026-10-12T08:00:20.000Z</time></trkpt>
+    <trkpt lat="50.0000010" lon="8.0049125"><time>2026-10-12T08:00:25.000Z</time></trkpt>
+  </trkseg></trk>
+</gpx>

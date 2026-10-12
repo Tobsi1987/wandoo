@@ -5,19 +5,21 @@ import 'package:wandoo/features/discovery/domain/known_segments_repository.dart'
 class DiscoverSegments {
   const DiscoverSegments({
     required this.repository,
-    this.matcher = const NearestSegmentMatcher(),
+    this.matcher = const CoverageMatcher(),
+    this.filter = const WalkingFilter(),
     this.novelty = const NoveltyEvaluator(),
   });
 
   final KnownSegmentsRepository repository;
   final MapMatcher matcher;
+  final WalkingFilter filter;
   final NoveltyEvaluator novelty;
 
   Future<List<RoadSegment>> call(
     Track track,
     List<RoadSegment> candidates,
   ) async {
-    final walked = matcher.match(track, candidates);
+    final walked = matcher.match(filter.apply(track), candidates);
     final result = novelty.evaluate(
       walked: walked,
       known: await repository.knownIds(),

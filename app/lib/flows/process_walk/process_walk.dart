@@ -25,7 +25,7 @@ class ProcessWalk {
   final FeedCreature feed;
 
   Future<WalkResult> call(Track track, {DateTime? now}) async {
-    final candidates = await mapData.segmentsNear(track.points);
+    final candidates = await mapData.segmentsNear(track.positions);
     final newSegments = await discover(track, candidates);
     final byEnvironment = classify(newSegments);
     final creature = feed(

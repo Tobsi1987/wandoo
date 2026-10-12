@@ -21,10 +21,16 @@ class _ForestPath implements MapDataSource {
 }
 
 void main() {
+  final start = DateTime.utc(2026, 10, 12, 8);
   final track = Track(
     id: 'gang-1',
-    points: const [GeoPoint(50.00002, 8.0005), GeoPoint(50.00003, 8.0015)],
-    startedAt: DateTime(2026, 10, 12),
+    points: [
+      for (var i = 0; i <= 20; i++)
+        TrackPoint(
+          GeoPoint(50.00002, 8 + 0.0001 * i),
+          start.add(Duration(seconds: 5 * i)),
+        ),
+    ],
   );
 
   test(
