@@ -24,6 +24,7 @@ class WorldBackdrop extends StatelessWidget {
     Daytime.morning: ('assets/world/morning.jpg', 1.3),
     Daytime.day: ('assets/world/day.jpg', 1.3),
     Daytime.evening: ('assets/world/evening.jpg', 1.6),
+    Daytime.night: ('assets/world/night.jpg', 2.3),
   };
 
   @override
@@ -54,7 +55,9 @@ class WorldBackdrop extends StatelessWidget {
             ],
           ),
         ),
-        WeatherLayer(world: world),
+        // Der gemalte Mond liegt oberhalb des Ausschnitts, Sterne und Mond
+        // zeichnet daher weiter die Wetterschicht.
+        WeatherLayer(world: world, painted: !world.night),
       ],
     );
   }

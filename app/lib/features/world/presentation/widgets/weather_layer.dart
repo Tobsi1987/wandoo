@@ -4,9 +4,12 @@ import 'package:wandoo/features/world/presentation/widgets/weather_painter.dart'
 
 /// Himmel hinter dem Wesen: Sterne nachts, Regen, Schnee, Nebel, Sonne.
 class WeatherLayer extends StatefulWidget {
-  const WeatherLayer({required this.world, super.key});
+  const WeatherLayer({required this.world, this.painted = false, super.key});
 
   final WorldState world;
+
+  /// Vor einem gemalten Bild: ohne eigene Sterne, Mond und Sonne.
+  final bool painted;
 
   /// In Tests aus, damit `pumpAndSettle` zur Ruhe kommt.
   @visibleForTesting
