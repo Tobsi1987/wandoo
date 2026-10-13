@@ -11,8 +11,8 @@ class SpeciesLook {
   final int placeholder;
 
   /// z. B. `assets/creatures/funkel.glb`; null, solange es keins gibt.
-  /// Modelle kommen aus Meshy und werden mit `tool/prepare_model.mjs`
-  /// verkleinert: Füße auf y = 0, genau 1 Einheit hoch, Blick nach vorn.
+  /// Modelle sind Meshy-Rigs, die `tool/animate_rig.mjs` animiert und
+  /// zurechtrückt: Füße auf y = 0, in einer 1×1-Box, Blick nach vorn.
   final String? modelAsset;
 }
 

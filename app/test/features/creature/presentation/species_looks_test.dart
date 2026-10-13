@@ -18,7 +18,8 @@ void main() {
       if (asset == null) continue;
       final file = File(asset);
       expect(file.existsSync(), isTrue, reason: asset);
-      expect(file.lengthSync(), lessThan(3 * 1024 * 1024), reason: asset);
+      // Geriggte Modelle tragen Knochengewichte, Glutling (Fell) ist ~4 MB.
+      expect(file.lengthSync(), lessThan(4.5 * 1024 * 1024), reason: asset);
     }
   });
 
