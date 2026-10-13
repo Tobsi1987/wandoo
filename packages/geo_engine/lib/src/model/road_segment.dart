@@ -11,12 +11,17 @@ class RoadSegment {
     required this.start,
     required this.end,
     this.areaTags = const {},
-  });
+    String? streetId,
+  }) : streetId = streetId ?? id;
 
   final String id;
   final GeoPoint start;
   final GeoPoint end;
   final Map<String, String> areaTags;
+
+  /// Straße, zu der der Abschnitt gehört (Name oder OSM-Weg). Damit zählt
+  /// "+3 neue Straßen" Straßen statt einzelner Stücke.
+  final String streetId;
 
   double get lengthMeters => start.distanceTo(end);
 }

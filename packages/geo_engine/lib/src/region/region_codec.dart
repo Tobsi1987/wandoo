@@ -5,7 +5,7 @@ import 'package:geo_engine/src/model/road_segment.dart';
 
 /// Kompaktes JSON-Format für Regionsdaten auf dem Gerät.
 ///
-/// `{"v":1,"segments":[[id, lat1, lon1, lat2, lon2, {tags}], ...]}`
+/// `{"v":1,"segments":[[id, lat1, lon1, lat2, lon2, {tags}, streetId]]}`
 abstract final class RegionCodec {
   static const version = 1;
 
@@ -20,6 +20,7 @@ abstract final class RegionCodec {
           s.end.latitude,
           s.end.longitude,
           s.areaTags,
+          s.streetId,
         ],
     ],
   });
@@ -42,6 +43,7 @@ abstract final class RegionCodec {
       start: GeoPoint(n(1), n(2)),
       end: GeoPoint(n(3), n(4)),
       areaTags: (row[5] as Map<String, dynamic>).cast<String, String>(),
+      streetId: row.length > 6 ? row[6] as String : null,
     );
   }
 }
