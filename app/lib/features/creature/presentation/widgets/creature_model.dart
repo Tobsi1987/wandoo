@@ -8,6 +8,7 @@ import 'package:wandoo/features/creature/domain/outfit.dart';
 import 'package:wandoo/features/creature/presentation/widgets/creature_spin.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_accessories.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_anchors.dart';
+import 'package:wandoo/features/creature/presentation/widgets/model_eyes.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_overlays.dart';
 
 /// Ein 3D-Modell (.glb) des Wesens, das als Ganzes atmet, schwankt und
@@ -27,6 +28,8 @@ class CreatureModel extends StatefulWidget {
     this.anchors = ModelAnchors.fallback,
     this.hat,
     this.neck,
+    this.eyes,
+    this.eyesClosed = false,
     super.key,
   });
 
@@ -47,6 +50,10 @@ class CreatureModel extends StatefulWidget {
   final ModelAnchors anchors;
   final CreatureHat? hat;
   final CreatureNeck? neck;
+
+  /// Wo die Augen sitzen; nur damit kann es sie im Schlaf schließen.
+  final EyeSpot? eyes;
+  final bool eyesClosed;
 
   static final Future<bool> _ready = Scene.initializeStaticResources().then(
     (_) => true,
@@ -72,6 +79,7 @@ class _CreatureModelState extends State<CreatureModel> {
   final _pivot = Node();
   final _time = ValueNotifier<double>(0);
   Node? _outfit;
+  Node? _lids;
   bool _loaded = false;
 
   /// Zusätzliche Drehung von außen, siehe [CreatureSpin].
@@ -94,7 +102,7 @@ class _CreatureModelState extends State<CreatureModel> {
     setState(() => _loaded = true);
   }
 
-  /// Hut und Halsschmuck neu anziehen.
+  /// Hut, Halsschmuck und Schlaf-Lider neu anziehen.
   void _dress() {
     _outfit?.detach();
     final w = widget;
@@ -102,6 +110,12 @@ class _CreatureModelState extends State<CreatureModel> {
         ? null
         : modelAccessories(w.anchors, w.hat, w.neck);
     if (_outfit case final outfit?) _pivot.add(outfit);
+    _lids?.detach();
+    _lids = switch (w.eyes) {
+      final eyes? when w.eyesClosed => modelEyelids(eyes),
+      _ => null,
+    };
+    if (_lids case final lids?) _pivot.add(lids);
   }
 
   /// Ganzkörper-Bewegung: wippen und schauen, im Schlaf zur Seite kippen.
@@ -125,10 +139,15 @@ class _CreatureModelState extends State<CreatureModel> {
     if (old.asset != widget.asset) {
       _pivot.removeAll();
       _outfit = null;
+      _lids = null;
       _loaded = false;
       unawaited(CreatureModel._load(widget.asset).then(_show));
     } else if (_loaded) {
-      if (old.hat != widget.hat || old.neck != widget.neck) _dress();
+      if (old.hat != widget.hat ||
+          old.neck != widget.neck ||
+          old.eyesClosed != widget.eyesClosed) {
+        _dress();
+      }
       // Mit der aktuellen Zeit, sonst springt die Figur bei jedem Neuaufbau
       // kurz in die Ausgangshaltung (sieht beim Laufen wie Zittern aus).
       _pose(_time.value);

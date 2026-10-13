@@ -12,6 +12,7 @@ import 'package:wandoo/features/creature/presentation/painting/creature_shader_u
 import 'package:wandoo/features/creature/presentation/species_looks.dart';
 import 'package:wandoo/features/creature/presentation/widgets/creature_model.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_anchors.dart';
+import 'package:wandoo/features/creature/presentation/widgets/model_eyes.dart';
 import 'package:wandoo/features/world/world.dart';
 
 /// Die Figur des Wesens: das 3D-Modell der Art, sonst animiertes 3D aus
@@ -123,6 +124,8 @@ class _CreatureFigureState extends State<CreatureFigure>
     return CreatureModel(
       asset: asset,
       anchors: ModelAnchors.of(SpeciesCatalog.byId(c.speciesId).id),
+      eyes: modelEyes[SpeciesCatalog.byId(c.speciesId).id],
+      eyesClosed: night && !widget.awake,
       hat: c.hat,
       neck: c.neck,
       size: widget.size,
