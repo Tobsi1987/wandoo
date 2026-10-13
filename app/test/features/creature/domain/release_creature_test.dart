@@ -13,6 +13,11 @@ void main() {
     expect(egg.lastReleasedAt, now);
   });
 
+  test('das Album bleibt beim Wegschicken erhalten', () {
+    final seen = grown.copyWith(seenSpecies: {'axolotl', 'moosbaer'});
+    expect(release(seen, now).seenSpecies, {'axolotl', 'moosbaer'});
+  });
+
   test('ein Ei kann man nicht wegschicken', () {
     expect(release.canRelease(const Creature(), now), isFalse);
   });

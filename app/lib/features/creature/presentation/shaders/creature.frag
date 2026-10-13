@@ -11,6 +11,8 @@ uniform vec3 uAccent;        // Farbe der zweitstärksten Umgebung
 uniform float uAccentLevel;  // 0..3, wie deutlich ihr Muster ist
 uniform float uSleepy;       // 1 = träge
 uniform float uCrack;        // 1 = Ei kurz vor dem Schlüpfen
+uniform float uHat;          // 0 keiner, sonst CreatureHat-Index + 1
+uniform float uNeck;         // 0 keiner, sonst CreatureNeck-Index + 1
 
 out vec4 fragColor;
 
@@ -41,6 +43,7 @@ vec3 toLocal(vec3 p) {
 }
 
 #include "family_parts.glsl"
+#include "accessories.glsl"
 
 float egg(vec3 p) {
   vec3 q = p - gCenter;
@@ -78,6 +81,7 @@ float map(vec3 p, out float m) {
   m = 1.0;
   pick(d, m, eyes(q), 2.0);
   familyParts(q, d, m);
+  accessories(q, d, m);
   return d;
 }
 
@@ -99,7 +103,9 @@ vec3 shade(vec3 p, vec3 rd, float m) {
   float spec = pow(clamp(dot(reflect(rd, n), light), 0.0, 1.0), 24.0);
   vec3 col = materialColor(p, n, m) * (0.6 + 0.5 * diff) + rim * 0.18;
   bool eye = m > 1.5 && m < 2.5;
+  bool shiny = m > 11.5 && m < 13.5;
   float shine = eye ? 0.9 : (uFamily > 0.5 && uFamily < 1.5 ? 0.5 : 0.2);
+  if (shiny) shine = 1.2;
   if (eye) {
     vec3 sparkle = normalize(vec3(-0.35, 0.45, 1.0));
     shine += smoothstep(0.93, 0.96, dot(n, sparkle)) * 4.0;

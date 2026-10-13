@@ -1,4 +1,5 @@
 import 'package:wandoo/features/creature/domain/growth_stage.dart';
+import 'package:wandoo/features/creature/domain/outfit.dart';
 import 'package:wandoo/features/creature/domain/trait.dart';
 
 /// Das Wesen des Spielers.
@@ -9,6 +10,10 @@ class Creature {
     this.lastFedAt,
     this.speciesId,
     this.lastReleasedAt,
+    this.hat,
+    this.neck,
+    this.seenSpecies = const {},
+    this.luckyEgg = false,
   });
 
   /// Ohne Neues wird das Wesen nach dieser Zeit träge (keine Bestrafung).
@@ -27,6 +32,16 @@ class Creature {
 
   /// Wann zuletzt ein Wesen weggeschickt wurde; bleibt beim neuen Ei.
   final DateTime? lastReleasedAt;
+
+  final CreatureHat? hat;
+  final CreatureNeck? neck;
+
+  /// Alle Arten, die je geschlüpft sind, fürs Sammelalbum. Bleibt beim
+  /// Wegschicken erhalten.
+  final Set<String> seenSpecies;
+
+  /// Belohnung aus Abenteuern: Das nächste Ei schlüpft mindestens selten.
+  final bool luckyEgg;
 
   bool get hatched => stage != GrowthStage.egg;
 
@@ -62,6 +77,8 @@ class Creature {
     Map<Trait, int>? traitPoints,
     DateTime? lastFedAt,
     String? speciesId,
+    Set<String>? seenSpecies,
+    bool? luckyEgg,
   }) {
     return Creature(
       food: food ?? this.food,
@@ -69,6 +86,24 @@ class Creature {
       lastFedAt: lastFedAt ?? this.lastFedAt,
       speciesId: speciesId ?? this.speciesId,
       lastReleasedAt: lastReleasedAt,
+      hat: hat,
+      neck: neck,
+      seenSpecies: seenSpecies ?? this.seenSpecies,
+      luckyEgg: luckyEgg ?? this.luckyEgg,
     );
   }
+
+  /// Zieht dem Wesen Deko an oder aus (null = nichts).
+  Creature wearing({required CreatureHat? hat, required CreatureNeck? neck}) =>
+      Creature(
+        food: food,
+        traitPoints: traitPoints,
+        lastFedAt: lastFedAt,
+        speciesId: speciesId,
+        lastReleasedAt: lastReleasedAt,
+        hat: hat,
+        neck: neck,
+        seenSpecies: seenSpecies,
+        luckyEgg: luckyEgg,
+      );
 }

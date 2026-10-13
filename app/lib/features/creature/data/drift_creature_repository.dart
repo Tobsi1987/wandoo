@@ -4,6 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:wandoo/core/database/app_database.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/domain/creature_repository.dart';
+import 'package:wandoo/features/creature/domain/outfit.dart';
 import 'package:wandoo/features/creature/domain/trait.dart';
 
 /// Speichert das Wesen in der lokalen Datenbank.
@@ -31,6 +32,13 @@ class DriftCreatureRepository implements CreatureRepository {
       lastFedAt: row.lastFedAt,
       speciesId: row.speciesId,
       lastReleasedAt: row.lastReleasedAt,
+      hat: CreatureHat.values.asNameMap()[row.hat],
+      neck: CreatureNeck.values.asNameMap()[row.neck],
+      seenSpecies: {
+        for (final id in jsonDecode(row.seenSpecies) as List<dynamic>)
+          id as String,
+      },
+      luckyEgg: row.luckyEgg,
     );
   }
 
@@ -45,6 +53,10 @@ class DriftCreatureRepository implements CreatureRepository {
           lastFedAt: Value(creature.lastFedAt),
           speciesId: Value(creature.speciesId),
           lastReleasedAt: Value(creature.lastReleasedAt),
+          hat: Value(creature.hat?.name),
+          neck: Value(creature.neck?.name),
+          seenSpecies: Value(jsonEncode(creature.seenSpecies.toList())),
+          luckyEgg: Value(creature.luckyEgg),
         ),
       );
 

@@ -33,6 +33,8 @@ void setCreatureUniforms(
     if (accent == null) 0 else _level(creature, accent),
     if (sleepy) 1 else 0,
     if (_nearlyHatched(creature)) 1 else 0,
+    (creature.hat?.index ?? -1) + 1.0,
+    (creature.neck?.index ?? -1) + 1.0,
   ];
   for (var i = 0; i < values.length; i++) {
     shader.setFloat(i, values[i]);

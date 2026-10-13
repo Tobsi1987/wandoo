@@ -46,6 +46,11 @@ class FeedCreature {
   /// Schlüpft das Ei, wird die Tierart zufällig gezogen und bleibt dann.
   Creature _hatch(Creature after) {
     if (!after.hatched || after.speciesId != null) return after;
-    return after.copyWith(speciesId: SpeciesCatalog.pick(_random).id);
+    final species = SpeciesCatalog.pick(_random, lucky: after.luckyEgg);
+    return after.copyWith(
+      speciesId: species.id,
+      seenSpecies: {...after.seenSpecies, species.id},
+      luckyEgg: false,
+    );
   }
 }

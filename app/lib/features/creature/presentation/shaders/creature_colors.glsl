@@ -1,6 +1,6 @@
 // Farben: Fell je Familie, Bauch, Wangen, Mund, Muster, Ei.
 // Material: 1 Körper, 2 Auge, 3 Rüschen, 4 Blatt, 5 Weiß, 6 Leuchten,
-// 7 Ringelschwanz, 9 Ei.
+// 7 Ringelschwanz, 9 Ei, ab 10 Deko (accessories.glsl).
 
 vec3 furColor() {
   if (uFamily < 0.5) return vec3(0.76, 0.58, 0.42);
@@ -60,8 +60,9 @@ vec3 eggColor(vec3 p) {
 }
 
 vec3 materialColor(vec3 p, vec3 n, float m) {
-  if (m > 8.5) return eggColor(p);
+  if (m > 8.5 && m < 9.5) return eggColor(p);
   vec3 q = toLocal(p);
+  if (m > 9.5) return accessoryColor(q, m);
   vec3 nl = n;
   nl.xz = rot(gYaw) * nl.xz;
   if (m < 1.5) return bodyColor(q, nl);

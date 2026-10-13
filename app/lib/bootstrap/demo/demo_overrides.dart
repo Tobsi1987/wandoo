@@ -18,6 +18,8 @@ import 'package:wandoo/features/reminders/reminders.dart';
 import 'package:wandoo/features/share/data/share_plus_image_sharer.dart';
 import 'package:wandoo/features/share/share.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
+import 'package:wandoo/features/treasure/data/in_memory_treasure_repository.dart';
+import 'package:wandoo/features/treasure/treasure.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
 
 /// Wie `appOverrides`, aber alles im Speicher und ohne Gerät: eine erfundene
@@ -39,6 +41,7 @@ List<Override> demoOverrides() => [
   walkSummaryRepositoryProvider.overrideWithValue(
     InMemoryWalkSummaryRepository(),
   ),
+  treasureRepositoryProvider.overrideWithValue(InMemoryTreasureRepository()),
 ];
 
 class _DemoMapData implements MapDataSource {

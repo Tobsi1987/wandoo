@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:geo_engine/geo_engine.dart';
 import 'package:wandoo/core/map_data/map_data_source.dart';
@@ -6,6 +8,9 @@ import 'package:wandoo/features/creature/data/in_memory_creature_repository.dart
 import 'package:wandoo/features/discovery/data/in_memory_known_segments_repository.dart';
 import 'package:wandoo/features/discovery/discovery.dart';
 import 'package:wandoo/features/environment/environment.dart';
+import 'package:wandoo/features/treasure/data/in_memory_treasure_repository.dart';
+import 'package:wandoo/features/treasure/treasure.dart';
+import 'package:wandoo/flows/process_walk/extras/treasure_extra.dart';
 import 'package:wandoo/flows/process_walk/process_walk.dart';
 
 import '../support/fake_walk_summary_repository.dart';
@@ -58,4 +63,26 @@ void main() {
       expect(second.creature.lastFedAt, isNotNull);
     },
   );
+
+  test('Fundstücke landen in der Kiste und in der Zusammenfassung', () async {
+    final chests = InMemoryTreasureRepository();
+    final process = ProcessWalk(
+      mapData: _ForestPath(),
+      discover: DiscoverSegments(repository: InMemoryKnownSegmentsRepository()),
+      classify: const ClassifySegments(),
+      creatures: InMemoryCreatureRepository(),
+      summaries: FakeWalkSummaryRepository(),
+      extras: [
+        TreasureExtra(
+          chests,
+          drop: const DropFinds(chance: 1),
+          random: Random(2),
+        ),
+      ],
+    );
+    final result = await process(track);
+    final chest = await chests.load();
+    expect(chest.count(Find.acorn) + chest.count(Find.starShard), 1);
+    expect(result.summary.extraLines.single, startsWith('Gefunden: '));
+  });
 }

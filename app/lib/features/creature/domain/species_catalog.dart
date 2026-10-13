@@ -20,8 +20,20 @@ abstract final class SpeciesCatalog {
       all.firstWhere((s) => s.id == id, orElse: () => fallback);
 
   /// Zieht zufällig eine Art: erst die Seltenheit nach ihrem Gewicht, dann
-  /// eine Art daraus. Seltenheiten ohne Arten nehmen nicht teil.
-  static Species pick(Random random, {List<Species> from = all}) {
+  /// eine Art daraus. Seltenheiten ohne Arten nehmen nicht teil. Ein
+  /// Glücks-Ei ([lucky]) lässt gewöhnliche Arten aus.
+  static Species pick(
+    Random random, {
+    List<Species> from = all,
+    bool lucky = false,
+  }) {
+    final pool = lucky && from.any((s) => s.rarity != Rarity.common)
+        ? from.where((s) => s.rarity != Rarity.common).toList()
+        : from;
+    return _pickFrom(pool, random);
+  }
+
+  static Species _pickFrom(List<Species> from, Random random) {
     final rarities = {for (final s in from) s.rarity}.toList()
       ..sort((a, b) => a.index.compareTo(b.index));
     final total = rarities.fold(0, (sum, r) => sum + r.weight);
