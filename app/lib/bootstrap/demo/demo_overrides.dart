@@ -8,6 +8,8 @@ import 'package:wandoo/bootstrap/demo/simulated_location_source.dart';
 import 'package:wandoo/core/location/location_providers.dart';
 import 'package:wandoo/core/map_data/map_data_providers.dart';
 import 'package:wandoo/core/map_data/map_data_source.dart';
+import 'package:wandoo/features/adventures/adventures.dart';
+import 'package:wandoo/features/adventures/data/in_memory_adventure_repository.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/creature/data/in_memory_creature_repository.dart';
 import 'package:wandoo/features/discovery/data/in_memory_known_segments_repository.dart';
@@ -42,6 +44,7 @@ List<Override> demoOverrides() => [
     InMemoryWalkSummaryRepository(),
   ),
   treasureRepositoryProvider.overrideWithValue(InMemoryTreasureRepository()),
+  adventureRepositoryProvider.overrideWithValue(InMemoryAdventureRepository()),
 ];
 
 class _DemoMapData implements MapDataSource {

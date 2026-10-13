@@ -10,6 +10,8 @@ import 'package:wandoo/core/map_data/map_data_providers.dart';
 import 'package:wandoo/core/map_data/overpass_client.dart';
 import 'package:wandoo/core/map_data/tile_cache.dart';
 import 'package:wandoo/core/map_data/tiled_map_data_source.dart';
+import 'package:wandoo/features/adventures/adventures.dart';
+import 'package:wandoo/features/adventures/data/drift_adventure_repository.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/creature/data/drift_creature_repository.dart';
 import 'package:wandoo/features/discovery/data/drift_known_segments_repository.dart';
@@ -54,5 +56,6 @@ Future<List<Override>> appOverrides() async {
       DriftWalkSummaryRepository(db),
     ),
     treasureRepositoryProvider.overrideWithValue(DriftTreasureRepository(db)),
+    adventureRepositoryProvider.overrideWithValue(DriftAdventureRepository(db)),
   ];
 }

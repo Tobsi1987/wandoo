@@ -20,4 +20,8 @@ enum Find {
     }
     return null;
   }
+
+  /// Belohnung aus einer Umgebung; ohne passende Umgebung ein Sternsplitter.
+  static Find rewardFor(EnvironmentType? type) =>
+      (type == null ? null : forEnvironment(type)) ?? starShard;
 }

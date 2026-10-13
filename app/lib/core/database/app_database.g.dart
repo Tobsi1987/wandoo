@@ -2105,6 +2105,308 @@ class TreasureStatesCompanion extends UpdateCompanion<TreasureState> {
   }
 }
 
+class $AdventureStatesTable extends AdventureStates
+    with TableInfo<$AdventureStatesTable, AdventureState> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AdventureStatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _weekStartMeta = const VerificationMeta(
+    'weekStart',
+  );
+  @override
+  late final GeneratedColumn<DateTime> weekStart = GeneratedColumn<DateTime>(
+    'week_start',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _questsMeta = const VerificationMeta('quests');
+  @override
+  late final GeneratedColumn<String> quests = GeneratedColumn<String>(
+    'quests',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bonusClaimedMeta = const VerificationMeta(
+    'bonusClaimed',
+  );
+  @override
+  late final GeneratedColumn<bool> bonusClaimed = GeneratedColumn<bool>(
+    'bonus_claimed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("bonus_claimed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, weekStart, quests, bonusClaimed];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'adventure_states';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<AdventureState> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('week_start')) {
+      context.handle(
+        _weekStartMeta,
+        weekStart.isAcceptableOrUnknown(data['week_start']!, _weekStartMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_weekStartMeta);
+    }
+    if (data.containsKey('quests')) {
+      context.handle(
+        _questsMeta,
+        quests.isAcceptableOrUnknown(data['quests']!, _questsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_questsMeta);
+    }
+    if (data.containsKey('bonus_claimed')) {
+      context.handle(
+        _bonusClaimedMeta,
+        bonusClaimed.isAcceptableOrUnknown(
+          data['bonus_claimed']!,
+          _bonusClaimedMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  AdventureState map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AdventureState(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      weekStart: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}week_start'],
+      )!,
+      quests: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}quests'],
+      )!,
+      bonusClaimed: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}bonus_claimed'],
+      )!,
+    );
+  }
+
+  @override
+  $AdventureStatesTable createAlias(String alias) {
+    return $AdventureStatesTable(attachedDatabase, alias);
+  }
+}
+
+class AdventureState extends DataClass implements Insertable<AdventureState> {
+  final int id;
+  final DateTime weekStart;
+
+  /// Die Abenteuer als JSON-Liste.
+  final String quests;
+  final bool bonusClaimed;
+  const AdventureState({
+    required this.id,
+    required this.weekStart,
+    required this.quests,
+    required this.bonusClaimed,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['week_start'] = Variable<DateTime>(weekStart);
+    map['quests'] = Variable<String>(quests);
+    map['bonus_claimed'] = Variable<bool>(bonusClaimed);
+    return map;
+  }
+
+  AdventureStatesCompanion toCompanion(bool nullToAbsent) {
+    return AdventureStatesCompanion(
+      id: Value(id),
+      weekStart: Value(weekStart),
+      quests: Value(quests),
+      bonusClaimed: Value(bonusClaimed),
+    );
+  }
+
+  factory AdventureState.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AdventureState(
+      id: serializer.fromJson<int>(json['id']),
+      weekStart: serializer.fromJson<DateTime>(json['weekStart']),
+      quests: serializer.fromJson<String>(json['quests']),
+      bonusClaimed: serializer.fromJson<bool>(json['bonusClaimed']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'weekStart': serializer.toJson<DateTime>(weekStart),
+      'quests': serializer.toJson<String>(quests),
+      'bonusClaimed': serializer.toJson<bool>(bonusClaimed),
+    };
+  }
+
+  AdventureState copyWith({
+    int? id,
+    DateTime? weekStart,
+    String? quests,
+    bool? bonusClaimed,
+  }) => AdventureState(
+    id: id ?? this.id,
+    weekStart: weekStart ?? this.weekStart,
+    quests: quests ?? this.quests,
+    bonusClaimed: bonusClaimed ?? this.bonusClaimed,
+  );
+  AdventureState copyWithCompanion(AdventureStatesCompanion data) {
+    return AdventureState(
+      id: data.id.present ? data.id.value : this.id,
+      weekStart: data.weekStart.present ? data.weekStart.value : this.weekStart,
+      quests: data.quests.present ? data.quests.value : this.quests,
+      bonusClaimed: data.bonusClaimed.present
+          ? data.bonusClaimed.value
+          : this.bonusClaimed,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AdventureState(')
+          ..write('id: $id, ')
+          ..write('weekStart: $weekStart, ')
+          ..write('quests: $quests, ')
+          ..write('bonusClaimed: $bonusClaimed')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, weekStart, quests, bonusClaimed);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AdventureState &&
+          other.id == this.id &&
+          other.weekStart == this.weekStart &&
+          other.quests == this.quests &&
+          other.bonusClaimed == this.bonusClaimed);
+}
+
+class AdventureStatesCompanion extends UpdateCompanion<AdventureState> {
+  final Value<int> id;
+  final Value<DateTime> weekStart;
+  final Value<String> quests;
+  final Value<bool> bonusClaimed;
+  const AdventureStatesCompanion({
+    this.id = const Value.absent(),
+    this.weekStart = const Value.absent(),
+    this.quests = const Value.absent(),
+    this.bonusClaimed = const Value.absent(),
+  });
+  AdventureStatesCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime weekStart,
+    required String quests,
+    this.bonusClaimed = const Value.absent(),
+  }) : weekStart = Value(weekStart),
+       quests = Value(quests);
+  static Insertable<AdventureState> custom({
+    Expression<int>? id,
+    Expression<DateTime>? weekStart,
+    Expression<String>? quests,
+    Expression<bool>? bonusClaimed,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (weekStart != null) 'week_start': weekStart,
+      if (quests != null) 'quests': quests,
+      if (bonusClaimed != null) 'bonus_claimed': bonusClaimed,
+    });
+  }
+
+  AdventureStatesCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? weekStart,
+    Value<String>? quests,
+    Value<bool>? bonusClaimed,
+  }) {
+    return AdventureStatesCompanion(
+      id: id ?? this.id,
+      weekStart: weekStart ?? this.weekStart,
+      quests: quests ?? this.quests,
+      bonusClaimed: bonusClaimed ?? this.bonusClaimed,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (weekStart.present) {
+      map['week_start'] = Variable<DateTime>(weekStart.value);
+    }
+    if (quests.present) {
+      map['quests'] = Variable<String>(quests.value);
+    }
+    if (bonusClaimed.present) {
+      map['bonus_claimed'] = Variable<bool>(bonusClaimed.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AdventureStatesCompanion(')
+          ..write('id: $id, ')
+          ..write('weekStart: $weekStart, ')
+          ..write('quests: $quests, ')
+          ..write('bonusClaimed: $bonusClaimed')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2113,6 +2415,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $RecordedWalksTable recordedWalks = $RecordedWalksTable(this);
   late final $WalkSummariesTable walkSummaries = $WalkSummariesTable(this);
   late final $TreasureStatesTable treasureStates = $TreasureStatesTable(this);
+  late final $AdventureStatesTable adventureStates = $AdventureStatesTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2123,6 +2428,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     recordedWalks,
     walkSummaries,
     treasureStates,
+    adventureStates,
   ];
 }
 
@@ -3280,6 +3586,198 @@ typedef $$TreasureStatesTableProcessedTableManager =
       TreasureState,
       PrefetchHooks Function()
     >;
+typedef $$AdventureStatesTableCreateCompanionBuilder =
+    AdventureStatesCompanion Function({
+      Value<int> id,
+      required DateTime weekStart,
+      required String quests,
+      Value<bool> bonusClaimed,
+    });
+typedef $$AdventureStatesTableUpdateCompanionBuilder =
+    AdventureStatesCompanion Function({
+      Value<int> id,
+      Value<DateTime> weekStart,
+      Value<String> quests,
+      Value<bool> bonusClaimed,
+    });
+
+class $$AdventureStatesTableFilterComposer
+    extends Composer<_$AppDatabase, $AdventureStatesTable> {
+  $$AdventureStatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get weekStart => $composableBuilder(
+    column: $table.weekStart,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get quests => $composableBuilder(
+    column: $table.quests,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get bonusClaimed => $composableBuilder(
+    column: $table.bonusClaimed,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$AdventureStatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $AdventureStatesTable> {
+  $$AdventureStatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get weekStart => $composableBuilder(
+    column: $table.weekStart,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get quests => $composableBuilder(
+    column: $table.quests,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get bonusClaimed => $composableBuilder(
+    column: $table.bonusClaimed,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$AdventureStatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $AdventureStatesTable> {
+  $$AdventureStatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get weekStart =>
+      $composableBuilder(column: $table.weekStart, builder: (column) => column);
+
+  GeneratedColumn<String> get quests =>
+      $composableBuilder(column: $table.quests, builder: (column) => column);
+
+  GeneratedColumn<bool> get bonusClaimed => $composableBuilder(
+    column: $table.bonusClaimed,
+    builder: (column) => column,
+  );
+}
+
+class $$AdventureStatesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AdventureStatesTable,
+          AdventureState,
+          $$AdventureStatesTableFilterComposer,
+          $$AdventureStatesTableOrderingComposer,
+          $$AdventureStatesTableAnnotationComposer,
+          $$AdventureStatesTableCreateCompanionBuilder,
+          $$AdventureStatesTableUpdateCompanionBuilder,
+          (
+            AdventureState,
+            BaseReferences<
+              _$AppDatabase,
+              $AdventureStatesTable,
+              AdventureState
+            >,
+          ),
+          AdventureState,
+          PrefetchHooks Function()
+        > {
+  $$AdventureStatesTableTableManager(
+    _$AppDatabase db,
+    $AdventureStatesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$AdventureStatesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$AdventureStatesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$AdventureStatesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> weekStart = const Value.absent(),
+                Value<String> quests = const Value.absent(),
+                Value<bool> bonusClaimed = const Value.absent(),
+              }) => AdventureStatesCompanion(
+                id: id,
+                weekStart: weekStart,
+                quests: quests,
+                bonusClaimed: bonusClaimed,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required DateTime weekStart,
+                required String quests,
+                Value<bool> bonusClaimed = const Value.absent(),
+              }) => AdventureStatesCompanion.insert(
+                id: id,
+                weekStart: weekStart,
+                quests: quests,
+                bonusClaimed: bonusClaimed,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$AdventureStatesTable, AdventureState>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $AdventureStatesTable,
+                    AdventureState
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AdventureStatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AdventureStatesTable,
+      AdventureState,
+      $$AdventureStatesTableFilterComposer,
+      $$AdventureStatesTableOrderingComposer,
+      $$AdventureStatesTableAnnotationComposer,
+      $$AdventureStatesTableCreateCompanionBuilder,
+      $$AdventureStatesTableUpdateCompanionBuilder,
+      (
+        AdventureState,
+        BaseReferences<_$AppDatabase, $AdventureStatesTable, AdventureState>,
+      ),
+      AdventureState,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3294,4 +3792,6 @@ class $AppDatabaseManager {
       $$WalkSummariesTableTableManager(_db, _db.walkSummaries);
   $$TreasureStatesTableTableManager get treasureStates =>
       $$TreasureStatesTableTableManager(_db, _db.treasureStates);
+  $$AdventureStatesTableTableManager get adventureStates =>
+      $$AdventureStatesTableTableManager(_db, _db.adventureStates);
 }

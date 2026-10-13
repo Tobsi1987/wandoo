@@ -86,3 +86,16 @@ class TreasureStates extends Table {
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
+
+/// Die Abenteuer der aktuellen Woche, immer genau eine Zeile.
+class AdventureStates extends Table {
+  IntColumn get id => integer()();
+  DateTimeColumn get weekStart => dateTime()();
+
+  /// Die Abenteuer als JSON-Liste.
+  TextColumn get quests => text()();
+  BoolColumn get bonusClaimed => boolean().withDefault(const Constant(false))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
