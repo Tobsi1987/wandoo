@@ -189,6 +189,7 @@ class _CreatureModelState extends State<CreatureModel> {
       size: widget.size,
       animate: widget.animate,
       night: widget.night,
+      asleep: widget.eyesClosed && widget.eyes != null,
       time: _time,
       onTime: _pose,
     );
