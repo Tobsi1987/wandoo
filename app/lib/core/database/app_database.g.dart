@@ -119,6 +119,18 @@ class $CreatureStatesTable extends CreatureStates
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _walkedMetersMeta = const VerificationMeta(
+    'walkedMeters',
+  );
+  @override
+  late final GeneratedColumn<int> walkedMeters = GeneratedColumn<int>(
+    'walked_meters',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -131,6 +143,7 @@ class $CreatureStatesTable extends CreatureStates
     neck,
     seenSpecies,
     luckyEgg,
+    walkedMeters,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -210,6 +223,15 @@ class $CreatureStatesTable extends CreatureStates
         luckyEgg.isAcceptableOrUnknown(data['lucky_egg']!, _luckyEggMeta),
       );
     }
+    if (data.containsKey('walked_meters')) {
+      context.handle(
+        _walkedMetersMeta,
+        walkedMeters.isAcceptableOrUnknown(
+          data['walked_meters']!,
+          _walkedMetersMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -259,6 +281,10 @@ class $CreatureStatesTable extends CreatureStates
         DriftSqlType.bool,
         data['${effectivePrefix}lucky_egg'],
       )!,
+      walkedMeters: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}walked_meters'],
+      )!,
     );
   }
 
@@ -287,6 +313,9 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
   /// Je geschlüpfte Arten als JSON-Liste, fürs Sammelalbum.
   final String seenSpecies;
   final bool luckyEgg;
+
+  /// Meter, die man mit diesem Wesen schon gegangen ist.
+  final int walkedMeters;
   const CreatureState({
     required this.id,
     required this.food,
@@ -298,6 +327,7 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
     this.neck,
     required this.seenSpecies,
     required this.luckyEgg,
+    required this.walkedMeters,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -322,6 +352,7 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
     }
     map['seen_species'] = Variable<String>(seenSpecies);
     map['lucky_egg'] = Variable<bool>(luckyEgg);
+    map['walked_meters'] = Variable<int>(walkedMeters);
     return map;
   }
 
@@ -343,6 +374,7 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
       neck: neck == null && nullToAbsent ? const Value.absent() : Value(neck),
       seenSpecies: Value(seenSpecies),
       luckyEgg: Value(luckyEgg),
+      walkedMeters: Value(walkedMeters),
     );
   }
 
@@ -362,6 +394,7 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
       neck: serializer.fromJson<String?>(json['neck']),
       seenSpecies: serializer.fromJson<String>(json['seenSpecies']),
       luckyEgg: serializer.fromJson<bool>(json['luckyEgg']),
+      walkedMeters: serializer.fromJson<int>(json['walkedMeters']),
     );
   }
   @override
@@ -378,6 +411,7 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
       'neck': serializer.toJson<String?>(neck),
       'seenSpecies': serializer.toJson<String>(seenSpecies),
       'luckyEgg': serializer.toJson<bool>(luckyEgg),
+      'walkedMeters': serializer.toJson<int>(walkedMeters),
     };
   }
 
@@ -392,6 +426,7 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
     Value<String?> neck = const Value.absent(),
     String? seenSpecies,
     bool? luckyEgg,
+    int? walkedMeters,
   }) => CreatureState(
     id: id ?? this.id,
     food: food ?? this.food,
@@ -405,6 +440,7 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
     neck: neck.present ? neck.value : this.neck,
     seenSpecies: seenSpecies ?? this.seenSpecies,
     luckyEgg: luckyEgg ?? this.luckyEgg,
+    walkedMeters: walkedMeters ?? this.walkedMeters,
   );
   CreatureState copyWithCompanion(CreatureStatesCompanion data) {
     return CreatureState(
@@ -424,6 +460,9 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
           ? data.seenSpecies.value
           : this.seenSpecies,
       luckyEgg: data.luckyEgg.present ? data.luckyEgg.value : this.luckyEgg,
+      walkedMeters: data.walkedMeters.present
+          ? data.walkedMeters.value
+          : this.walkedMeters,
     );
   }
 
@@ -439,7 +478,8 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
           ..write('hat: $hat, ')
           ..write('neck: $neck, ')
           ..write('seenSpecies: $seenSpecies, ')
-          ..write('luckyEgg: $luckyEgg')
+          ..write('luckyEgg: $luckyEgg, ')
+          ..write('walkedMeters: $walkedMeters')
           ..write(')'))
         .toString();
   }
@@ -456,6 +496,7 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
     neck,
     seenSpecies,
     luckyEgg,
+    walkedMeters,
   );
   @override
   bool operator ==(Object other) =>
@@ -470,7 +511,8 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
           other.hat == this.hat &&
           other.neck == this.neck &&
           other.seenSpecies == this.seenSpecies &&
-          other.luckyEgg == this.luckyEgg);
+          other.luckyEgg == this.luckyEgg &&
+          other.walkedMeters == this.walkedMeters);
 }
 
 class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
@@ -484,6 +526,7 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
   final Value<String?> neck;
   final Value<String> seenSpecies;
   final Value<bool> luckyEgg;
+  final Value<int> walkedMeters;
   const CreatureStatesCompanion({
     this.id = const Value.absent(),
     this.food = const Value.absent(),
@@ -495,6 +538,7 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
     this.neck = const Value.absent(),
     this.seenSpecies = const Value.absent(),
     this.luckyEgg = const Value.absent(),
+    this.walkedMeters = const Value.absent(),
   });
   CreatureStatesCompanion.insert({
     this.id = const Value.absent(),
@@ -507,6 +551,7 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
     this.neck = const Value.absent(),
     this.seenSpecies = const Value.absent(),
     this.luckyEgg = const Value.absent(),
+    this.walkedMeters = const Value.absent(),
   });
   static Insertable<CreatureState> custom({
     Expression<int>? id,
@@ -519,6 +564,7 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
     Expression<String>? neck,
     Expression<String>? seenSpecies,
     Expression<bool>? luckyEgg,
+    Expression<int>? walkedMeters,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -531,6 +577,7 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
       if (neck != null) 'neck': neck,
       if (seenSpecies != null) 'seen_species': seenSpecies,
       if (luckyEgg != null) 'lucky_egg': luckyEgg,
+      if (walkedMeters != null) 'walked_meters': walkedMeters,
     });
   }
 
@@ -545,6 +592,7 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
     Value<String?>? neck,
     Value<String>? seenSpecies,
     Value<bool>? luckyEgg,
+    Value<int>? walkedMeters,
   }) {
     return CreatureStatesCompanion(
       id: id ?? this.id,
@@ -557,6 +605,7 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
       neck: neck ?? this.neck,
       seenSpecies: seenSpecies ?? this.seenSpecies,
       luckyEgg: luckyEgg ?? this.luckyEgg,
+      walkedMeters: walkedMeters ?? this.walkedMeters,
     );
   }
 
@@ -593,6 +642,9 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
     if (luckyEgg.present) {
       map['lucky_egg'] = Variable<bool>(luckyEgg.value);
     }
+    if (walkedMeters.present) {
+      map['walked_meters'] = Variable<int>(walkedMeters.value);
+    }
     return map;
   }
 
@@ -608,7 +660,8 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
           ..write('hat: $hat, ')
           ..write('neck: $neck, ')
           ..write('seenSpecies: $seenSpecies, ')
-          ..write('luckyEgg: $luckyEgg')
+          ..write('luckyEgg: $luckyEgg, ')
+          ..write('walkedMeters: $walkedMeters')
           ..write(')'))
         .toString();
   }
@@ -1327,6 +1380,18 @@ class $WalkSummariesTable extends WalkSummaries
     requiredDuringInsert: false,
     defaultValue: const Constant('[]'),
   );
+  static const VerificationMeta _distanceMetersMeta = const VerificationMeta(
+    'distanceMeters',
+  );
+  @override
+  late final GeneratedColumn<int> distanceMeters = GeneratedColumn<int>(
+    'distance_meters',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     walkId,
@@ -1339,6 +1404,7 @@ class $WalkSummariesTable extends WalkSummaries
     creatureGrew,
     seen,
     extraLines,
+    distanceMeters,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1444,6 +1510,15 @@ class $WalkSummariesTable extends WalkSummaries
         extraLines.isAcceptableOrUnknown(data['extra_lines']!, _extraLinesMeta),
       );
     }
+    if (data.containsKey('distance_meters')) {
+      context.handle(
+        _distanceMetersMeta,
+        distanceMeters.isAcceptableOrUnknown(
+          data['distance_meters']!,
+          _distanceMetersMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1493,6 +1568,10 @@ class $WalkSummariesTable extends WalkSummaries
         DriftSqlType.string,
         data['${effectivePrefix}extra_lines'],
       )!,
+      distanceMeters: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}distance_meters'],
+      )!,
     );
   }
 
@@ -1520,6 +1599,9 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
   /// Zusätzliche Zeilen anderer Features als JSON-Liste, z. B. Fundstücke
   /// (seit Schema 7).
   final String extraLines;
+
+  /// Länge des Gangs in Metern.
+  final int distanceMeters;
   const WalkSummaryRow({
     required this.walkId,
     required this.finishedAt,
@@ -1531,6 +1613,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
     required this.creatureGrew,
     required this.seen,
     required this.extraLines,
+    required this.distanceMeters,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1545,6 +1628,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
     map['creature_grew'] = Variable<bool>(creatureGrew);
     map['seen'] = Variable<bool>(seen);
     map['extra_lines'] = Variable<String>(extraLines);
+    map['distance_meters'] = Variable<int>(distanceMeters);
     return map;
   }
 
@@ -1560,6 +1644,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
       creatureGrew: Value(creatureGrew),
       seen: Value(seen),
       extraLines: Value(extraLines),
+      distanceMeters: Value(distanceMeters),
     );
   }
 
@@ -1581,6 +1666,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
       creatureGrew: serializer.fromJson<bool>(json['creatureGrew']),
       seen: serializer.fromJson<bool>(json['seen']),
       extraLines: serializer.fromJson<String>(json['extraLines']),
+      distanceMeters: serializer.fromJson<int>(json['distanceMeters']),
     );
   }
   @override
@@ -1597,6 +1683,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
       'creatureGrew': serializer.toJson<bool>(creatureGrew),
       'seen': serializer.toJson<bool>(seen),
       'extraLines': serializer.toJson<String>(extraLines),
+      'distanceMeters': serializer.toJson<int>(distanceMeters),
     };
   }
 
@@ -1611,6 +1698,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
     bool? creatureGrew,
     bool? seen,
     String? extraLines,
+    int? distanceMeters,
   }) => WalkSummaryRow(
     walkId: walkId ?? this.walkId,
     finishedAt: finishedAt ?? this.finishedAt,
@@ -1622,6 +1710,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
     creatureGrew: creatureGrew ?? this.creatureGrew,
     seen: seen ?? this.seen,
     extraLines: extraLines ?? this.extraLines,
+    distanceMeters: distanceMeters ?? this.distanceMeters,
   );
   WalkSummaryRow copyWithCompanion(WalkSummariesCompanion data) {
     return WalkSummaryRow(
@@ -1651,6 +1740,9 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
       extraLines: data.extraLines.present
           ? data.extraLines.value
           : this.extraLines,
+      distanceMeters: data.distanceMeters.present
+          ? data.distanceMeters.value
+          : this.distanceMeters,
     );
   }
 
@@ -1666,7 +1758,8 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
           ..write('streetsByEnvironment: $streetsByEnvironment, ')
           ..write('creatureGrew: $creatureGrew, ')
           ..write('seen: $seen, ')
-          ..write('extraLines: $extraLines')
+          ..write('extraLines: $extraLines, ')
+          ..write('distanceMeters: $distanceMeters')
           ..write(')'))
         .toString();
   }
@@ -1683,6 +1776,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
     creatureGrew,
     seen,
     extraLines,
+    distanceMeters,
   );
   @override
   bool operator ==(Object other) =>
@@ -1697,7 +1791,8 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
           other.streetsByEnvironment == this.streetsByEnvironment &&
           other.creatureGrew == this.creatureGrew &&
           other.seen == this.seen &&
-          other.extraLines == this.extraLines);
+          other.extraLines == this.extraLines &&
+          other.distanceMeters == this.distanceMeters);
 }
 
 class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
@@ -1711,6 +1806,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
   final Value<bool> creatureGrew;
   final Value<bool> seen;
   final Value<String> extraLines;
+  final Value<int> distanceMeters;
   final Value<int> rowid;
   const WalkSummariesCompanion({
     this.walkId = const Value.absent(),
@@ -1723,6 +1819,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
     this.creatureGrew = const Value.absent(),
     this.seen = const Value.absent(),
     this.extraLines = const Value.absent(),
+    this.distanceMeters = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   WalkSummariesCompanion.insert({
@@ -1736,6 +1833,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
     required bool creatureGrew,
     this.seen = const Value.absent(),
     this.extraLines = const Value.absent(),
+    this.distanceMeters = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : walkId = Value(walkId),
        finishedAt = Value(finishedAt),
@@ -1755,6 +1853,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
     Expression<bool>? creatureGrew,
     Expression<bool>? seen,
     Expression<String>? extraLines,
+    Expression<int>? distanceMeters,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1769,6 +1868,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
       if (creatureGrew != null) 'creature_grew': creatureGrew,
       if (seen != null) 'seen': seen,
       if (extraLines != null) 'extra_lines': extraLines,
+      if (distanceMeters != null) 'distance_meters': distanceMeters,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1784,6 +1884,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
     Value<bool>? creatureGrew,
     Value<bool>? seen,
     Value<String>? extraLines,
+    Value<int>? distanceMeters,
     Value<int>? rowid,
   }) {
     return WalkSummariesCompanion(
@@ -1797,6 +1898,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
       creatureGrew: creatureGrew ?? this.creatureGrew,
       seen: seen ?? this.seen,
       extraLines: extraLines ?? this.extraLines,
+      distanceMeters: distanceMeters ?? this.distanceMeters,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1836,6 +1938,9 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
     if (extraLines.present) {
       map['extra_lines'] = Variable<String>(extraLines.value);
     }
+    if (distanceMeters.present) {
+      map['distance_meters'] = Variable<int>(distanceMeters.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1855,6 +1960,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
           ..write('creatureGrew: $creatureGrew, ')
           ..write('seen: $seen, ')
           ..write('extraLines: $extraLines, ')
+          ..write('distanceMeters: $distanceMeters, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2444,6 +2550,7 @@ typedef $$CreatureStatesTableCreateCompanionBuilder =
       Value<String?> neck,
       Value<String> seenSpecies,
       Value<bool> luckyEgg,
+      Value<int> walkedMeters,
     });
 typedef $$CreatureStatesTableUpdateCompanionBuilder =
     CreatureStatesCompanion Function({
@@ -2457,6 +2564,7 @@ typedef $$CreatureStatesTableUpdateCompanionBuilder =
       Value<String?> neck,
       Value<String> seenSpecies,
       Value<bool> luckyEgg,
+      Value<int> walkedMeters,
     });
 
 class $$CreatureStatesTableFilterComposer
@@ -2515,6 +2623,11 @@ class $$CreatureStatesTableFilterComposer
 
   ColumnFilters<bool> get luckyEgg => $composableBuilder(
     column: $table.luckyEgg,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get walkedMeters => $composableBuilder(
+    column: $table.walkedMeters,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2577,6 +2690,11 @@ class $$CreatureStatesTableOrderingComposer
     column: $table.luckyEgg,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get walkedMeters => $composableBuilder(
+    column: $table.walkedMeters,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CreatureStatesTableAnnotationComposer
@@ -2623,6 +2741,11 @@ class $$CreatureStatesTableAnnotationComposer
 
   GeneratedColumn<bool> get luckyEgg =>
       $composableBuilder(column: $table.luckyEgg, builder: (column) => column);
+
+  GeneratedColumn<int> get walkedMeters => $composableBuilder(
+    column: $table.walkedMeters,
+    builder: (column) => column,
+  );
 }
 
 class $$CreatureStatesTableTableManager
@@ -2668,6 +2791,7 @@ class $$CreatureStatesTableTableManager
                 Value<String?> neck = const Value.absent(),
                 Value<String> seenSpecies = const Value.absent(),
                 Value<bool> luckyEgg = const Value.absent(),
+                Value<int> walkedMeters = const Value.absent(),
               }) => CreatureStatesCompanion(
                 id: id,
                 food: food,
@@ -2679,6 +2803,7 @@ class $$CreatureStatesTableTableManager
                 neck: neck,
                 seenSpecies: seenSpecies,
                 luckyEgg: luckyEgg,
+                walkedMeters: walkedMeters,
               ),
           createCompanionCallback:
               ({
@@ -2692,6 +2817,7 @@ class $$CreatureStatesTableTableManager
                 Value<String?> neck = const Value.absent(),
                 Value<String> seenSpecies = const Value.absent(),
                 Value<bool> luckyEgg = const Value.absent(),
+                Value<int> walkedMeters = const Value.absent(),
               }) => CreatureStatesCompanion.insert(
                 id: id,
                 food: food,
@@ -2703,6 +2829,7 @@ class $$CreatureStatesTableTableManager
                 neck: neck,
                 seenSpecies: seenSpecies,
                 luckyEgg: luckyEgg,
+                walkedMeters: walkedMeters,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -3115,6 +3242,7 @@ typedef $$WalkSummariesTableCreateCompanionBuilder =
       required bool creatureGrew,
       Value<bool> seen,
       Value<String> extraLines,
+      Value<int> distanceMeters,
       Value<int> rowid,
     });
 typedef $$WalkSummariesTableUpdateCompanionBuilder =
@@ -3129,6 +3257,7 @@ typedef $$WalkSummariesTableUpdateCompanionBuilder =
       Value<bool> creatureGrew,
       Value<bool> seen,
       Value<String> extraLines,
+      Value<int> distanceMeters,
       Value<int> rowid,
     });
 
@@ -3188,6 +3317,11 @@ class $$WalkSummariesTableFilterComposer
 
   ColumnFilters<String> get extraLines => $composableBuilder(
     column: $table.extraLines,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get distanceMeters => $composableBuilder(
+    column: $table.distanceMeters,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -3250,6 +3384,11 @@ class $$WalkSummariesTableOrderingComposer
     column: $table.extraLines,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get distanceMeters => $composableBuilder(
+    column: $table.distanceMeters,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$WalkSummariesTableAnnotationComposer
@@ -3306,6 +3445,11 @@ class $$WalkSummariesTableAnnotationComposer
     column: $table.extraLines,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get distanceMeters => $composableBuilder(
+    column: $table.distanceMeters,
+    builder: (column) => column,
+  );
 }
 
 class $$WalkSummariesTableTableManager
@@ -3349,6 +3493,7 @@ class $$WalkSummariesTableTableManager
                 Value<bool> creatureGrew = const Value.absent(),
                 Value<bool> seen = const Value.absent(),
                 Value<String> extraLines = const Value.absent(),
+                Value<int> distanceMeters = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WalkSummariesCompanion(
                 walkId: walkId,
@@ -3361,6 +3506,7 @@ class $$WalkSummariesTableTableManager
                 creatureGrew: creatureGrew,
                 seen: seen,
                 extraLines: extraLines,
+                distanceMeters: distanceMeters,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -3375,6 +3521,7 @@ class $$WalkSummariesTableTableManager
                 required bool creatureGrew,
                 Value<bool> seen = const Value.absent(),
                 Value<String> extraLines = const Value.absent(),
+                Value<int> distanceMeters = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WalkSummariesCompanion.insert(
                 walkId: walkId,
@@ -3387,6 +3534,7 @@ class $$WalkSummariesTableTableManager
                 creatureGrew: creatureGrew,
                 seen: seen,
                 extraLines: extraLines,
+                distanceMeters: distanceMeters,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

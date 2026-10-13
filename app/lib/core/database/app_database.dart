@@ -26,7 +26,7 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase.open() => AppDatabase(driftDatabase(name: 'wandoo'));
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -45,8 +45,16 @@ class AppDatabase extends _$AppDatabase {
       }
       if (from < 7) await _upgradeTo7(m, from);
       if (from < 8) await m.createTable(adventureStates);
+      if (from < 9) await _upgradeTo9(m, from);
     },
   );
+
+  Future<void> _upgradeTo9(Migrator m, int from) async {
+    await m.addColumn(creatureStates, creatureStates.walkedMeters);
+    if (from >= 3) {
+      await m.addColumn(walkSummaries, walkSummaries.distanceMeters);
+    }
+  }
 
   Future<void> _upgradeTo7(Migrator m, int from) async {
     for (final column in [

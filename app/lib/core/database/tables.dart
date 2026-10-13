@@ -21,6 +21,9 @@ class CreatureStates extends Table {
   TextColumn get seenSpecies => text().withDefault(const Constant('[]'))();
   BoolColumn get luckyEgg => boolean().withDefault(const Constant(false))();
 
+  /// Meter, die man mit diesem Wesen schon gegangen ist.
+  IntColumn get walkedMeters => integer().withDefault(const Constant(0))();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -68,6 +71,9 @@ class WalkSummaries extends Table {
   /// Zusätzliche Zeilen anderer Features als JSON-Liste, z. B. Fundstücke
   /// (seit Schema 7).
   TextColumn get extraLines => text().withDefault(const Constant('[]'))();
+
+  /// Länge des Gangs in Metern.
+  IntColumn get distanceMeters => integer().withDefault(const Constant(0))();
 
   @override
   Set<Column<Object>> get primaryKey => {walkId};

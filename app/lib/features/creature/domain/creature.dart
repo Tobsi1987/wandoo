@@ -14,6 +14,7 @@ class Creature {
     this.neck,
     this.seenSpecies = const {},
     this.luckyEgg = false,
+    this.walkedMeters = 0,
   });
 
   /// Ohne Neues wird das Wesen nach dieser Zeit träge (keine Bestrafung).
@@ -42,6 +43,9 @@ class Creature {
 
   /// Belohnung aus Abenteuern: Das nächste Ei schlüpft mindestens selten.
   final bool luckyEgg;
+
+  /// Wie weit man mit diesem Wesen schon gegangen ist, in Metern.
+  final int walkedMeters;
 
   bool get hatched => stage != GrowthStage.egg;
 
@@ -83,6 +87,7 @@ class Creature {
     String? speciesId,
     Set<String>? seenSpecies,
     bool? luckyEgg,
+    int? walkedMeters,
   }) {
     return Creature(
       food: food ?? this.food,
@@ -94,6 +99,7 @@ class Creature {
       neck: neck,
       seenSpecies: seenSpecies ?? this.seenSpecies,
       luckyEgg: luckyEgg ?? this.luckyEgg,
+      walkedMeters: walkedMeters ?? this.walkedMeters,
     );
   }
 
@@ -109,5 +115,6 @@ class Creature {
         neck: neck,
         seenSpecies: seenSpecies,
         luckyEgg: luckyEgg,
+        walkedMeters: walkedMeters,
       );
 }

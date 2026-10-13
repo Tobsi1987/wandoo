@@ -41,13 +41,15 @@ class ProcessWalk {
     final discovery = await discover(track, candidates);
     final newSegments = classify.each(discovery.fresh);
 
+    final meters = _length(track);
     final before = await creatures.load();
-    final after = feed(
+    final fed = feed(
       before,
       _count(newSegments),
       now ?? DateTime.now(),
       knownSegments: discovery.knownCount,
     );
+    final after = fed.copyWith(walkedMeters: fed.walkedMeters + meters);
     await creatures.save(after);
 
     var summary = summarize(
@@ -56,6 +58,7 @@ class ProcessWalk {
       newSegments: newSegments,
       knownSegmentCount: discovery.knownCount,
       creatureGrew: after.stage != before.stage,
+      distanceMeters: meters,
     );
     final outcome = WalkOutcome(
       track: track,
@@ -69,6 +72,15 @@ class ProcessWalk {
     }
     await summaries.save(summary);
     return WalkResult(summary: summary, creature: after);
+  }
+
+  static int _length(Track track) {
+    final points = track.positions;
+    var meters = 0.0;
+    for (var i = 1; i < points.length; i++) {
+      meters += points[i - 1].distanceTo(points[i]);
+    }
+    return meters.round();
   }
 
   static Map<EnvironmentType, int> _count(

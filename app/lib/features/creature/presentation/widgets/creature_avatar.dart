@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wandoo/core/format/distance_label.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/domain/species_catalog.dart';
 import 'package:wandoo/features/creature/presentation/creature_labels.dart';
@@ -53,10 +54,11 @@ class CreatureAvatar extends StatelessWidget {
   }
 
   String get _subtitle {
-    final food = '${creature.food} neue Abschnitte gefressen';
-    if (!creature.hatched) return food;
+    final walked =
+        '👣 ${distanceLabel(creature.walkedMeters)} zusammen gelaufen';
+    if (!creature.hatched) return walked;
     final rarity = SpeciesCatalog.byId(creature.speciesId).rarity;
-    return '${stageLabel(creature.stage)} · ${rarityLabel(rarity)} · $food';
+    return '${stageLabel(creature.stage)} · ${rarityLabel(rarity)}\n$walked';
   }
 
   @override

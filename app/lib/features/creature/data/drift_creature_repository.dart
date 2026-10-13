@@ -39,6 +39,7 @@ class DriftCreatureRepository implements CreatureRepository {
           id as String,
       },
       luckyEgg: row.luckyEgg,
+      walkedMeters: row.walkedMeters,
     );
   }
 
@@ -57,6 +58,7 @@ class DriftCreatureRepository implements CreatureRepository {
           neck: Value(creature.neck?.name),
           seenSpecies: Value(jsonEncode(creature.seenSpecies.toList())),
           luckyEgg: Value(creature.luckyEgg),
+          walkedMeters: Value(creature.walkedMeters),
         ),
       );
 

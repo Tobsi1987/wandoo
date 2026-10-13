@@ -12,6 +12,7 @@ class WalkSummary {
     required this.creatureGrew,
     this.knownSegmentCount = 0,
     this.extraLines = const [],
+    this.distanceMeters = 0,
   });
 
   final String walkId;
@@ -25,6 +26,9 @@ class WalkSummary {
   /// Was andere Features zum Gang zu sagen haben, z. B. Fundstücke.
   final List<String> extraLines;
 
+  /// Wie lang der Gang war, in Metern.
+  final int distanceMeters;
+
   /// Dieselbe Zusammenfassung mit weiteren Zeilen.
   WalkSummary withExtraLines(List<String> lines) => WalkSummary(
     walkId: walkId,
@@ -36,6 +40,7 @@ class WalkSummary {
     creatureGrew: creatureGrew,
     knownSegmentCount: knownSegmentCount,
     extraLines: [...extraLines, ...lines],
+    distanceMeters: distanceMeters,
   );
 
   /// Verschiedene Straßen, auf denen mindestens ein neuer Abschnitt lag.
