@@ -1,6 +1,9 @@
 import 'dart:math' as math;
 
+import 'package:meta/meta.dart';
+
 /// Ein Punkt auf der Erde in WGS84-Koordinaten.
+@immutable
 class GeoPoint {
   const GeoPoint(this.latitude, this.longitude);
 
@@ -22,6 +25,15 @@ class GeoPoint {
   }
 
   static double _rad(double degrees) => degrees * math.pi / 180;
+
+  @override
+  bool operator ==(Object other) =>
+      other is GeoPoint &&
+      other.latitude == latitude &&
+      other.longitude == longitude;
+
+  @override
+  int get hashCode => Object.hash(latitude, longitude);
 
   @override
   String toString() => 'GeoPoint($latitude, $longitude)';

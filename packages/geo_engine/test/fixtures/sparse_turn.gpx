@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="wandoo">
+  <trk><name>sparse_turn</name><trkseg>
+    <trkpt lat="49.9999655" lon="8.0000033"><time>2026-10-12T08:00:00.000Z</time></trkpt>
+    <trkpt lat="49.9999948" lon="8.0006070"><time>2026-10-12T08:00:30.000Z</time></trkpt>
+    <trkpt lat="49.9999507" lon="8.0013090"><time>2026-10-12T08:01:00.000Z</time></trkpt>
+    <trkpt lat="50.0000999" lon="8.0015961"><time>2026-10-12T08:01:30.000Z</time></trkpt>
+    <trkpt lat="50.0000006" lon="8.0023699"><time>2026-10-12T08:02:00.000Z</time></trkpt>
+    <trkpt lat="50.0001714" lon="8.0027604"><time>2026-10-12T08:02:30.000Z</time></trkpt>
+    <trkpt lat="50.0004108" lon="8.0028527"><time>2026-10-12T08:03:00.000Z</time></trkpt>
+    <trkpt lat="50.0008380" lon="8.0028339"><time>2026-10-12T08:03:30.000Z</time></trkpt>
+    <trkpt lat="50.0012279" lon="8.0028629"><time>2026-10-12T08:04:00.000Z</time></trkpt>
+    <trkpt lat="50.0015842" lon="8.0027402"><time>2026-10-12T08:04:30.000Z</time></trkpt>
+  </trkseg></trk>
+</gpx>
