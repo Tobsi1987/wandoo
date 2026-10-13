@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/presentation/creature_labels.dart';
-import 'package:wandoo/features/creature/presentation/painting/creature_painter.dart';
+import 'package:wandoo/features/creature/presentation/widgets/creature_figure.dart';
 import 'package:wandoo/features/creature/presentation/widgets/trait_badge.dart';
 
 /// Zeigt das Wesen als Figur, dazu Stufe, Futter und Merkmale.
@@ -25,13 +25,7 @@ class CreatureAvatar extends StatelessWidget {
       children: [
         Semantics(
           label: 'Dein Wesen: ${stageLabel(creature.stage)}',
-          child: CustomPaint(
-            size: Size.square(figureSize),
-            painter: CreaturePainter(
-              creature: creature,
-              sluggish: creature.isSluggish(DateTime.now()),
-            ),
-          ),
+          child: CreatureFigure(creature: creature, size: figureSize),
         ),
         const SizedBox(height: 8),
         Text(stageLabel(creature.stage), style: text.headlineMedium),
