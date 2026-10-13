@@ -10,6 +10,7 @@ class SummarizeWalk {
     required DateTime finishedAt,
     required Map<RoadSegment, EnvironmentType> newSegments,
     required bool creatureGrew,
+    int knownSegmentCount = 0,
   }) {
     final streetsByEnvironment = <EnvironmentType, Set<String>>{};
     newSegments.forEach((segment, type) {
@@ -21,6 +22,7 @@ class SummarizeWalk {
       walkId: walkId,
       finishedAt: finishedAt,
       newSegmentCount: newSegments.length,
+      knownSegmentCount: knownSegmentCount,
       newStreetCount: {for (final s in segments) s.streetId}.length,
       streetsByEnvironment: {
         for (final e in streetsByEnvironment.entries) e.key: e.value.length,

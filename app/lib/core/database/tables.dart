@@ -42,6 +42,9 @@ class WalkSummaries extends Table {
   IntColumn get newStreetCount => integer()();
   IntColumn get bridgeCount => integer()();
 
+  /// Wieder abgelaufene bekannte Abschnitte (seit Schema 4).
+  IntColumn get knownSegmentCount => integer().withDefault(const Constant(0))();
+
   /// Neue Straßen je Umgebung als JSON, z. B. `{"forest":2}`.
   TextColumn get streetsByEnvironment => text()();
   BoolColumn get creatureGrew => boolean()();

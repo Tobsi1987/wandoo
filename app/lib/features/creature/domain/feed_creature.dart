@@ -2,10 +2,11 @@ import 'package:geo_engine/geo_engine.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/domain/trait.dart';
 
-/// Füttert das Wesen mit den neuen Abschnitten eines Gangs.
+/// Füttert das Wesen nach einem Gang.
 ///
-/// Jeder neue Abschnitt ist Futter, und seine Umgebung stärkt das
-/// passende Merkmal. Bekannte Wege kommen hier gar nicht erst an.
+/// Jeder Weg macht satt, auch ein schon bekannter: Das Wesen wird dann
+/// nicht träge. Wachsen lassen es nur neue Abschnitte, und ihre Umgebung
+/// stärkt das passende Merkmal.
 class FeedCreature {
   const FeedCreature({this.foodPerSegment = 1});
 
@@ -14,10 +15,13 @@ class FeedCreature {
   Creature call(
     Creature creature,
     Map<EnvironmentType, int> newSegmentsByEnvironment,
-    DateTime now,
-  ) {
+    DateTime now, {
+    int knownSegments = 0,
+  }) {
     final total = newSegmentsByEnvironment.values.fold(0, (a, b) => a + b);
-    if (total == 0) return creature;
+    if (total == 0) {
+      return knownSegments > 0 ? creature.copyWith(lastFedAt: now) : creature;
+    }
 
     final traits = Map<Trait, int>.of(creature.traitPoints);
     newSegmentsByEnvironment.forEach((type, count) {

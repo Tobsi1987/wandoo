@@ -898,6 +898,18 @@ class $WalkSummariesTable extends WalkSummaries
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _knownSegmentCountMeta = const VerificationMeta(
+    'knownSegmentCount',
+  );
+  @override
+  late final GeneratedColumn<int> knownSegmentCount = GeneratedColumn<int>(
+    'known_segment_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _streetsByEnvironmentMeta =
       const VerificationMeta('streetsByEnvironment');
   @override
@@ -943,6 +955,7 @@ class $WalkSummariesTable extends WalkSummaries
     newSegmentCount,
     newStreetCount,
     bridgeCount,
+    knownSegmentCount,
     streetsByEnvironment,
     creatureGrew,
     seen,
@@ -1008,6 +1021,15 @@ class $WalkSummariesTable extends WalkSummaries
     } else if (isInserting) {
       context.missing(_bridgeCountMeta);
     }
+    if (data.containsKey('known_segment_count')) {
+      context.handle(
+        _knownSegmentCountMeta,
+        knownSegmentCount.isAcceptableOrUnknown(
+          data['known_segment_count']!,
+          _knownSegmentCountMeta,
+        ),
+      );
+    }
     if (data.containsKey('streets_by_environment')) {
       context.handle(
         _streetsByEnvironmentMeta,
@@ -1065,6 +1087,10 @@ class $WalkSummariesTable extends WalkSummaries
         DriftSqlType.int,
         data['${effectivePrefix}bridge_count'],
       )!,
+      knownSegmentCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}known_segment_count'],
+      )!,
       streetsByEnvironment: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}streets_by_environment'],
@@ -1093,6 +1119,9 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
   final int newStreetCount;
   final int bridgeCount;
 
+  /// Wieder abgelaufene bekannte Abschnitte (seit Schema 4).
+  final int knownSegmentCount;
+
   /// Neue Straßen je Umgebung als JSON, z. B. `{"forest":2}`.
   final String streetsByEnvironment;
   final bool creatureGrew;
@@ -1103,6 +1132,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
     required this.newSegmentCount,
     required this.newStreetCount,
     required this.bridgeCount,
+    required this.knownSegmentCount,
     required this.streetsByEnvironment,
     required this.creatureGrew,
     required this.seen,
@@ -1115,6 +1145,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
     map['new_segment_count'] = Variable<int>(newSegmentCount);
     map['new_street_count'] = Variable<int>(newStreetCount);
     map['bridge_count'] = Variable<int>(bridgeCount);
+    map['known_segment_count'] = Variable<int>(knownSegmentCount);
     map['streets_by_environment'] = Variable<String>(streetsByEnvironment);
     map['creature_grew'] = Variable<bool>(creatureGrew);
     map['seen'] = Variable<bool>(seen);
@@ -1128,6 +1159,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
       newSegmentCount: Value(newSegmentCount),
       newStreetCount: Value(newStreetCount),
       bridgeCount: Value(bridgeCount),
+      knownSegmentCount: Value(knownSegmentCount),
       streetsByEnvironment: Value(streetsByEnvironment),
       creatureGrew: Value(creatureGrew),
       seen: Value(seen),
@@ -1145,6 +1177,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
       newSegmentCount: serializer.fromJson<int>(json['newSegmentCount']),
       newStreetCount: serializer.fromJson<int>(json['newStreetCount']),
       bridgeCount: serializer.fromJson<int>(json['bridgeCount']),
+      knownSegmentCount: serializer.fromJson<int>(json['knownSegmentCount']),
       streetsByEnvironment: serializer.fromJson<String>(
         json['streetsByEnvironment'],
       ),
@@ -1161,6 +1194,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
       'newSegmentCount': serializer.toJson<int>(newSegmentCount),
       'newStreetCount': serializer.toJson<int>(newStreetCount),
       'bridgeCount': serializer.toJson<int>(bridgeCount),
+      'knownSegmentCount': serializer.toJson<int>(knownSegmentCount),
       'streetsByEnvironment': serializer.toJson<String>(streetsByEnvironment),
       'creatureGrew': serializer.toJson<bool>(creatureGrew),
       'seen': serializer.toJson<bool>(seen),
@@ -1173,6 +1207,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
     int? newSegmentCount,
     int? newStreetCount,
     int? bridgeCount,
+    int? knownSegmentCount,
     String? streetsByEnvironment,
     bool? creatureGrew,
     bool? seen,
@@ -1182,6 +1217,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
     newSegmentCount: newSegmentCount ?? this.newSegmentCount,
     newStreetCount: newStreetCount ?? this.newStreetCount,
     bridgeCount: bridgeCount ?? this.bridgeCount,
+    knownSegmentCount: knownSegmentCount ?? this.knownSegmentCount,
     streetsByEnvironment: streetsByEnvironment ?? this.streetsByEnvironment,
     creatureGrew: creatureGrew ?? this.creatureGrew,
     seen: seen ?? this.seen,
@@ -1201,6 +1237,9 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
       bridgeCount: data.bridgeCount.present
           ? data.bridgeCount.value
           : this.bridgeCount,
+      knownSegmentCount: data.knownSegmentCount.present
+          ? data.knownSegmentCount.value
+          : this.knownSegmentCount,
       streetsByEnvironment: data.streetsByEnvironment.present
           ? data.streetsByEnvironment.value
           : this.streetsByEnvironment,
@@ -1219,6 +1258,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
           ..write('newSegmentCount: $newSegmentCount, ')
           ..write('newStreetCount: $newStreetCount, ')
           ..write('bridgeCount: $bridgeCount, ')
+          ..write('knownSegmentCount: $knownSegmentCount, ')
           ..write('streetsByEnvironment: $streetsByEnvironment, ')
           ..write('creatureGrew: $creatureGrew, ')
           ..write('seen: $seen')
@@ -1233,6 +1273,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
     newSegmentCount,
     newStreetCount,
     bridgeCount,
+    knownSegmentCount,
     streetsByEnvironment,
     creatureGrew,
     seen,
@@ -1246,6 +1287,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
           other.newSegmentCount == this.newSegmentCount &&
           other.newStreetCount == this.newStreetCount &&
           other.bridgeCount == this.bridgeCount &&
+          other.knownSegmentCount == this.knownSegmentCount &&
           other.streetsByEnvironment == this.streetsByEnvironment &&
           other.creatureGrew == this.creatureGrew &&
           other.seen == this.seen);
@@ -1257,6 +1299,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
   final Value<int> newSegmentCount;
   final Value<int> newStreetCount;
   final Value<int> bridgeCount;
+  final Value<int> knownSegmentCount;
   final Value<String> streetsByEnvironment;
   final Value<bool> creatureGrew;
   final Value<bool> seen;
@@ -1267,6 +1310,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
     this.newSegmentCount = const Value.absent(),
     this.newStreetCount = const Value.absent(),
     this.bridgeCount = const Value.absent(),
+    this.knownSegmentCount = const Value.absent(),
     this.streetsByEnvironment = const Value.absent(),
     this.creatureGrew = const Value.absent(),
     this.seen = const Value.absent(),
@@ -1278,6 +1322,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
     required int newSegmentCount,
     required int newStreetCount,
     required int bridgeCount,
+    this.knownSegmentCount = const Value.absent(),
     required String streetsByEnvironment,
     required bool creatureGrew,
     this.seen = const Value.absent(),
@@ -1295,6 +1340,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
     Expression<int>? newSegmentCount,
     Expression<int>? newStreetCount,
     Expression<int>? bridgeCount,
+    Expression<int>? knownSegmentCount,
     Expression<String>? streetsByEnvironment,
     Expression<bool>? creatureGrew,
     Expression<bool>? seen,
@@ -1306,6 +1352,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
       if (newSegmentCount != null) 'new_segment_count': newSegmentCount,
       if (newStreetCount != null) 'new_street_count': newStreetCount,
       if (bridgeCount != null) 'bridge_count': bridgeCount,
+      if (knownSegmentCount != null) 'known_segment_count': knownSegmentCount,
       if (streetsByEnvironment != null)
         'streets_by_environment': streetsByEnvironment,
       if (creatureGrew != null) 'creature_grew': creatureGrew,
@@ -1320,6 +1367,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
     Value<int>? newSegmentCount,
     Value<int>? newStreetCount,
     Value<int>? bridgeCount,
+    Value<int>? knownSegmentCount,
     Value<String>? streetsByEnvironment,
     Value<bool>? creatureGrew,
     Value<bool>? seen,
@@ -1331,6 +1379,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
       newSegmentCount: newSegmentCount ?? this.newSegmentCount,
       newStreetCount: newStreetCount ?? this.newStreetCount,
       bridgeCount: bridgeCount ?? this.bridgeCount,
+      knownSegmentCount: knownSegmentCount ?? this.knownSegmentCount,
       streetsByEnvironment: streetsByEnvironment ?? this.streetsByEnvironment,
       creatureGrew: creatureGrew ?? this.creatureGrew,
       seen: seen ?? this.seen,
@@ -1355,6 +1404,9 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
     }
     if (bridgeCount.present) {
       map['bridge_count'] = Variable<int>(bridgeCount.value);
+    }
+    if (knownSegmentCount.present) {
+      map['known_segment_count'] = Variable<int>(knownSegmentCount.value);
     }
     if (streetsByEnvironment.present) {
       map['streets_by_environment'] = Variable<String>(
@@ -1381,6 +1433,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
           ..write('newSegmentCount: $newSegmentCount, ')
           ..write('newStreetCount: $newStreetCount, ')
           ..write('bridgeCount: $bridgeCount, ')
+          ..write('knownSegmentCount: $knownSegmentCount, ')
           ..write('streetsByEnvironment: $streetsByEnvironment, ')
           ..write('creatureGrew: $creatureGrew, ')
           ..write('seen: $seen, ')
@@ -1950,6 +2003,7 @@ typedef $$WalkSummariesTableCreateCompanionBuilder =
       required int newSegmentCount,
       required int newStreetCount,
       required int bridgeCount,
+      Value<int> knownSegmentCount,
       required String streetsByEnvironment,
       required bool creatureGrew,
       Value<bool> seen,
@@ -1962,6 +2016,7 @@ typedef $$WalkSummariesTableUpdateCompanionBuilder =
       Value<int> newSegmentCount,
       Value<int> newStreetCount,
       Value<int> bridgeCount,
+      Value<int> knownSegmentCount,
       Value<String> streetsByEnvironment,
       Value<bool> creatureGrew,
       Value<bool> seen,
@@ -1999,6 +2054,11 @@ class $$WalkSummariesTableFilterComposer
 
   ColumnFilters<int> get bridgeCount => $composableBuilder(
     column: $table.bridgeCount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get knownSegmentCount => $composableBuilder(
+    column: $table.knownSegmentCount,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2052,6 +2112,11 @@ class $$WalkSummariesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get knownSegmentCount => $composableBuilder(
+    column: $table.knownSegmentCount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get streetsByEnvironment => $composableBuilder(
     column: $table.streetsByEnvironment,
     builder: (column) => ColumnOrderings(column),
@@ -2097,6 +2162,11 @@ class $$WalkSummariesTableAnnotationComposer
 
   GeneratedColumn<int> get bridgeCount => $composableBuilder(
     column: $table.bridgeCount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get knownSegmentCount => $composableBuilder(
+    column: $table.knownSegmentCount,
     builder: (column) => column,
   );
 
@@ -2150,6 +2220,7 @@ class $$WalkSummariesTableTableManager
                 Value<int> newSegmentCount = const Value.absent(),
                 Value<int> newStreetCount = const Value.absent(),
                 Value<int> bridgeCount = const Value.absent(),
+                Value<int> knownSegmentCount = const Value.absent(),
                 Value<String> streetsByEnvironment = const Value.absent(),
                 Value<bool> creatureGrew = const Value.absent(),
                 Value<bool> seen = const Value.absent(),
@@ -2160,6 +2231,7 @@ class $$WalkSummariesTableTableManager
                 newSegmentCount: newSegmentCount,
                 newStreetCount: newStreetCount,
                 bridgeCount: bridgeCount,
+                knownSegmentCount: knownSegmentCount,
                 streetsByEnvironment: streetsByEnvironment,
                 creatureGrew: creatureGrew,
                 seen: seen,
@@ -2172,6 +2244,7 @@ class $$WalkSummariesTableTableManager
                 required int newSegmentCount,
                 required int newStreetCount,
                 required int bridgeCount,
+                Value<int> knownSegmentCount = const Value.absent(),
                 required String streetsByEnvironment,
                 required bool creatureGrew,
                 Value<bool> seen = const Value.absent(),
@@ -2182,6 +2255,7 @@ class $$WalkSummariesTableTableManager
                 newSegmentCount: newSegmentCount,
                 newStreetCount: newStreetCount,
                 bridgeCount: bridgeCount,
+                knownSegmentCount: knownSegmentCount,
                 streetsByEnvironment: streetsByEnvironment,
                 creatureGrew: creatureGrew,
                 seen: seen,

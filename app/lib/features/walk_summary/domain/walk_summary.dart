@@ -10,11 +10,16 @@ class WalkSummary {
     required this.streetsByEnvironment,
     required this.bridgeCount,
     required this.creatureGrew,
+    this.knownSegmentCount = 0,
   });
 
   final String walkId;
   final DateTime finishedAt;
   final int newSegmentCount;
+
+  /// Schon bekannte Abschnitte, die wieder abgelaufen wurden. Sie machen
+  /// das Wesen satt, lassen es aber nicht wachsen.
+  final int knownSegmentCount;
 
   /// Verschiedene Straßen, auf denen mindestens ein neuer Abschnitt lag.
   final int newStreetCount;

@@ -53,7 +53,9 @@ void main() {
 
       final second = await process(track);
       expect(second.newSegmentCount, 0);
+      expect(second.summary.knownSegmentCount, 1);
       expect(second.creature.food, 1);
+      expect(second.creature.lastFedAt, isNotNull);
     },
   );
 }
