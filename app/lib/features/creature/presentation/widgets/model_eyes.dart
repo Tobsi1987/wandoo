@@ -87,7 +87,7 @@ PhysicallyBasedMaterial _material(Color c) {
 /// Gemessene Augen je Art.
 const modelEyes = <String, EyeSpot>{
   'aurora': EyeSpot(124, 582, 322, 62, 80, 285, -5, 0xFFE0D8D6),
-  'blaetterdrache': EyeSpot(163, 632, 255, 46, 59, 495, 110, 0xFFA5D098),
+  'blaetterdrache': EyeSpot(163, 632, 255, 46, 59, 495, 110, 0xFF8DC84C),
   'blitzmaus': EyeSpot(134, 507, 212, 36, 50, 385, 180, 0xFF77B4BA),
   'brummli': EyeSpot(147, 520, 282, 71, 76, 340, 240, 0xFFD9C07E),
   'fluffeule': EyeSpot(129, 663, 261, 90, 90, 100, 105, 0xFFE2C6AA),
@@ -95,7 +95,7 @@ const modelEyes = <String, EyeSpot>{
   'glutling': EyeSpot(130, 575, 250, 52, 60, 255, 260, 0xFFE4544A),
   'kieselchen': EyeSpot(176, 765, 247, 64, 64, 285, 295, 0xFFE0D2C2),
   'kristallis': EyeSpot(142, 488, 248, 50, 54, 290, 135, 0xFFE1C5AE),
-  'laternchen': EyeSpot(136, 556, 238, 57, 66, 455, 10, 0xFFF6D9AD),
+  'laternchen': EyeSpot(136, 556, 238, 57, 66, 455, 10, 0xFFFEE0AC),
   'moosel': EyeSpot(220, 581, 420, 74, 84, 335, 5, 0xFFB0E1B4),
   'nebelfuchs': EyeSpot(133, 502, 642, 59, 62, 135, 15, 0xFFBCCEDC),
   'pfuetzling': EyeSpot(228, 554, 313, 86, 102, 410, 30, 0xFFB4ECF4),
