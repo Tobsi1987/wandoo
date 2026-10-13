@@ -33,6 +33,12 @@ void main() {
     expect(classifier.classify(byId('w2-0')), EnvironmentType.water);
   });
 
+  test('Brücken-Tag des Wegs bleibt neben den Flächen-Tags erhalten', () {
+    expect(byId('w2-0').areaTags['bridge'], 'yes');
+    expect(byId('w2-1').areaTags['landuse'], 'residential');
+    expect(byId('w1-0').areaTags['bridge'], isNull);
+  });
+
   test('Abfrage enthält das Rechteck und Geometrie', () {
     final query = overpassQuery(50, 8, 50.05, 8.05);
     expect(query, contains('(50.0,8.0,50.05,8.05)'));

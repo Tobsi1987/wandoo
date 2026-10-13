@@ -32,3 +32,21 @@ class RecordedWalks extends Table {
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
+
+/// Zusammenfassung je verarbeitetem Gang.
+@DataClassName('WalkSummaryRow')
+class WalkSummaries extends Table {
+  TextColumn get walkId => text()();
+  DateTimeColumn get finishedAt => dateTime()();
+  IntColumn get newSegmentCount => integer()();
+  IntColumn get newStreetCount => integer()();
+  IntColumn get bridgeCount => integer()();
+
+  /// Neue Straßen je Umgebung als JSON, z. B. `{"forest":2}`.
+  TextColumn get streetsByEnvironment => text()();
+  BoolColumn get creatureGrew => boolean()();
+  BoolColumn get seen => boolean().withDefault(const Constant(false))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {walkId};
+}

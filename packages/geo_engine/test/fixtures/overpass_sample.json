@@ -51,7 +51,8 @@
     }
    ],
    "tags": {
-    "highway": "footway"
+    "highway": "footway",
+    "bridge": "yes"
    }
   },
   {

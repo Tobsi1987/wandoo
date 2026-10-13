@@ -10,6 +10,7 @@ import 'package:wandoo/flows/process_walk/pending_walk_processor.dart';
 import 'package:wandoo/flows/process_walk/process_walk.dart';
 
 import '../support/fake_location_source.dart';
+import '../support/fake_walk_summary_repository.dart';
 import '../support/test_database.dart';
 
 class _FlakyMap implements MapDataSource {
@@ -44,6 +45,7 @@ void main() {
         ),
         classify: const ClassifySegments(),
         creatures: InMemoryCreatureRepository(),
+        summaries: FakeWalkSummaryRepository(),
       ),
     );
     await walks.saveFinished(

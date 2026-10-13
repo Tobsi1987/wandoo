@@ -3,9 +3,11 @@ import 'package:wandoo/core/map_data/map_data_source.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/discovery/discovery.dart';
 import 'package:wandoo/features/environment/environment.dart';
+import 'package:wandoo/features/walk_summary/walk_summary.dart';
 import 'package:wandoo/flows/process_walk/walk_result.dart';
 
-/// Verarbeitet einen fertigen Gang: Spur, Entdeckung, Umgebung, Fütterung.
+/// Verarbeitet einen fertigen Gang: Spur, Entdeckung, Umgebung, Fütterung,
+/// Zusammenfassung.
 ///
 /// Der einzige Ort, der diese Features verbindet. Keines davon kennt die
 /// anderen.
@@ -15,29 +17,45 @@ class ProcessWalk {
     required this.discover,
     required this.classify,
     required this.creatures,
+    required this.summaries,
     this.feed = const FeedCreature(),
+    this.summarize = const SummarizeWalk(),
   });
 
   final MapDataSource mapData;
   final DiscoverSegments discover;
   final ClassifySegments classify;
   final CreatureRepository creatures;
+  final WalkSummaryRepository summaries;
   final FeedCreature feed;
+  final SummarizeWalk summarize;
 
   Future<WalkResult> call(Track track, {DateTime? now}) async {
+    final finishedAt = track.points.lastOrNull?.time ?? now ?? DateTime.now();
     final candidates = await mapData.segmentsNear(track.positions);
-    final newSegments = await discover(track, candidates);
-    final byEnvironment = classify(newSegments);
-    final creature = feed(
-      await creatures.load(),
-      byEnvironment,
-      now ?? DateTime.now(),
+    final newSegments = classify.each(await discover(track, candidates));
+
+    final before = await creatures.load();
+    final after = feed(before, _count(newSegments), now ?? DateTime.now());
+    await creatures.save(after);
+
+    final summary = summarize(
+      walkId: track.id,
+      finishedAt: finishedAt,
+      newSegments: newSegments,
+      creatureGrew: after.stage != before.stage,
     );
-    await creatures.save(creature);
-    return WalkResult(
-      newSegmentCount: newSegments.length,
-      byEnvironment: byEnvironment,
-      creature: creature,
-    );
+    await summaries.save(summary);
+    return WalkResult(summary: summary, creature: after);
+  }
+
+  static Map<EnvironmentType, int> _count(
+    Map<RoadSegment, EnvironmentType> segments,
+  ) {
+    final counts = <EnvironmentType, int>{};
+    for (final type in segments.values) {
+      counts.update(type, (n) => n + 1, ifAbsent: () => 1);
+    }
+    return counts;
   }
 }
