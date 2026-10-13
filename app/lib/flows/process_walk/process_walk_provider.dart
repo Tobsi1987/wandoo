@@ -8,6 +8,7 @@ import 'package:wandoo/features/tracking/tracking.dart';
 import 'package:wandoo/features/treasure/treasure.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
 import 'package:wandoo/flows/process_walk/extras/adventure_extra.dart';
+import 'package:wandoo/flows/process_walk/extras/district_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/treasure_extra.dart';
 import 'package:wandoo/flows/process_walk/pending_walk_processor.dart';
 import 'package:wandoo/flows/process_walk/process_walk.dart';
@@ -20,6 +21,7 @@ final processWalkProvider = Provider<ProcessWalk>(
     creatures: ref.watch(creatureRepositoryProvider),
     summaries: ref.watch(walkSummaryRepositoryProvider),
     extras: [
+      DistrictExtra(ref.watch(knownSegmentsRepositoryProvider)),
       TreasureExtra(ref.watch(treasureRepositoryProvider)),
       AdventureExtra(
         adventures: ref.watch(adventureRepositoryProvider),
