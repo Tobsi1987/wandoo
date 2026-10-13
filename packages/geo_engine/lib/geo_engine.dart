@@ -17,5 +17,7 @@ export 'src/model/track.dart';
 export 'src/model/track_point.dart';
 export 'src/novelty/novelty_evaluator.dart';
 export 'src/novelty/novelty_result.dart';
+export 'src/osm/overpass_query.dart';
+export 'src/osm/region_builder.dart';
 export 'src/quota/discovery_quota.dart';
 export 'src/region/region_codec.dart';
