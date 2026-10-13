@@ -13,8 +13,15 @@ class WalkIdle extends WalkSession {
 
 /// Ein Gang läuft.
 class WalkRecording extends WalkSession {
-  const WalkRecording({required this.startedAt, required this.distanceMeters});
+  const WalkRecording({
+    required this.startedAt,
+    required this.distanceMeters,
+    this.tooFast = false,
+  });
 
   final DateTime startedAt;
   final double distanceMeters;
+
+  /// Gerade schneller als zu Fuß; solche Strecken zählen nicht.
+  final bool tooFast;
 }

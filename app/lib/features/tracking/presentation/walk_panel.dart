@@ -15,6 +15,11 @@ class WalkPanel extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         switch (session) {
+          WalkRecording(tooFast: true) => const Text(
+            'Ganz schön schnell! Im Auto, Bus oder auf dem Rad zählen '
+            'die Wege nicht, nur zu Fuß.',
+            textAlign: TextAlign.center,
+          ),
           WalkRecording(:final distanceMeters) => Text(
             '${distanceMeters.round()} m unterwegs',
           ),
