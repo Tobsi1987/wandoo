@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wandoo/features/creature/domain/trait.dart';
+import 'package:wandoo/features/creature/presentation/creature_labels.dart';
 
 /// Zeigt ein Merkmal und wie stark es ausgeprägt ist.
 class TraitBadge extends StatelessWidget {
@@ -10,13 +11,6 @@ class TraitBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Chip(label: Text('${_label(trait)} $points'));
+    return Chip(label: Text('${traitLabel(trait)} $points'));
   }
-
-  static String _label(Trait trait) => switch (trait) {
-    Trait.moss => 'Moos',
-    Trait.fins => 'Flossen',
-    Trait.lanterns => 'Laternen',
-    Trait.wheatEars => 'Ähren',
-  };
 }
