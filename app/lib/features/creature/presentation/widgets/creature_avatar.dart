@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/presentation/creature_labels.dart';
+import 'package:wandoo/features/creature/presentation/painting/creature_painter.dart';
 import 'package:wandoo/features/creature/presentation/widgets/trait_badge.dart';
 
-/// Platzhalter-Darstellung des Wesens, bis die Grafiken da sind.
+/// Zeigt das Wesen als Figur, dazu Stufe, Futter und Merkmale.
 class CreatureAvatar extends StatelessWidget {
-  const CreatureAvatar({required this.creature, super.key});
+  const CreatureAvatar({
+    required this.creature,
+    this.figureSize = 180,
+    super.key,
+  });
 
   final Creature creature;
+
+  /// Kantenlänge der gezeichneten Figur.
+  final double figureSize;
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +23,17 @@ class CreatureAvatar extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        Semantics(
+          label: 'Dein Wesen: ${stageLabel(creature.stage)}',
+          child: CustomPaint(
+            size: Size.square(figureSize),
+            painter: CreaturePainter(
+              creature: creature,
+              sluggish: creature.isSluggish(DateTime.now()),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
         Text(stageLabel(creature.stage), style: text.headlineMedium),
         const SizedBox(height: 8),
         Text('${creature.food} neue Abschnitte gefressen'),
