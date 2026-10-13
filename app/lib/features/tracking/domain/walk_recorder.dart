@@ -25,6 +25,11 @@ class WalkRecorder {
 
   int get pointCount => _points.length;
 
+  /// Ob die letzten Sekunden schneller als zu Fuß waren (Rad, Bus, Auto).
+  bool get tooFast =>
+      _points.isNotEmpty &&
+      const WalkingFilter().tooFastAt(_points, _points.length - 1);
+
   void add(TrackPoint point) {
     if (_points.isNotEmpty) {
       final step = _points.last.position.distanceTo(point.position);

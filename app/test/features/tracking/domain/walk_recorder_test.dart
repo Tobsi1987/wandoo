@@ -18,4 +18,12 @@ void main() {
     final recorder = WalkRecorder(id: 'w')..add(eastOf(0, 0));
     expect(recorder.hasWalk, isFalse);
   });
+
+  test('merkt, wenn es zu schnell für zu Fuß wird', () {
+    final recorder = WalkRecorder(id: 'g');
+    for (var i = 0; i < 8; i++) {
+      recorder.add(eastOf(i * 50.0, i * 5));
+    }
+    expect(recorder.tooFast, isTrue);
+  });
 }

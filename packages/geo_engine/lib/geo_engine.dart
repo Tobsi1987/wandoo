@@ -6,6 +6,7 @@ library;
 
 export 'src/classification/environment_classifier.dart';
 export 'src/classification/osm_environment_rules.dart';
+export 'src/filtering/moving_speed.dart';
 export 'src/filtering/walking_filter.dart';
 export 'src/gpx/gpx_codec.dart';
 export 'src/matching/coverage_matcher.dart';
