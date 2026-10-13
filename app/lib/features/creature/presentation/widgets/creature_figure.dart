@@ -1,17 +1,18 @@
 import 'dart:async';
 import 'dart:ui';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/domain/growth_stage.dart';
 import 'package:wandoo/features/creature/domain/species_catalog.dart';
 import 'package:wandoo/features/creature/presentation/painting/creature_painter.dart';
+import 'package:wandoo/features/creature/presentation/painting/creature_shader_painter.dart';
 import 'package:wandoo/features/creature/presentation/painting/creature_shader_uniforms.dart';
 import 'package:wandoo/features/creature/presentation/species_looks.dart';
 import 'package:wandoo/features/creature/presentation/widgets/creature_model.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_anchors.dart';
+import 'package:wandoo/features/creature/presentation/widgets/model_eyes.dart';
 import 'package:wandoo/features/world/world.dart';
 
 /// Die Figur des Wesens: das 3D-Modell der Art, sonst animiertes 3D aus
@@ -27,6 +28,7 @@ class CreatureFigure extends StatefulWidget {
     this.silhouette = false,
     this.world,
     this.still = false,
+    this.awake = false,
     super.key,
   });
 
@@ -42,6 +44,9 @@ class CreatureFigure extends StatefulWidget {
   /// Steht still, z. B. im Album: viele Figuren auf einmal bleiben so
   /// sparsam.
   final bool still;
+
+  /// Wach und munter, auch nachts, zum Beispiel während eines Gangs.
+  final bool awake;
 
   /// In Tests aus, damit `pumpAndSettle` zur Ruhe kommt.
   @visibleForTesting
@@ -110,7 +115,7 @@ class _CreatureFigureState extends State<CreatureFigure>
 
   @override
   Widget build(BuildContext context) {
-    final sleepy = widget.creature.isSluggish(DateTime.now());
+    final sleepy = !widget.awake && widget.creature.isSluggish(DateTime.now());
     final drawn = _drawn(sleepy);
     final asset = _modelAsset();
     if (asset == null) return drawn;
@@ -119,11 +124,13 @@ class _CreatureFigureState extends State<CreatureFigure>
     return CreatureModel(
       asset: asset,
       anchors: ModelAnchors.of(SpeciesCatalog.byId(c.speciesId).id),
+      eyes: modelEyes[SpeciesCatalog.byId(c.speciesId).id],
+      eyesClosed: night && !widget.awake,
       hat: c.hat,
       neck: c.neck,
       size: widget.size,
       fallback: drawn,
-      sleepy: sleepy || night,
+      sleepy: sleepy || (night && !widget.awake),
       night: night,
       grownUp: c.stage == GrowthStage.adult,
       animate: CreatureFigure.animate && !widget.still,
@@ -138,13 +145,14 @@ class _CreatureFigureState extends State<CreatureFigure>
     if (shader != null) {
       return CustomPaint(
         size: Size.square(widget.size),
-        painter: _ShaderPainter(
+        painter: CreatureShaderPainter(
           shader,
           widget.creature,
           _time,
           sleepy: sleepy,
           silhouette: widget.silhouette,
           world: widget.world,
+          awake: widget.awake,
         ),
       );
     }
@@ -158,43 +166,4 @@ class _CreatureFigureState extends State<CreatureFigure>
       child: flat,
     );
   }
-}
-
-class _ShaderPainter extends CustomPainter {
-  _ShaderPainter(
-    this.shader,
-    this.creature,
-    this.time, {
-    required this.sleepy,
-    required this.silhouette,
-    required this.world,
-  }) : super(repaint: time);
-
-  final FragmentShader shader;
-  final Creature creature;
-  final bool sleepy;
-  final bool silhouette;
-  final WorldState? world;
-  final ValueListenable<double> time;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    setCreatureUniforms(
-      shader,
-      size: size,
-      time: time.value,
-      creature: creature,
-      sleepy: sleepy,
-      silhouette: silhouette,
-      world: world,
-    );
-    canvas.drawRect(Offset.zero & size, Paint()..shader = shader);
-  }
-
-  @override
-  bool shouldRepaint(_ShaderPainter old) =>
-      old.creature != creature ||
-      old.sleepy != sleepy ||
-      old.silhouette != silhouette ||
-      old.world != world;
 }

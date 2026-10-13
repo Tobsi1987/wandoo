@@ -15,6 +15,7 @@ class CelebrationPose {
     this.sway = 0,
     this.burst = 0,
     this.greeting = 0,
+    this.stretch = 0,
   });
 
   /// Schlüpfen: Ei zittert, platzt, Wesen springt mit einer Drehung
@@ -36,6 +37,7 @@ class CelebrationPose {
       return CelebrationPose(
         scale: 0.3 + 0.7 * Curves.easeOutBack.transform(math.min(j / 0.3, 1)),
         lift: 0.24 * 4 * j * (1 - j),
+        stretch: 0.24 * 4 * j * (1 - j) / 0.14,
         spin: 2 * math.pi * Curves.easeInOut.transform(j),
         burst: burst,
       );
@@ -57,10 +59,18 @@ class CelebrationPose {
     if (t <= 0 || t >= 1) return rest;
     final phase = t * 2;
     final hop = phase % 1;
+    final lift = 0.14 * 4 * hop * (1 - hop) * (phase < 1 ? 1.0 : 0.55);
     return CelebrationPose(
-      lift: 0.14 * 4 * hop * (1 - hop) * (phase < 1 ? 1.0 : 0.55),
+      lift: lift,
+      stretch: lift / 0.14,
       squash: math.pow(1 - math.min(hop, 1 - hop) * 2, 8).toDouble(),
     );
+  }
+
+  /// Ein ruhiger Sprung ohne Stauchen, zum Beispiel beim Laufen.
+  factory CelebrationPose.jump(double t) {
+    if (t <= 0 || t >= 1) return rest;
+    return CelebrationPose(lift: 0.1 * math.sin(math.pi * t));
   }
 
   /// Noch das alte Ei zeigen.
@@ -84,6 +94,9 @@ class CelebrationPose {
 
   /// Fortschritt von Blitz und Schalenstücken (0 = keine).
   final double burst;
+
+  /// Streckung im Flug (0 = keine).
+  final double stretch;
 
   /// Wie sichtbar die Sprechblase "Hallo!" ist (0 bis 1).
   final double greeting;

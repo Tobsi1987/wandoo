@@ -14,7 +14,7 @@ String traitLabel(Trait trait) => switch (trait) {
   Trait.moss => 'Moos',
   Trait.fins => 'Flossen',
   Trait.lanterns => 'Laternen',
-  Trait.wheatEars => 'Ähren',
+  Trait.wheatEars => 'Gras',
 };
 
 /// Anzeigename einer Seltenheit.

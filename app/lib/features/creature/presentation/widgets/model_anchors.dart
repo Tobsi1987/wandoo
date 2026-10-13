@@ -52,11 +52,12 @@ class ModelAnchors {
 /// Abgemessene Punkte je Art: Hut y, z, Kopfradius, Hals y, Halsradius.
 const modelAnchors = <String, ModelAnchors>{
   'aurora': ModelAnchors.measured(.86, .15, .22, .36, .21, .05),
-  'blaetterdrache': ModelAnchors.measured(.93, .18, .28, .52, .20),
+  'blaetterdrache': ModelAnchors.measured(.88, .10, .28, .44, .20, .15),
   'blitzmaus': ModelAnchors.measured(.74, 0, .29, .33, .21, 0),
   'brummli': ModelAnchors.measured(.85, .13, .28, .36, .23),
+  'fluffeule': ModelAnchors.measured(.92, .05, .30, .5, .33, .05),
   'funkel': ModelAnchors.measured(.92, .10, .28, .47, .20),
-  'glutling': ModelAnchors.measured(.82, .13, .20, .37, .17, .07),
+  'glutling': ModelAnchors.measured(.76, .08, .26, .38, .16, .08),
   'kieselchen': ModelAnchors.measured(.98, 0, .30, .42, .40),
   'kristallis': ModelAnchors.measured(.85, .08, .28, .30, .22, .02),
   'laternchen': ModelAnchors.measured(.82, 0, .30, .36, .19, 0),
@@ -64,6 +65,7 @@ const modelAnchors = <String, ModelAnchors>{
   'nebelfuchs': ModelAnchors.measured(.84, .45, .26, .32, .14, .40),
   'pfuetzling': ModelAnchors.measured(.88, 0, .44, .40, .25),
   'pilzling': ModelAnchors.measured(.98, 0, .43, .30, .18),
+  'pustel': ModelAnchors.measured(.73, .03, .24, .32, .19, .12),
   'schnirp': ModelAnchors.measured(.73, .14, .20, .32, .18),
   'sternschnuppe': ModelAnchors.measured(.92, 0, .36, .32, .20),
   'wellenwal': ModelAnchors.measured(.82, .10, .25, .30, .35),
