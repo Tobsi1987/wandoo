@@ -20,6 +20,21 @@ flutter pub get
 lefthook install
 ```
 
+## Auf dem Handy testen (Android)
+
+Nach jedem Merge baut der Workflow **Test-APK** eine installierbare APK
+(GitHub > Actions > Test-APK > letzter Lauf > Artifacts). Sie ist mit dem
+Debug-Schlüssel signiert und nur für Testgeräte gedacht.
+
+1. ZIP auf dem Handy herunterladen und entpacken, `app-release.apk` öffnen,
+   Installation aus dieser Quelle erlauben.
+2. Beim ersten "Losgehen" Standort erlauben, Benachrichtigungen erlauben
+   (für die Aufzeichnung im Hintergrund und die Erinnerung).
+3. Widget: lange auf den Startbildschirm drücken > Widgets > Wandoo.
+
+Kartendaten lädt die App beim ersten Gang einer Gegend live von
+OpenStreetMap (Overpass) und speichert sie dann auf dem Gerät.
+
 ## Demo ohne Gerät
 
 `app/lib/main_demo.dart` startet die App mit einer erfundenen Stadt und
