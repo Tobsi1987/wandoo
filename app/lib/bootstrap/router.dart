@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:wandoo/features/adventures/adventures.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/discovery_map/discovery_map.dart';
+import 'package:wandoo/features/districts/districts.dart';
 import 'package:wandoo/features/home/home.dart';
 import 'package:wandoo/features/share/share.dart';
 import 'package:wandoo/features/treasure/treasure.dart';
@@ -32,6 +33,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: AdventureScreen.path,
       builder: (context, state) => const AdventureScreen(),
+    ),
+    GoRoute(
+      path: PuzzleScreen.path,
+      builder: (context, state) => const PuzzleScreen(),
     ),
   ],
 );

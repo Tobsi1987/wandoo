@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:wandoo/features/discovery_map/application/discovery_map_providers.dart';
 import 'package:wandoo/features/discovery_map/presentation/widgets/discovery_map_view.dart';
+import 'package:wandoo/features/districts/districts.dart';
 
 /// Entdeckungskarte: was vom eigenen Ort schon bekannt ist.
 class DiscoveryMapScreen extends ConsumerWidget {
@@ -13,7 +15,16 @@ class DiscoveryMapScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final overview = ref.watch(discoveryOverviewProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Entdeckungskarte')),
+      appBar: AppBar(
+        title: const Text('Entdeckungskarte'),
+        actions: [
+          IconButton(
+            tooltip: 'Viertel-Puzzle',
+            icon: const Icon(Icons.extension_outlined),
+            onPressed: () => context.push(PuzzleScreen.path),
+          ),
+        ],
+      ),
       body: overview.when(
         data: (o) => o == null
             ? const _Message('Ohne Standort kann die Karte nichts zeigen.')

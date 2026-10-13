@@ -7,11 +7,19 @@ class WalkOutcome {
     required this.track,
     required this.summary,
     required this.newSegmentsByEnvironment,
+    this.nearby = const [],
+    this.freshIds = const {},
   });
 
   final Track track;
   final WalkSummary summary;
   final Map<EnvironmentType, int> newSegmentsByEnvironment;
+
+  /// Alle Abschnitte der Kartenkacheln rund um den Gang.
+  final List<RoadSegment> nearby;
+
+  /// Abschnitte, die mit diesem Gang neu bekannt wurden.
+  final Set<String> freshIds;
 }
 
 /// Ein Zusatz, der nach jedem Gang läuft und Zeilen für die
