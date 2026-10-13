@@ -6,6 +6,10 @@ import 'package:wandoo/core/map_data/map_data_providers.dart';
 import 'package:wandoo/features/discovery/discovery.dart';
 import 'package:wandoo/features/discovery_map/domain/discovery_overview.dart';
 
+/// Ob unter den Straßen die OSM-Karte liegt. Die Demo schaltet sie ab,
+/// weil ihre Stadt erfunden ist.
+final Provider<bool> showBaseMapProvider = Provider<bool>((ref) => true);
+
 /// Wo die Karte steht: aktuelle Position, `null` ohne Standort.
 final FutureProvider<GeoPoint?> mapCenterProvider =
     FutureProvider.autoDispose<GeoPoint?>(

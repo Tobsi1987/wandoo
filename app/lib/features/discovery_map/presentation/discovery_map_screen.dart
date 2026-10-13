@@ -17,7 +17,10 @@ class DiscoveryMapScreen extends ConsumerWidget {
       body: overview.when(
         data: (o) => o == null
             ? const _Message('Ohne Standort kann die Karte nichts zeigen.')
-            : DiscoveryMapView(overview: o),
+            : DiscoveryMapView(
+                overview: o,
+                showBaseMap: ref.watch(showBaseMapProvider),
+              ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) =>
             const _Message('Kartendaten konnten nicht geladen werden.'),

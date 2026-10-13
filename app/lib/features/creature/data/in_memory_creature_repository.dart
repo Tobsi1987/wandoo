@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/domain/creature_repository.dart';
 
-/// Hält das Wesen nur im Speicher. Für Tests.
+/// Hält das Wesen nur im Speicher. Für Tests und die Demo.
 class InMemoryCreatureRepository implements CreatureRepository {
   Creature _creature = const Creature();
   final _changes = StreamController<Creature>.broadcast();
