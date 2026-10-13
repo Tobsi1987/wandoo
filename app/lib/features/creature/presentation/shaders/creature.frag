@@ -13,6 +13,7 @@ uniform float uSleepy;       // 1 = träge
 uniform float uCrack;        // 1 = Ei kurz vor dem Schlüpfen
 uniform float uHat;          // 0 keiner, sonst CreatureHat-Index + 1
 uniform float uNeck;         // 0 keiner, sonst CreatureNeck-Index + 1
+uniform float uSilhouette;   // 1 = nur dunkler Umriss (Album)
 
 out vec4 fragColor;
 
@@ -23,6 +24,7 @@ const vec3 PINK = vec3(1.0, 0.6, 0.72);
 const vec3 LEAF = vec3(0.42, 0.72, 0.32);
 const vec3 WHITE = vec3(0.99, 0.97, 0.94);
 const vec3 GLOW = vec3(1.0, 0.85, 0.35);
+const vec3 SILHOUETTE = vec3(0.357, 0.384, 0.439);
 
 // Werte für map(), einmal pro Pixel berechnet.
 vec3 gCenter;
@@ -162,6 +164,10 @@ void main() {
     vec3 g = ro + rd * ((GROUND - ro.y) / rd.y);
     float s = smoothstep(0.6, 0.0, length(g.xz * vec2(1.0, 1.8)));
     col = vec4(vec3(0.0), s * 0.18);
+  }
+  if (uSilhouette > 0.5) {
+    fragColor = hit ? vec4(SILHOUETTE, 1.0) : vec4(col.rgb * col.a, col.a);
+    return;
   }
   float halo = exp(-max(glow, 0.0) * 18.0) * 0.55;
   col.rgb = col.rgb * col.a + GLOW * halo;

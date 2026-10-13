@@ -45,6 +45,10 @@ class Creature {
 
   bool get hatched => stage != GrowthStage.egg;
 
+  /// Alle Arten fürs Album, auch die aktuelle aus Spielständen von vor
+  /// dem Album.
+  Set<String> get discoveredSpecies => {...seenSpecies, ?speciesId};
+
   GrowthStage get stage => GrowthStage.forFood(food);
 
   /// Das ausgeprägteste Merkmal, oder null, solange nichts gefressen wurde.

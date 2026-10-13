@@ -16,6 +16,7 @@ void setCreatureUniforms(
   required double time,
   required Creature creature,
   required bool sleepy,
+  bool silhouette = false,
 }) {
   final egg = creature.stage == GrowthStage.egg;
   final accent = egg ? creature.dominantTrait : creature.accentTrait;
@@ -35,11 +36,15 @@ void setCreatureUniforms(
     if (_nearlyHatched(creature)) 1 else 0,
     (creature.hat?.index ?? -1) + 1.0,
     (creature.neck?.index ?? -1) + 1.0,
+    if (silhouette) 1 else 0,
   ];
   for (var i = 0; i < values.length; i++) {
     shader.setFloat(i, values[i]);
   }
 }
+
+/// Farbe unentdeckter Arten im Album; passt zu `SILHOUETTE` im Shader.
+const silhouetteColor = Color(0xFF5B6270);
 
 /// Farbe, mit der eine Umgebung Muster ins Fell oder aufs Ei malt.
 Color accentColor(Trait? trait) => switch (trait) {
