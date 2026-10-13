@@ -7,9 +7,14 @@ import 'package:wandoo/features/discovery_map/presentation/widgets/unknown_share
 
 /// Karte mit bekannten Straßen in Farbe und unbekannten blass.
 class DiscoveryMapView extends StatelessWidget {
-  const DiscoveryMapView({required this.overview, super.key});
+  const DiscoveryMapView({
+    required this.overview,
+    this.showBaseMap = true,
+    super.key,
+  });
 
   final DiscoveryOverview overview;
+  final bool showBaseMap;
 
   @override
   Widget build(BuildContext context) {
@@ -19,13 +24,14 @@ class DiscoveryMapView extends StatelessWidget {
         FlutterMap(
           options: MapOptions(
             initialCenter: _latLng(overview.center),
-            initialZoom: 15,
+            initialZoom: 16,
           ),
           children: [
-            TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'app.wandoo.wandoo',
-            ),
+            if (showBaseMap)
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'app.wandoo.wandoo',
+              ),
             PolylineLayer(
               polylines: [
                 for (final s in overview.unknown)
@@ -33,9 +39,10 @@ class DiscoveryMapView extends StatelessWidget {
                 for (final s in overview.known) _line(s, colors.primary, 5),
               ],
             ),
-            const SimpleAttributionWidget(
-              source: Text('© OpenStreetMap-Mitwirkende'),
-            ),
+            if (showBaseMap)
+              const SimpleAttributionWidget(
+                source: Text('© OpenStreetMap-Mitwirkende'),
+              ),
           ],
         ),
         Positioned(
