@@ -17,21 +17,25 @@ void main() {
 
   tearDown(() => CreatureFigure.animate = false);
 
-  testWidgets('beim Schlüpfen springt erst das Ei auf, dann kommt das Wesen', (
-    tester,
-  ) async {
-    CreatureFigure.animate = true;
-    await tester.pumpWidget(host(egg));
-    await tester.pumpWidget(host(hatched));
-    await tester.pump();
-    await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('Ei'), findsOneWidget);
-    await tester.pump(const Duration(milliseconds: 1000));
-    expect(find.text('Wesen'), findsOneWidget);
-    await tester.pumpAndSettle();
-    expect(find.text('Wesen'), findsOneWidget);
-    expect(find.text('Ei'), findsNothing);
-  });
+  testWidgets(
+    'beim Schlüpfen platzt das Ei, das Wesen springt heraus und grüßt',
+    (tester) async {
+      CreatureFigure.animate = true;
+      await tester.pumpWidget(host(egg));
+      await tester.pumpWidget(host(hatched));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(find.text('Ei'), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 1000));
+      expect(find.text('Wesen'), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 1500));
+      expect(find.text('Hallo!'), findsOneWidget);
+      await tester.pumpAndSettle();
+      expect(find.text('Hallo!'), findsNothing);
+      expect(find.text('Wesen'), findsOneWidget);
+      expect(find.text('Ei'), findsNothing);
+    },
+  );
 
   testWidgets('ohne Animation steht das Wesen sofort da', (tester) async {
     await tester.pumpWidget(host(egg));

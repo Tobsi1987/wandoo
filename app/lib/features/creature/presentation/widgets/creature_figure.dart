@@ -67,6 +67,9 @@ class CreatureFigure extends StatefulWidget {
     if (asset != null) await CreatureModel.preload(asset);
   }
 
+  /// Ob [creature] als 3D-Modell gezeigt wird.
+  static bool hasModel(Creature creature) => _modelAssetOf(creature) != null;
+
   static String? _modelAssetOf(Creature c) {
     if (!models || !c.hatched) return null;
     return speciesLooks[SpeciesCatalog.byId(c.speciesId).id]?.modelAsset;

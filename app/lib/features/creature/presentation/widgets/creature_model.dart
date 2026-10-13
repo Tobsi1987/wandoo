@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 import 'package:wandoo/features/creature/domain/outfit.dart';
+import 'package:wandoo/features/creature/presentation/widgets/creature_spin.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_accessories.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_anchors.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_overlays.dart';
@@ -73,6 +74,9 @@ class _CreatureModelState extends State<CreatureModel> {
   Node? _outfit;
   bool _loaded = false;
 
+  /// Zusätzliche Drehung von außen, siehe [CreatureSpin].
+  double _spin = 0;
+
   @override
   void initState() {
     super.initState();
@@ -111,7 +115,7 @@ class _CreatureModelState extends State<CreatureModel> {
       ..scale = vm.Vector3.all(scale)
       ..position = vm.Vector3(0, bob.abs() * scale, 0)
       ..rotation =
-          vm.Quaternion.axisAngle(vm.Vector3(0, 1, 0), look) *
+          vm.Quaternion.axisAngle(vm.Vector3(0, 1, 0), look + _spin) *
           vm.Quaternion.axisAngle(vm.Vector3(0, 0, 1), tilt);
   }
 
@@ -137,6 +141,11 @@ class _CreatureModelState extends State<CreatureModel> {
 
   @override
   Widget build(BuildContext context) {
+    final spin = CreatureSpin.of(context);
+    if (spin != _spin) {
+      _spin = spin;
+      if (_loaded) _pose(_time.value);
+    }
     if (!_loaded) return widget.fallback;
     return SizedBox.square(
       dimension: widget.size,
