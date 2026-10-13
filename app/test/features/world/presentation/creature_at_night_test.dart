@@ -8,7 +8,7 @@ import 'package:wandoo/features/world/world.dart';
 void main() {
   testWidgets('nachts schläft das Wesen im Sternenhimmel', (tester) async {
     final repo = InMemoryCreatureRepository();
-    await repo.save(const Creature(food: 30, speciesId: 'moosbaer'));
+    await repo.save(const Creature(food: 30, speciesId: 'moosel'));
     await tester.pumpWidget(
       ProviderScope(
         overrides: [

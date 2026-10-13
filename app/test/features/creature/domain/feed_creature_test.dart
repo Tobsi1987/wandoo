@@ -45,11 +45,11 @@ void main() {
   });
 
   test('geschlüpfte Art landet im Album, ein Glücks-Ei wird verbraucht', () {
-    const lucky = Creature(food: 19, luckyEgg: true, seenSpecies: {'moosbaer'});
+    const lucky = Creature(food: 19, luckyEgg: true, seenSpecies: {'moosel'});
     final hatched = feed(lucky, {EnvironmentType.field: 1}, now);
     final species = SpeciesCatalog.byId(hatched.speciesId);
     expect(species.rarity, isNot(Rarity.common));
-    expect(hatched.seenSpecies, {'moosbaer', species.id});
+    expect(hatched.seenSpecies, {'moosel', species.id});
     expect(hatched.luckyEgg, isFalse);
   });
 
