@@ -30,7 +30,9 @@ class ShareCard extends StatelessWidget {
             children: [
               Text('Wandoo', style: text.titleLarge),
               Expanded(
-                child: Center(child: CreatureAvatar(creature: creature)),
+                child: Center(
+                  child: CreatureAvatar(creature: creature, figureSize: 150),
+                ),
               ),
               Text(
                 'Gewachsen auf neuen Wegen',
