@@ -4,11 +4,14 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/presentation/widgets/celebration_burst.dart';
+import 'package:wandoo/features/creature/presentation/widgets/celebration_pose.dart';
 import 'package:wandoo/features/creature/presentation/widgets/creature_figure.dart';
+import 'package:wandoo/features/creature/presentation/widgets/creature_spin.dart';
+import 'package:wandoo/features/creature/presentation/widgets/greeting_bubble.dart';
 
 /// Spielt kleine Momente ab, wenn sich das Wesen ändert: Nach dem Fressen
-/// hüpft es vor Freude, beim Schlüpfen springt das Ei auf und das Wesen
-/// kommt heraus.
+/// hüpft es vor Freude. Beim Schlüpfen platzt das Ei, das Wesen springt
+/// mit einer Drehung heraus und winkt.
 ///
 /// Wartet damit, bis die Figur wirklich zu sehen ist (kein anderer
 /// Bildschirm darüber) und das 3D-Modell geladen ist.
@@ -78,7 +81,7 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
         if (!mounted) return;
         setState(() => _playing = moment);
         _controller.duration = Duration(
-          milliseconds: moment == _Moment.hatch ? 2400 : 1100,
+          milliseconds: moment == _Moment.hatch ? 4400 : 1100,
         );
         unawaited(_controller.forward(from: 0).whenComplete(_done));
       }),
@@ -105,80 +108,48 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, _) {
-        final t = _playing == null ? 0.0 : _controller.value;
-        final hatching = _playing == _Moment.hatch;
+        final t = _controller.value;
+        final pose = switch (_playing) {
+          _Moment.hatch => CelebrationPose.hatch(t),
+          _Moment.hop => CelebrationPose.hop(t),
+          null => CelebrationPose(egg: _egg != null),
+        };
         final egg = _egg;
-        final showEgg = egg != null && (!hatching || t < _open);
-        final figure = widget.builder(showEgg ? egg : widget.creature);
-        final after = hatching
-            ? ((t - _open) / (1 - _open)).clamp(0.0, 1.0)
-            : 0.0;
+        final shown = pose.egg && egg != null ? egg : widget.creature;
         return Stack(
           clipBehavior: Clip.none,
           alignment: Alignment.center,
           children: [
-            _pose(t, after, figure),
+            _posed(pose, shown),
             IgnorePointer(
               child: CustomPaint(
                 size: Size.square(widget.size),
-                painter: CelebrationBurst(hatching ? after : 0),
+                painter: CelebrationBurst(pose.burst),
               ),
             ),
+            if (pose.greeting > 0) GreetingBubble(visible: pose.greeting),
           ],
         );
       },
     );
   }
 
-  static const _open = 0.3;
-
-  /// Hüpfen; beim Schlüpfen erst Ei zittern, dann Wesen herauswachsen.
-  Widget _pose(double t, double after, Widget figure) {
-    var shake = 0.0;
-    var scale = 1.0;
-    var hopT = _playing == _Moment.hop ? t : 0.0;
-    if (_playing == _Moment.hatch) {
-      if (t < _open) {
-        shake = math.sin(t * 90) * 0.12 * (t / _open);
-        scale = 1 + 0.12 * t / _open;
-      } else {
-        scale =
-            0.25 +
-            0.75 * Curves.elasticOut.transform(math.min(after / 0.55, 1));
-        hopT = ((after - 0.6) / 0.4).clamp(0.0, 1.0);
-      }
-    }
-    return _hop(
-      hopT,
-      Transform.rotate(
-        angle: shake,
+  Widget _posed(CelebrationPose pose, Creature shown) {
+    final size = widget.size;
+    // Mit 3D-Modell dreht sich das Modell selbst, sonst nur ein Umklappen.
+    final flat = CreatureFigure.hasModel(shown) ? 1.0 : math.cos(pose.spin);
+    final stretch = pose.lift / 0.14;
+    return Transform.translate(
+      offset: Offset(0, -size * pose.lift),
+      child: Transform.rotate(
+        angle: pose.shake + pose.sway,
         alignment: Alignment.bottomCenter,
         child: Transform.scale(
-          scale: scale,
+          scaleX: pose.scale * flat * (1 + 0.1 * pose.squash - 0.04 * stretch),
+          scaleY: pose.scale * (1 - 0.1 * pose.squash + 0.06 * stretch),
           alignment: Alignment.bottomCenter,
-          child: figure,
+          child: CreatureSpin(turns: pose.spin, child: widget.builder(shown)),
         ),
-      ),
-    );
-  }
-
-  /// Zwei Freudenhüpfer, mit Stauchen beim Landen.
-  Widget _hop(double t, Widget child) {
-    var height = 0.0;
-    var squash = 0.0;
-    if (t > 0 && t < 1) {
-      final phase = t * 2;
-      final hop = phase % 1;
-      height = 4 * hop * (1 - hop) * (phase < 1 ? 1.0 : 0.55);
-      squash = math.pow(1 - math.min(hop, 1 - hop) * 2, 8).toDouble();
-    }
-    return Transform.translate(
-      offset: Offset(0, -widget.size * 0.14 * height),
-      child: Transform.scale(
-        scaleX: 1 + 0.1 * squash - 0.04 * height,
-        scaleY: 1 - 0.1 * squash + 0.06 * height,
-        alignment: Alignment.bottomCenter,
-        child: child,
       ),
     );
   }
