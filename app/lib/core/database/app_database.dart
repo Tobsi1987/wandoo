@@ -9,7 +9,7 @@ part 'app_database.g.dart';
 /// Das Schema liegt hier zentral, damit `core` keine Features kennen muss.
 /// Die Übersetzung in Domänenobjekte machen die Repositories in den
 /// `data/`-Ordnern der Features.
-@DriftDatabase(tables: [CreatureStates, KnownSegments])
+@DriftDatabase(tables: [CreatureStates, KnownSegments, RecordedWalks])
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
 
@@ -17,5 +17,12 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase.open() => AppDatabase(driftDatabase(name: 'wandoo'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (m, from, to) async {
+      if (from < 2) await m.createTable(recordedWalks);
+    },
+  );
 }

@@ -9,4 +9,4 @@ export 'domain/creature_repository.dart';
 export 'domain/feed_creature.dart';
 export 'domain/growth_stage.dart';
 export 'domain/trait.dart';
-export 'presentation/creature_screen.dart';
+export 'presentation/creature_card.dart';

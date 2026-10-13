@@ -7,6 +7,7 @@ final creatureRepositoryProvider = Provider<CreatureRepository>(
   (ref) => throw UnimplementedError('In bootstrap/providers.dart setzen.'),
 );
 
-final creatureProvider = FutureProvider<Creature>(
-  (ref) => ref.watch(creatureRepositoryProvider).load(),
+/// Das Wesen, aktuell gehalten bei jeder Fütterung.
+final creatureProvider = StreamProvider<Creature>(
+  (ref) => ref.watch(creatureRepositoryProvider).watch(),
 );

@@ -21,3 +21,14 @@ class KnownSegments extends Table {
   @override
   Set<Column<Object>> get primaryKey => {segmentId};
 }
+
+/// Aufgezeichnete Gänge als GPX, bis sie verarbeitet sind.
+class RecordedWalks extends Table {
+  TextColumn get id => text()();
+  DateTimeColumn get startedAt => dateTime()();
+  TextColumn get gpx => text()();
+  DateTimeColumn get processedAt => dateTime().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}

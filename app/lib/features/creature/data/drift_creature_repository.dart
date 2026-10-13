@@ -14,10 +14,16 @@ class DriftCreatureRepository implements CreatureRepository {
   static const _rowId = 1;
 
   @override
-  Future<Creature> load() async {
-    final row = await (_db.select(
-      _db.creatureStates,
-    )..where((t) => t.id.equals(_rowId))).getSingleOrNull();
+  Future<Creature> load() async =>
+      _toCreature(await _query().getSingleOrNull());
+
+  @override
+  Stream<Creature> watch() => _query().watchSingleOrNull().map(_toCreature);
+
+  SimpleSelectStatement<$CreatureStatesTable, CreatureState> _query() =>
+      _db.select(_db.creatureStates)..where((t) => t.id.equals(_rowId));
+
+  static Creature _toCreature(CreatureState? row) {
     if (row == null) return const Creature();
     return Creature(
       food: row.food,

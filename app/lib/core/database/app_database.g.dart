@@ -525,11 +525,326 @@ class KnownSegmentsCompanion extends UpdateCompanion<KnownSegment> {
   }
 }
 
+class $RecordedWalksTable extends RecordedWalks
+    with TableInfo<$RecordedWalksTable, RecordedWalk> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RecordedWalksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startedAtMeta = const VerificationMeta(
+    'startedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startedAt = GeneratedColumn<DateTime>(
+    'started_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _gpxMeta = const VerificationMeta('gpx');
+  @override
+  late final GeneratedColumn<String> gpx = GeneratedColumn<String>(
+    'gpx',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _processedAtMeta = const VerificationMeta(
+    'processedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> processedAt = GeneratedColumn<DateTime>(
+    'processed_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, startedAt, gpx, processedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'recorded_walks';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RecordedWalk> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('started_at')) {
+      context.handle(
+        _startedAtMeta,
+        startedAt.isAcceptableOrUnknown(data['started_at']!, _startedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startedAtMeta);
+    }
+    if (data.containsKey('gpx')) {
+      context.handle(
+        _gpxMeta,
+        gpx.isAcceptableOrUnknown(data['gpx']!, _gpxMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_gpxMeta);
+    }
+    if (data.containsKey('processed_at')) {
+      context.handle(
+        _processedAtMeta,
+        processedAt.isAcceptableOrUnknown(
+          data['processed_at']!,
+          _processedAtMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RecordedWalk map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RecordedWalk(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      startedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}started_at'],
+      )!,
+      gpx: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}gpx'],
+      )!,
+      processedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}processed_at'],
+      ),
+    );
+  }
+
+  @override
+  $RecordedWalksTable createAlias(String alias) {
+    return $RecordedWalksTable(attachedDatabase, alias);
+  }
+}
+
+class RecordedWalk extends DataClass implements Insertable<RecordedWalk> {
+  final String id;
+  final DateTime startedAt;
+  final String gpx;
+  final DateTime? processedAt;
+  const RecordedWalk({
+    required this.id,
+    required this.startedAt,
+    required this.gpx,
+    this.processedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['started_at'] = Variable<DateTime>(startedAt);
+    map['gpx'] = Variable<String>(gpx);
+    if (!nullToAbsent || processedAt != null) {
+      map['processed_at'] = Variable<DateTime>(processedAt);
+    }
+    return map;
+  }
+
+  RecordedWalksCompanion toCompanion(bool nullToAbsent) {
+    return RecordedWalksCompanion(
+      id: Value(id),
+      startedAt: Value(startedAt),
+      gpx: Value(gpx),
+      processedAt: processedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(processedAt),
+    );
+  }
+
+  factory RecordedWalk.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RecordedWalk(
+      id: serializer.fromJson<String>(json['id']),
+      startedAt: serializer.fromJson<DateTime>(json['startedAt']),
+      gpx: serializer.fromJson<String>(json['gpx']),
+      processedAt: serializer.fromJson<DateTime?>(json['processedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'startedAt': serializer.toJson<DateTime>(startedAt),
+      'gpx': serializer.toJson<String>(gpx),
+      'processedAt': serializer.toJson<DateTime?>(processedAt),
+    };
+  }
+
+  RecordedWalk copyWith({
+    String? id,
+    DateTime? startedAt,
+    String? gpx,
+    Value<DateTime?> processedAt = const Value.absent(),
+  }) => RecordedWalk(
+    id: id ?? this.id,
+    startedAt: startedAt ?? this.startedAt,
+    gpx: gpx ?? this.gpx,
+    processedAt: processedAt.present ? processedAt.value : this.processedAt,
+  );
+  RecordedWalk copyWithCompanion(RecordedWalksCompanion data) {
+    return RecordedWalk(
+      id: data.id.present ? data.id.value : this.id,
+      startedAt: data.startedAt.present ? data.startedAt.value : this.startedAt,
+      gpx: data.gpx.present ? data.gpx.value : this.gpx,
+      processedAt: data.processedAt.present
+          ? data.processedAt.value
+          : this.processedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecordedWalk(')
+          ..write('id: $id, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('gpx: $gpx, ')
+          ..write('processedAt: $processedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, startedAt, gpx, processedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RecordedWalk &&
+          other.id == this.id &&
+          other.startedAt == this.startedAt &&
+          other.gpx == this.gpx &&
+          other.processedAt == this.processedAt);
+}
+
+class RecordedWalksCompanion extends UpdateCompanion<RecordedWalk> {
+  final Value<String> id;
+  final Value<DateTime> startedAt;
+  final Value<String> gpx;
+  final Value<DateTime?> processedAt;
+  final Value<int> rowid;
+  const RecordedWalksCompanion({
+    this.id = const Value.absent(),
+    this.startedAt = const Value.absent(),
+    this.gpx = const Value.absent(),
+    this.processedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  RecordedWalksCompanion.insert({
+    required String id,
+    required DateTime startedAt,
+    required String gpx,
+    this.processedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       startedAt = Value(startedAt),
+       gpx = Value(gpx);
+  static Insertable<RecordedWalk> custom({
+    Expression<String>? id,
+    Expression<DateTime>? startedAt,
+    Expression<String>? gpx,
+    Expression<DateTime>? processedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (startedAt != null) 'started_at': startedAt,
+      if (gpx != null) 'gpx': gpx,
+      if (processedAt != null) 'processed_at': processedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  RecordedWalksCompanion copyWith({
+    Value<String>? id,
+    Value<DateTime>? startedAt,
+    Value<String>? gpx,
+    Value<DateTime?>? processedAt,
+    Value<int>? rowid,
+  }) {
+    return RecordedWalksCompanion(
+      id: id ?? this.id,
+      startedAt: startedAt ?? this.startedAt,
+      gpx: gpx ?? this.gpx,
+      processedAt: processedAt ?? this.processedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (startedAt.present) {
+      map['started_at'] = Variable<DateTime>(startedAt.value);
+    }
+    if (gpx.present) {
+      map['gpx'] = Variable<String>(gpx.value);
+    }
+    if (processedAt.present) {
+      map['processed_at'] = Variable<DateTime>(processedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecordedWalksCompanion(')
+          ..write('id: $id, ')
+          ..write('startedAt: $startedAt, ')
+          ..write('gpx: $gpx, ')
+          ..write('processedAt: $processedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $CreatureStatesTable creatureStates = $CreatureStatesTable(this);
   late final $KnownSegmentsTable knownSegments = $KnownSegmentsTable(this);
+  late final $RecordedWalksTable recordedWalks = $RecordedWalksTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -537,6 +852,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     creatureStates,
     knownSegments,
+    recordedWalks,
   ];
 }
 
@@ -882,6 +1198,198 @@ typedef $$KnownSegmentsTableProcessedTableManager =
       KnownSegment,
       PrefetchHooks Function()
     >;
+typedef $$RecordedWalksTableCreateCompanionBuilder =
+    RecordedWalksCompanion Function({
+      required String id,
+      required DateTime startedAt,
+      required String gpx,
+      Value<DateTime?> processedAt,
+      Value<int> rowid,
+    });
+typedef $$RecordedWalksTableUpdateCompanionBuilder =
+    RecordedWalksCompanion Function({
+      Value<String> id,
+      Value<DateTime> startedAt,
+      Value<String> gpx,
+      Value<DateTime?> processedAt,
+      Value<int> rowid,
+    });
+
+class $$RecordedWalksTableFilterComposer
+    extends Composer<_$AppDatabase, $RecordedWalksTable> {
+  $$RecordedWalksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get gpx => $composableBuilder(
+    column: $table.gpx,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get processedAt => $composableBuilder(
+    column: $table.processedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$RecordedWalksTableOrderingComposer
+    extends Composer<_$AppDatabase, $RecordedWalksTable> {
+  $$RecordedWalksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startedAt => $composableBuilder(
+    column: $table.startedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get gpx => $composableBuilder(
+    column: $table.gpx,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get processedAt => $composableBuilder(
+    column: $table.processedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RecordedWalksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RecordedWalksTable> {
+  $$RecordedWalksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startedAt =>
+      $composableBuilder(column: $table.startedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get gpx =>
+      $composableBuilder(column: $table.gpx, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get processedAt => $composableBuilder(
+    column: $table.processedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$RecordedWalksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RecordedWalksTable,
+          RecordedWalk,
+          $$RecordedWalksTableFilterComposer,
+          $$RecordedWalksTableOrderingComposer,
+          $$RecordedWalksTableAnnotationComposer,
+          $$RecordedWalksTableCreateCompanionBuilder,
+          $$RecordedWalksTableUpdateCompanionBuilder,
+          (
+            RecordedWalk,
+            BaseReferences<_$AppDatabase, $RecordedWalksTable, RecordedWalk>,
+          ),
+          RecordedWalk,
+          PrefetchHooks Function()
+        > {
+  $$RecordedWalksTableTableManager(_$AppDatabase db, $RecordedWalksTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RecordedWalksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RecordedWalksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RecordedWalksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<DateTime> startedAt = const Value.absent(),
+                Value<String> gpx = const Value.absent(),
+                Value<DateTime?> processedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RecordedWalksCompanion(
+                id: id,
+                startedAt: startedAt,
+                gpx: gpx,
+                processedAt: processedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required DateTime startedAt,
+                required String gpx,
+                Value<DateTime?> processedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => RecordedWalksCompanion.insert(
+                id: id,
+                startedAt: startedAt,
+                gpx: gpx,
+                processedAt: processedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$RecordedWalksTable, RecordedWalk>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $RecordedWalksTable,
+                    RecordedWalk
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$RecordedWalksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RecordedWalksTable,
+      RecordedWalk,
+      $$RecordedWalksTableFilterComposer,
+      $$RecordedWalksTableOrderingComposer,
+      $$RecordedWalksTableAnnotationComposer,
+      $$RecordedWalksTableCreateCompanionBuilder,
+      $$RecordedWalksTableUpdateCompanionBuilder,
+      (
+        RecordedWalk,
+        BaseReferences<_$AppDatabase, $RecordedWalksTable, RecordedWalk>,
+      ),
+      RecordedWalk,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -890,4 +1398,6 @@ class $AppDatabaseManager {
       $$CreatureStatesTableTableManager(_db, _db.creatureStates);
   $$KnownSegmentsTableTableManager get knownSegments =>
       $$KnownSegmentsTableTableManager(_db, _db.knownSegments);
+  $$RecordedWalksTableTableManager get recordedWalks =>
+      $$RecordedWalksTableTableManager(_db, _db.recordedWalks);
 }

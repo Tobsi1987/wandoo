@@ -1,12 +1,12 @@
 import 'package:go_router/go_router.dart';
-import 'package:wandoo/features/creature/creature.dart';
+import 'package:wandoo/features/home/home.dart';
 
 /// Alle Routen der App. Neue Screens werden nur hier eingehängt.
 final appRouter = GoRouter(
   routes: [
     GoRoute(
-      path: CreatureScreen.path,
-      builder: (context, state) => const CreatureScreen(),
+      path: HomeScreen.path,
+      builder: (context, state) => const HomeScreen(),
     ),
   ],
 );
