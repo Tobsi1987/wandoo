@@ -14,10 +14,18 @@ import 'package:wandoo/features/creature/presentation/painting/creature_shader_u
 /// Modelle vom Designer (.glb) die Figur ersetzen, wird nur dieses Widget
 /// getauscht. Solange der Shader lädt oder fehlt, zeigt es die 2D-Figur.
 class CreatureFigure extends StatefulWidget {
-  const CreatureFigure({required this.creature, this.size = 180, super.key});
+  const CreatureFigure({
+    required this.creature,
+    this.size = 180,
+    this.silhouette = false,
+    super.key,
+  });
 
   final Creature creature;
   final double size;
+
+  /// Nur der dunkle Umriss, z. B. für noch unentdeckte Arten im Album.
+  final bool silhouette;
 
   /// In Tests aus, damit `pumpAndSettle` zur Ruhe kommt.
   @visibleForTesting
@@ -67,22 +75,43 @@ class _CreatureFigureState extends State<CreatureFigure>
   Widget build(BuildContext context) {
     final sleepy = widget.creature.isSluggish(DateTime.now());
     final shader = _shader;
-    return CustomPaint(
+    if (shader != null) {
+      return CustomPaint(
+        size: Size.square(widget.size),
+        painter: _ShaderPainter(
+          shader,
+          widget.creature,
+          _time,
+          sleepy: sleepy,
+          silhouette: widget.silhouette,
+        ),
+      );
+    }
+    final flat = CustomPaint(
       size: Size.square(widget.size),
-      painter: shader == null
-          ? CreaturePainter(creature: widget.creature, sluggish: sleepy)
-          : _ShaderPainter(shader, widget.creature, _time, sleepy: sleepy),
+      painter: CreaturePainter(creature: widget.creature, sluggish: sleepy),
+    );
+    if (!widget.silhouette) return flat;
+    return ColorFiltered(
+      colorFilter: const ColorFilter.mode(silhouetteColor, BlendMode.srcIn),
+      child: flat,
     );
   }
 }
 
 class _ShaderPainter extends CustomPainter {
-  _ShaderPainter(this.shader, this.creature, this.time, {required this.sleepy})
-    : super(repaint: time);
+  _ShaderPainter(
+    this.shader,
+    this.creature,
+    this.time, {
+    required this.sleepy,
+    required this.silhouette,
+  }) : super(repaint: time);
 
   final FragmentShader shader;
   final Creature creature;
   final bool sleepy;
+  final bool silhouette;
   final ValueListenable<double> time;
 
   @override
@@ -93,11 +122,14 @@ class _ShaderPainter extends CustomPainter {
       time: time.value,
       creature: creature,
       sleepy: sleepy,
+      silhouette: silhouette,
     );
     canvas.drawRect(Offset.zero & size, Paint()..shader = shader);
   }
 
   @override
   bool shouldRepaint(_ShaderPainter old) =>
-      old.creature != creature || old.sleepy != sleepy;
+      old.creature != creature ||
+      old.sleepy != sleepy ||
+      old.silhouette != silhouette;
 }

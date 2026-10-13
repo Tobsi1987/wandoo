@@ -20,6 +20,11 @@ class HomeScreen extends StatelessWidget {
         title: const Text('Wandoo'),
         actions: [
           IconButton(
+            tooltip: 'Sammelalbum',
+            icon: const Icon(Icons.collections_bookmark_outlined),
+            onPressed: () => context.push(AlbumScreen.path),
+          ),
+          IconButton(
             tooltip: 'Schatzkiste',
             icon: const Icon(Icons.inventory_2_outlined),
             onPressed: () => context.push(TreasureScreen.path),

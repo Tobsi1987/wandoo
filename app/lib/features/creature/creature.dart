@@ -14,6 +14,7 @@ export 'domain/release_creature.dart';
 export 'domain/species.dart';
 export 'domain/species_catalog.dart';
 export 'domain/trait.dart';
+export 'presentation/album_screen.dart';
 export 'presentation/creature_card.dart';
 export 'presentation/creature_labels.dart';
 export 'presentation/widgets/creature_avatar.dart';
