@@ -7,6 +7,13 @@ import 'package:geo_engine/geo_engine.dart';
 class WalkRecorder {
   WalkRecorder({required this.id, this.minStepMeters = 3});
 
+  /// Setzt einen gesicherten Gang fort.
+  factory WalkRecorder.resume(Track track) {
+    final recorder = WalkRecorder(id: track.id);
+    track.points.forEach(recorder.add);
+    return recorder;
+  }
+
   final String id;
   final double minStepMeters;
   final List<TrackPoint> _points = [];
@@ -15,6 +22,8 @@ class WalkRecorder {
   double get distanceMeters => _distanceMeters;
 
   bool get hasWalk => _points.length >= 2;
+
+  int get pointCount => _points.length;
 
   void add(TrackPoint point) {
     if (_points.isNotEmpty) {

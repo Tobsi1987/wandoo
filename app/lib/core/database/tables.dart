@@ -33,6 +33,9 @@ class RecordedWalks extends Table {
   TextColumn get gpx => text()();
   DateTimeColumn get processedAt => dateTime().nullable()();
 
+  /// false, solange der Gang noch läuft und nur zwischengesichert ist.
+  BoolColumn get finished => boolean().withDefault(const Constant(true))();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }

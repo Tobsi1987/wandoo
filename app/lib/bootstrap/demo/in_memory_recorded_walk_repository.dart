@@ -15,6 +15,15 @@ class InMemoryRecordedWalkRepository implements RecordedWalkRepository {
   }
 
   @override
+  Future<void> saveProgress(Track track) async {}
+
+  @override
+  Future<Track?> unfinished() async => null;
+
+  @override
+  Future<void> discard(String trackId) async {}
+
+  @override
   Future<List<Track>> pending() async => List.of(_pending);
 
   @override

@@ -683,8 +683,29 @@ class $RecordedWalksTable extends RecordedWalks
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _finishedMeta = const VerificationMeta(
+    'finished',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, startedAt, gpx, processedAt];
+  late final GeneratedColumn<bool> finished = GeneratedColumn<bool>(
+    'finished',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("finished" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    startedAt,
+    gpx,
+    processedAt,
+    finished,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -727,6 +748,12 @@ class $RecordedWalksTable extends RecordedWalks
         ),
       );
     }
+    if (data.containsKey('finished')) {
+      context.handle(
+        _finishedMeta,
+        finished.isAcceptableOrUnknown(data['finished']!, _finishedMeta),
+      );
+    }
     return context;
   }
 
@@ -752,6 +779,10 @@ class $RecordedWalksTable extends RecordedWalks
         DriftSqlType.dateTime,
         data['${effectivePrefix}processed_at'],
       ),
+      finished: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}finished'],
+      )!,
     );
   }
 
@@ -766,11 +797,15 @@ class RecordedWalk extends DataClass implements Insertable<RecordedWalk> {
   final DateTime startedAt;
   final String gpx;
   final DateTime? processedAt;
+
+  /// false, solange der Gang noch läuft und nur zwischengesichert ist.
+  final bool finished;
   const RecordedWalk({
     required this.id,
     required this.startedAt,
     required this.gpx,
     this.processedAt,
+    required this.finished,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -781,6 +816,7 @@ class RecordedWalk extends DataClass implements Insertable<RecordedWalk> {
     if (!nullToAbsent || processedAt != null) {
       map['processed_at'] = Variable<DateTime>(processedAt);
     }
+    map['finished'] = Variable<bool>(finished);
     return map;
   }
 
@@ -792,6 +828,7 @@ class RecordedWalk extends DataClass implements Insertable<RecordedWalk> {
       processedAt: processedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(processedAt),
+      finished: Value(finished),
     );
   }
 
@@ -805,6 +842,7 @@ class RecordedWalk extends DataClass implements Insertable<RecordedWalk> {
       startedAt: serializer.fromJson<DateTime>(json['startedAt']),
       gpx: serializer.fromJson<String>(json['gpx']),
       processedAt: serializer.fromJson<DateTime?>(json['processedAt']),
+      finished: serializer.fromJson<bool>(json['finished']),
     );
   }
   @override
@@ -815,6 +853,7 @@ class RecordedWalk extends DataClass implements Insertable<RecordedWalk> {
       'startedAt': serializer.toJson<DateTime>(startedAt),
       'gpx': serializer.toJson<String>(gpx),
       'processedAt': serializer.toJson<DateTime?>(processedAt),
+      'finished': serializer.toJson<bool>(finished),
     };
   }
 
@@ -823,11 +862,13 @@ class RecordedWalk extends DataClass implements Insertable<RecordedWalk> {
     DateTime? startedAt,
     String? gpx,
     Value<DateTime?> processedAt = const Value.absent(),
+    bool? finished,
   }) => RecordedWalk(
     id: id ?? this.id,
     startedAt: startedAt ?? this.startedAt,
     gpx: gpx ?? this.gpx,
     processedAt: processedAt.present ? processedAt.value : this.processedAt,
+    finished: finished ?? this.finished,
   );
   RecordedWalk copyWithCompanion(RecordedWalksCompanion data) {
     return RecordedWalk(
@@ -837,6 +878,7 @@ class RecordedWalk extends DataClass implements Insertable<RecordedWalk> {
       processedAt: data.processedAt.present
           ? data.processedAt.value
           : this.processedAt,
+      finished: data.finished.present ? data.finished.value : this.finished,
     );
   }
 
@@ -846,13 +888,14 @@ class RecordedWalk extends DataClass implements Insertable<RecordedWalk> {
           ..write('id: $id, ')
           ..write('startedAt: $startedAt, ')
           ..write('gpx: $gpx, ')
-          ..write('processedAt: $processedAt')
+          ..write('processedAt: $processedAt, ')
+          ..write('finished: $finished')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, startedAt, gpx, processedAt);
+  int get hashCode => Object.hash(id, startedAt, gpx, processedAt, finished);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -860,7 +903,8 @@ class RecordedWalk extends DataClass implements Insertable<RecordedWalk> {
           other.id == this.id &&
           other.startedAt == this.startedAt &&
           other.gpx == this.gpx &&
-          other.processedAt == this.processedAt);
+          other.processedAt == this.processedAt &&
+          other.finished == this.finished);
 }
 
 class RecordedWalksCompanion extends UpdateCompanion<RecordedWalk> {
@@ -868,12 +912,14 @@ class RecordedWalksCompanion extends UpdateCompanion<RecordedWalk> {
   final Value<DateTime> startedAt;
   final Value<String> gpx;
   final Value<DateTime?> processedAt;
+  final Value<bool> finished;
   final Value<int> rowid;
   const RecordedWalksCompanion({
     this.id = const Value.absent(),
     this.startedAt = const Value.absent(),
     this.gpx = const Value.absent(),
     this.processedAt = const Value.absent(),
+    this.finished = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   RecordedWalksCompanion.insert({
@@ -881,6 +927,7 @@ class RecordedWalksCompanion extends UpdateCompanion<RecordedWalk> {
     required DateTime startedAt,
     required String gpx,
     this.processedAt = const Value.absent(),
+    this.finished = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        startedAt = Value(startedAt),
@@ -890,6 +937,7 @@ class RecordedWalksCompanion extends UpdateCompanion<RecordedWalk> {
     Expression<DateTime>? startedAt,
     Expression<String>? gpx,
     Expression<DateTime>? processedAt,
+    Expression<bool>? finished,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -897,6 +945,7 @@ class RecordedWalksCompanion extends UpdateCompanion<RecordedWalk> {
       if (startedAt != null) 'started_at': startedAt,
       if (gpx != null) 'gpx': gpx,
       if (processedAt != null) 'processed_at': processedAt,
+      if (finished != null) 'finished': finished,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -906,6 +955,7 @@ class RecordedWalksCompanion extends UpdateCompanion<RecordedWalk> {
     Value<DateTime>? startedAt,
     Value<String>? gpx,
     Value<DateTime?>? processedAt,
+    Value<bool>? finished,
     Value<int>? rowid,
   }) {
     return RecordedWalksCompanion(
@@ -913,6 +963,7 @@ class RecordedWalksCompanion extends UpdateCompanion<RecordedWalk> {
       startedAt: startedAt ?? this.startedAt,
       gpx: gpx ?? this.gpx,
       processedAt: processedAt ?? this.processedAt,
+      finished: finished ?? this.finished,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -932,6 +983,9 @@ class RecordedWalksCompanion extends UpdateCompanion<RecordedWalk> {
     if (processedAt.present) {
       map['processed_at'] = Variable<DateTime>(processedAt.value);
     }
+    if (finished.present) {
+      map['finished'] = Variable<bool>(finished.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -945,6 +999,7 @@ class RecordedWalksCompanion extends UpdateCompanion<RecordedWalk> {
           ..write('startedAt: $startedAt, ')
           ..write('gpx: $gpx, ')
           ..write('processedAt: $processedAt, ')
+          ..write('finished: $finished, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -1962,6 +2017,7 @@ typedef $$RecordedWalksTableCreateCompanionBuilder =
       required DateTime startedAt,
       required String gpx,
       Value<DateTime?> processedAt,
+      Value<bool> finished,
       Value<int> rowid,
     });
 typedef $$RecordedWalksTableUpdateCompanionBuilder =
@@ -1970,6 +2026,7 @@ typedef $$RecordedWalksTableUpdateCompanionBuilder =
       Value<DateTime> startedAt,
       Value<String> gpx,
       Value<DateTime?> processedAt,
+      Value<bool> finished,
       Value<int> rowid,
     });
 
@@ -1999,6 +2056,11 @@ class $$RecordedWalksTableFilterComposer
 
   ColumnFilters<DateTime> get processedAt => $composableBuilder(
     column: $table.processedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get finished => $composableBuilder(
+    column: $table.finished,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2031,6 +2093,11 @@ class $$RecordedWalksTableOrderingComposer
     column: $table.processedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get finished => $composableBuilder(
+    column: $table.finished,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$RecordedWalksTableAnnotationComposer
@@ -2055,6 +2122,9 @@ class $$RecordedWalksTableAnnotationComposer
     column: $table.processedAt,
     builder: (column) => column,
   );
+
+  GeneratedColumn<bool> get finished =>
+      $composableBuilder(column: $table.finished, builder: (column) => column);
 }
 
 class $$RecordedWalksTableTableManager
@@ -2092,12 +2162,14 @@ class $$RecordedWalksTableTableManager
                 Value<DateTime> startedAt = const Value.absent(),
                 Value<String> gpx = const Value.absent(),
                 Value<DateTime?> processedAt = const Value.absent(),
+                Value<bool> finished = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RecordedWalksCompanion(
                 id: id,
                 startedAt: startedAt,
                 gpx: gpx,
                 processedAt: processedAt,
+                finished: finished,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -2106,12 +2178,14 @@ class $$RecordedWalksTableTableManager
                 required DateTime startedAt,
                 required String gpx,
                 Value<DateTime?> processedAt = const Value.absent(),
+                Value<bool> finished = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => RecordedWalksCompanion.insert(
                 id: id,
                 startedAt: startedAt,
                 gpx: gpx,
                 processedAt: processedAt,
+                finished: finished,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

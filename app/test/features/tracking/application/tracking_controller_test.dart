@@ -12,19 +12,27 @@ void main() {
   late FakeLocationSource location;
   late ProviderContainer container;
   late RecordedWalkRepository walks;
+  var now = DateTime.utc(2026, 10, 13, 8, 5);
+
+  ProviderContainer newContainer() {
+    final c = ProviderContainer(
+      overrides: [
+        locationSourceProvider.overrideWithValue(location),
+        recordedWalkRepositoryProvider.overrideWithValue(walks),
+        walkClockProvider.overrideWithValue(() => now),
+      ],
+    );
+    addTearDown(c.dispose);
+    return c;
+  }
 
   setUp(() {
     final db = testDatabase();
     addTearDown(db.close);
     location = FakeLocationSource();
     walks = DriftRecordedWalkRepository(db);
-    container = ProviderContainer(
-      overrides: [
-        locationSourceProvider.overrideWithValue(location),
-        recordedWalkRepositoryProvider.overrideWithValue(walks),
-      ],
-    );
-    addTearDown(container.dispose);
+    now = DateTime.utc(2026, 10, 13, 8, 5);
+    container = newContainer();
   });
 
   TrackingController controller() =>
@@ -59,5 +67,45 @@ void main() {
     await Future<void>.delayed(Duration.zero);
     await controller().stop();
     expect(await walks.pending(), isEmpty);
+  });
+
+  Future<void> walkSixPointsThenKillApp() async {
+    await controller().start();
+    for (var i = 0; i < 6; i++) {
+      location.emit(eastOf(i * 10.0, i * 10));
+    }
+    await Future<void>.delayed(Duration.zero);
+    container.dispose();
+  }
+
+  Future<ProviderContainer> reopenApp() async {
+    final reopened = newContainer()..read(trackingControllerProvider);
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+    return reopened;
+  }
+
+  test('nach kurzem App-Ende läuft der Gang weiter', () async {
+    await walkSixPointsThenKillApp();
+    expect(await walks.pending(), isEmpty);
+
+    final reopened = await reopenApp();
+    final session = reopened.read(trackingControllerProvider);
+    expect(session, isA<WalkRecording>());
+    expect((session as WalkRecording).distanceMeters, closeTo(50, 1));
+
+    location.emit(eastOf(80, 80));
+    await Future<void>.delayed(Duration.zero);
+    await reopened.read(trackingControllerProvider.notifier).stop();
+    expect((await walks.pending()).single.points, hasLength(7));
+  });
+
+  test('nach langer Pause wird der Gang so abgeschlossen', () async {
+    await walkSixPointsThenKillApp();
+    now = now.add(const Duration(hours: 3));
+
+    final reopened = await reopenApp();
+    expect(reopened.read(trackingControllerProvider), isA<WalkIdle>());
+    expect((await walks.pending()).single.points, hasLength(6));
+    expect(await walks.unfinished(), isNull);
   });
 }

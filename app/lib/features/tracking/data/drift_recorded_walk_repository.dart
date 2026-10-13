@@ -12,15 +12,35 @@ class DriftRecordedWalkRepository implements RecordedWalkRepository {
   final DateTime Function() _clock;
 
   @override
-  Future<void> saveFinished(Track track) => _db
+  Future<void> saveFinished(Track track) => _save(track, finished: true);
+
+  @override
+  Future<void> saveProgress(Track track) => _save(track, finished: false);
+
+  Future<void> _save(Track track, {required bool finished}) => _db
       .into(_db.recordedWalks)
       .insertOnConflictUpdate(
         RecordedWalksCompanion.insert(
           id: track.id,
           startedAt: track.startedAt ?? _clock(),
           gpx: GpxCodec.encode(track),
+          finished: Value(finished),
         ),
       );
+
+  @override
+  Future<Track?> unfinished() async {
+    final query = _db.select(_db.recordedWalks)
+      ..where((t) => t.finished.equals(false))
+      ..orderBy([(t) => OrderingTerm.desc(t.startedAt)])
+      ..limit(1);
+    final row = await query.getSingleOrNull();
+    return row == null ? null : GpxCodec.decode(row.gpx, id: row.id);
+  }
+
+  @override
+  Future<void> discard(String trackId) =>
+      (_db.delete(_db.recordedWalks)..where((t) => t.id.equals(trackId))).go();
 
   @override
   Future<List<Track>> pending() async {
@@ -40,6 +60,6 @@ class DriftRecordedWalkRepository implements RecordedWalkRepository {
 
   SimpleSelectStatement<$RecordedWalksTable, RecordedWalk> _pendingQuery() =>
       _db.select(_db.recordedWalks)
-        ..where((t) => t.processedAt.isNull())
+        ..where((t) => t.processedAt.isNull() & t.finished.equals(true))
         ..orderBy([(t) => OrderingTerm.asc(t.startedAt)]);
 }
