@@ -10,3 +10,5 @@ export 'domain/feed_creature.dart';
 export 'domain/growth_stage.dart';
 export 'domain/trait.dart';
 export 'presentation/creature_card.dart';
+export 'presentation/creature_labels.dart';
+export 'presentation/widgets/creature_avatar.dart';

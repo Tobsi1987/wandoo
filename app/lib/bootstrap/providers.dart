@@ -14,6 +14,8 @@ import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/creature/data/drift_creature_repository.dart';
 import 'package:wandoo/features/discovery/data/drift_known_segments_repository.dart';
 import 'package:wandoo/features/discovery/discovery.dart';
+import 'package:wandoo/features/share/data/share_plus_image_sharer.dart';
+import 'package:wandoo/features/share/share.dart';
 import 'package:wandoo/features/tracking/data/drift_recorded_walk_repository.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
 import 'package:wandoo/features/walk_summary/data/drift_walk_summary_repository.dart';
@@ -36,6 +38,7 @@ Future<List<Override>> appOverrides() async {
     ),
     mapDataSourceProvider.overrideWithValue(mapData),
     locationSourceProvider.overrideWithValue(const GeolocatorLocationSource()),
+    imageSharerProvider.overrideWithValue(const SharePlusImageSharer()),
     recordedWalkRepositoryProvider.overrideWithValue(
       DriftRecordedWalkRepository(db),
     ),
