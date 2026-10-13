@@ -13,5 +13,8 @@ final pendingWalkCountProvider = StreamProvider<int>(
   (ref) => ref.watch(recordedWalkRepositoryProvider).watchPendingCount(),
 );
 
+/// Uhr für die Aufzeichnung; in Tests überschreibbar.
+final walkClockProvider = Provider<DateTime Function()>((ref) => DateTime.now);
+
 final trackingControllerProvider =
     NotifierProvider<TrackingController, WalkSession>(TrackingController.new);
