@@ -28,8 +28,9 @@ class ModelStage extends StatelessWidget {
   /// Sekunden seit dem Start; wird bei jedem Bild weitergezählt.
   final ValueNotifier<double> time;
 
-  /// Bewegt das Wesen zur neuen Zeit.
-  final void Function(double seconds) onTime;
+  /// Bewegt das Wesen zur neuen Zeit; dazu die Sekunden seit dem letzten
+  /// Bild.
+  final void Function(double seconds, double delta) onTime;
 
   @override
   Widget build(BuildContext context) {
@@ -47,10 +48,10 @@ class ModelStage extends StatelessWidget {
               position: vm.Vector3(0, 0.6, -1.75),
               target: vm.Vector3(0, 0.46, 0),
             ),
-            onTick: (elapsed, _) {
+            onTick: (elapsed, delta) {
               if (!animate) return;
               time.value = elapsed.inMicroseconds / 1e6;
-              onTime(time.value);
+              onTime(time.value, delta);
             },
           ),
           if (night)

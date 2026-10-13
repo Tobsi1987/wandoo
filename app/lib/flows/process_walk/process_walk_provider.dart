@@ -20,6 +20,7 @@ final processWalkProvider = Provider<ProcessWalk>(
     classify: ref.watch(classifySegmentsProvider),
     creatures: ref.watch(creatureRepositoryProvider),
     summaries: ref.watch(walkSummaryRepositoryProvider),
+    feed: ref.watch(feedCreatureProvider),
     extras: [
       DistrictExtra(ref.watch(knownSegmentsRepositoryProvider)),
       TreasureExtra(ref.watch(treasureRepositoryProvider)),

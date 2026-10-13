@@ -8,6 +8,7 @@ import 'package:wandoo/features/creature/presentation/widgets/celebration_pose.d
 import 'package:wandoo/features/creature/presentation/widgets/creature_figure.dart';
 import 'package:wandoo/features/creature/presentation/widgets/creature_spin.dart';
 import 'package:wandoo/features/creature/presentation/widgets/greeting_bubble.dart';
+import 'package:wandoo/features/creature/presentation/widgets/model_motions.dart';
 
 /// Spielt kleine Momente ab, wenn sich das Wesen ändert: Nach dem Fressen
 /// hüpft es vor Freude. Beim Schlüpfen platzt das Ei, das Wesen springt
@@ -110,8 +111,7 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
   void _done() {
     if (!mounted) return;
     setState(() {
-      // Ein Freudensprung, der noch zu Ende läuft, während das Schlüpfen
-      // schon wartet, darf das Ei nicht wegnehmen.
+      // Ein auslaufender Sprung darf das wartende Ei nicht wegnehmen.
       if (_playing == _Moment.hatch) _egg = null;
       _playing = null;
     });
@@ -165,6 +165,17 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
     );
   }
 
+  /// Was ein geriggtes Modell dazu tut; beim Mitlaufen geht es einfach.
+  Motion? _motion(CelebrationPose pose) => switch (_playing) {
+    _ when widget.cheer => null,
+    _Moment.hatch => pose.greeting > 0 ? Motion.wave : Motion.happy,
+    _Moment.hop || _Moment.jump => Motion.happy,
+    null => null,
+  };
+
+  Widget _moving(CelebrationPose pose, Creature shown) =>
+      CreatureMotion(motion: _motion(pose), child: widget.builder(shown));
+
   Widget _posed(CelebrationPose pose, Creature shown) {
     final size = widget.size;
     // Mit 3D-Modell dreht sich das Modell selbst, sonst nur ein Umklappen.
@@ -179,7 +190,7 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
           scaleX: pose.scale * flat * (1 + 0.1 * pose.squash - 0.04 * stretch),
           scaleY: pose.scale * (1 - 0.1 * pose.squash + 0.06 * stretch),
           alignment: Alignment.bottomCenter,
-          child: CreatureSpin(turns: pose.spin, child: widget.builder(shown)),
+          child: CreatureSpin(turns: pose.spin, child: _moving(pose, shown)),
         ),
       ),
     );
