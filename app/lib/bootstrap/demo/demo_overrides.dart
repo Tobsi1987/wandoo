@@ -48,9 +48,10 @@ List<Override> demoOverrides() => [
   ),
   treasureRepositoryProvider.overrideWithValue(InMemoryTreasureRepository()),
   adventureRepositoryProvider.overrideWithValue(InMemoryAdventureRepository()),
-  feedCreatureProvider.overrideWithValue(
-    FeedCreature(hatchFrom: [SpeciesCatalog.byId(_hatches())]),
-  ),
+  if (_hatches() case final id?)
+    feedCreatureProvider.overrideWithValue(
+      FeedCreature(hatchFrom: [SpeciesCatalog.byId(id)]),
+    ),
   if (_hour() case final hour?)
     worldClockProvider.overrideWithValue(() {
       final now = DateTime.now();
@@ -67,9 +68,9 @@ class _DemoMapData implements MapDataSource {
       DemoTown.segments;
 }
 
-/// Was in der Demo aus dem Ei schlüpft: `?ei=funkel`, sonst Aurora (das
-/// erste Wesen mit Rig und Animationen).
-String _hatches() => Uri.base.queryParameters['ei'] ?? 'aurora';
+/// Was in der Demo aus dem Ei schlüpft: `?ei=funkel`, sonst ein Zufallswesen
+/// wie in der App.
+String? _hatches() => Uri.base.queryParameters['ei'];
 
 /// `?wesen=funkel` startet die Demo mit diesem Wesen geschlüpft und allen
 /// Arten im Album, um die 3D-Modelle anzusehen. Ohne Angabe: ein Ei, das
