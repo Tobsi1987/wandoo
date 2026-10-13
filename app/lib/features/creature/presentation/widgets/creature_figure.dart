@@ -7,6 +7,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/presentation/painting/creature_painter.dart';
 import 'package:wandoo/features/creature/presentation/painting/creature_shader_uniforms.dart';
+import 'package:wandoo/features/world/world.dart';
 
 /// Die Figur des Wesens: animiertes 3D aus `shaders/creature.frag`.
 ///
@@ -18,6 +19,7 @@ class CreatureFigure extends StatefulWidget {
     required this.creature,
     this.size = 180,
     this.silhouette = false,
+    this.world,
     super.key,
   });
 
@@ -26,6 +28,9 @@ class CreatureFigure extends StatefulWidget {
 
   /// Nur der dunkle Umriss, z. B. für noch unentdeckte Arten im Album.
   final bool silhouette;
+
+  /// Nacht und Jahreszeit; ohne Angabe Tag und schlichtes Ei.
+  final WorldState? world;
 
   /// In Tests aus, damit `pumpAndSettle` zur Ruhe kommt.
   @visibleForTesting
@@ -84,6 +89,7 @@ class _CreatureFigureState extends State<CreatureFigure>
           _time,
           sleepy: sleepy,
           silhouette: widget.silhouette,
+          world: widget.world,
         ),
       );
     }
@@ -106,12 +112,14 @@ class _ShaderPainter extends CustomPainter {
     this.time, {
     required this.sleepy,
     required this.silhouette,
+    required this.world,
   }) : super(repaint: time);
 
   final FragmentShader shader;
   final Creature creature;
   final bool sleepy;
   final bool silhouette;
+  final WorldState? world;
   final ValueListenable<double> time;
 
   @override
@@ -123,6 +131,7 @@ class _ShaderPainter extends CustomPainter {
       creature: creature,
       sleepy: sleepy,
       silhouette: silhouette,
+      world: world,
     );
     canvas.drawRect(Offset.zero & size, Paint()..shader = shader);
   }
@@ -131,5 +140,6 @@ class _ShaderPainter extends CustomPainter {
   bool shouldRepaint(_ShaderPainter old) =>
       old.creature != creature ||
       old.sleepy != sleepy ||
-      old.silhouette != silhouette;
+      old.silhouette != silhouette ||
+      old.world != world;
 }

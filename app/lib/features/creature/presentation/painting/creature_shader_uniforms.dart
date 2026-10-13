@@ -6,6 +6,7 @@ import 'package:wandoo/features/creature/domain/species_catalog.dart';
 import 'package:wandoo/features/creature/domain/trait.dart';
 import 'package:wandoo/features/creature/presentation/painting/body_geometry.dart';
 import 'package:wandoo/features/creature/presentation/species_looks.dart';
+import 'package:wandoo/features/world/world.dart';
 
 /// Überträgt das Wesen in die Uniforms von `shaders/creature.frag`.
 ///
@@ -17,6 +18,7 @@ void setCreatureUniforms(
   required Creature creature,
   required bool sleepy,
   bool silhouette = false,
+  WorldState? world,
 }) {
   final egg = creature.stage == GrowthStage.egg;
   final accent = egg ? creature.dominantTrait : creature.accentTrait;
@@ -37,6 +39,8 @@ void setCreatureUniforms(
     (creature.hat?.index ?? -1) + 1.0,
     (creature.neck?.index ?? -1) + 1.0,
     if (silhouette) 1 else 0,
+    if (world?.night ?? false) 1 else 0,
+    (world?.eggTheme.index ?? -1) + 1.0,
   ];
   for (var i = 0; i < values.length; i++) {
     shader.setFloat(i, values[i]);

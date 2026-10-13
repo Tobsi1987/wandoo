@@ -14,6 +14,8 @@ uniform float uCrack;        // 1 = Ei kurz vor dem Schlüpfen
 uniform float uHat;          // 0 keiner, sonst CreatureHat-Index + 1
 uniform float uNeck;         // 0 keiner, sonst CreatureNeck-Index + 1
 uniform float uSilhouette;   // 1 = nur dunkler Umriss (Album)
+uniform float uNight;        // 1 = Nacht: schläft, Glühwürmchen
+uniform float uEggTheme;     // 0 schlicht, sonst EggTheme-Index + 1
 
 out vec4 fragColor;
 
@@ -67,6 +69,7 @@ float body(vec3 q) {
 
 float eyes(vec3 q) {
   float open = mix(1.0, 0.25, uSleepy) * (1.0 - gBlink);
+  open = min(open, mix(1.0, 0.06, uNight));
   vec3 e = vec3(abs(q.x) - gRadius.x * 0.36, q.y - gRadius.y * 0.12,
                 q.z - gRadius.z * 0.86);
   float r = gRadius.y * 0.24;
@@ -94,6 +97,7 @@ vec3 normalAt(vec3 p) {
                    e.yxy * map(p + e.yxy, m) + e.xxx * map(p + e.xxx, m));
 }
 
+#include "egg_themes.glsl"
 #include "creature_colors.glsl"
 
 vec3 shade(vec3 p, vec3 rd, float m) {
@@ -104,6 +108,7 @@ vec3 shade(vec3 p, vec3 rd, float m) {
   float rim = pow(1.0 - clamp(dot(n, -rd), 0.0, 1.0), 3.0);
   float spec = pow(clamp(dot(reflect(rd, n), light), 0.0, 1.0), 24.0);
   vec3 col = materialColor(p, n, m) * (0.6 + 0.5 * diff) + rim * 0.18;
+  col *= mix(vec3(1.0), vec3(0.84, 0.87, 1.06), uNight);
   bool eye = m > 1.5 && m < 2.5;
   bool shiny = m > 11.5 && m < 13.5;
   float shine = eye ? 0.9 : (uFamily > 0.5 && uFamily < 1.5 ? 0.5 : 0.2);
@@ -117,8 +122,9 @@ vec3 shade(vec3 p, vec3 rd, float m) {
 
 void setup() {
   float t = uTime;
-  float speed = mix(1.0, 0.4, uSleepy);
-  float awake = 1.0 - uSleepy;
+  float tired = max(uSleepy, uNight);
+  float speed = mix(1.0, 0.4, tired);
+  float awake = 1.0 - tired;
   float breath = 1.0 + 0.03 * sin(t * 2.4 * speed);
   gScale = uStage > 1.5 ? 1.2 : 1.0;
   vec3 r = uFamily > 0.5 && uFamily < 1.5 ? vec3(0.5, 0.38, 0.42)
@@ -135,6 +141,20 @@ void setup() {
   float cycle = mod(t, 3.7);
   gBlink = smoothstep(0.0, 0.06, cycle) * smoothstep(0.18, 0.1, cycle);
   gGlow = 1e3;
+}
+
+// Glühwürmchen, die nachts um das schlafende Wesen schweben.
+float fireflies(vec2 uv) {
+  float sum = 0.0;
+  for (int i = 0; i < 6; i++) {
+    float fi = float(i);
+    vec2 pos = vec2(sin(uTime * 0.5 + fi * 1.7) * 0.42,
+                    0.05 + cos(uTime * 0.37 + fi * 2.3) * 0.3);
+    float pulse = 0.55 + 0.45 * sin(uTime * 2.5 + fi * 1.3);
+    float d = length(uv - pos);
+    sum += exp(-d * d * 2500.0) * pulse + exp(-d * d * 300.0) * 0.12 * pulse;
+  }
+  return sum;
 }
 
 void main() {
@@ -172,5 +192,8 @@ void main() {
   float halo = exp(-max(glow, 0.0) * 18.0) * 0.55;
   col.rgb = col.rgb * col.a + GLOW * halo;
   col.a = clamp(col.a + halo, 0.0, 1.0);
+  float flies = fireflies(uv) * uNight;
+  col.rgb += GLOW * flies;
+  col.a = clamp(col.a + flies, 0.0, 1.0);
   fragColor = col;
 }

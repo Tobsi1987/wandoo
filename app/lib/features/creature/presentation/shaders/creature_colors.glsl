@@ -49,7 +49,9 @@ vec3 tailColor(vec3 q) {
 vec3 eggColor(vec3 p) {
   vec3 q = normalize(p - gCenter);
   vec3 col = SHELL;
+  if (uEggTheme > 0.5) col = themedEgg(q);
   for (int i = 0; i < 6; i++) {
+    if (uEggTheme > 0.5) break;
     float fi = float(i);
     vec3 dir = normalize(vec3(sin(fi * 2.4), cos(fi * 1.7) * 0.8, cos(fi * 2.4)));
     col = mix(col, uAccent, smoothstep(0.95, 0.97, dot(q, dir)));
