@@ -1,6 +1,6 @@
 import 'package:wandoo/features/discovery/domain/known_segments_repository.dart';
 
-/// Platzhalter, bis die Drift-Datenbank in `core/database/` steht.
+/// Hält bekannte Abschnitte nur im Speicher. Für Tests.
 class InMemoryKnownSegmentsRepository implements KnownSegmentsRepository {
   final Set<String> _ids = {};
 
@@ -9,4 +9,7 @@ class InMemoryKnownSegmentsRepository implements KnownSegmentsRepository {
 
   @override
   Future<void> addAll(Set<String> ids) async => _ids.addAll(ids);
+
+  @override
+  Stream<Set<String>> watchKnownIds() => Stream.value(Set.of(_ids));
 }

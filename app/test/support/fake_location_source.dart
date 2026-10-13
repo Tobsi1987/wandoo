@@ -5,15 +5,19 @@ import 'package:wandoo/core/location/location_source.dart';
 
 /// Standortquelle für Tests: Positionen werden von Hand eingespeist.
 class FakeLocationSource implements LocationSource {
-  FakeLocationSource({this.granted = true});
+  FakeLocationSource({this.granted = true, this.current});
 
   bool granted;
+  GeoPoint? current;
   final _controller = StreamController<TrackPoint>.broadcast();
 
   void emit(TrackPoint point) => _controller.add(point);
 
   @override
   Future<bool> ensurePermission() async => granted;
+
+  @override
+  Future<GeoPoint?> currentPosition() async => current;
 
   @override
   Stream<TrackPoint> positions() => _controller.stream;

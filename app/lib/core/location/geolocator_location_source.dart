@@ -22,6 +22,15 @@ class GeolocatorLocationSource implements LocationSource {
   }
 
   @override
+  Future<GeoPoint?> currentPosition() async {
+    if (!await ensurePermission()) return null;
+    final p =
+        await Geolocator.getLastKnownPosition() ??
+        await Geolocator.getCurrentPosition();
+    return GeoPoint(p.latitude, p.longitude);
+  }
+
+  @override
   Stream<TrackPoint> positions() => Geolocator.getPositionStream(
     locationSettings: _settings(),
   ).map(_toTrackPoint);
