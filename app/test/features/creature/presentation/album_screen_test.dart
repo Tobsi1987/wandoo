@@ -8,9 +8,16 @@ void main() {
   testWidgets('entdeckte Arten mit Namen, die anderen als Umriss', (
     tester,
   ) async {
+    tester.view.physicalSize = const Size(800, 4000);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
     final repo = InMemoryCreatureRepository();
     await repo.save(
-      const Creature(food: 30, speciesId: 'axolotl', seenSpecies: {'moosbaer'}),
+      const Creature(
+        food: 30,
+        speciesId: 'pfuetzling',
+        seenSpecies: {'moosel'},
+      ),
     );
     await tester.pumpWidget(
       ProviderScope(
@@ -21,7 +28,7 @@ void main() {
     await tester.pumpAndSettle();
     final total = SpeciesCatalog.all.length;
     expect(find.text('2 von $total Tieren entdeckt'), findsOneWidget);
-    expect(find.text('Wasser-Axolotl'), findsOneWidget);
+    expect(find.text('Pfützling'), findsOneWidget);
     expect(find.text('???'), findsNWidgets(total - 2));
     final silhouettes = tester
         .widgetList<CreatureFigure>(find.byType(CreatureFigure))

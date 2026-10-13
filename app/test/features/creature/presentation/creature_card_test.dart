@@ -31,7 +31,7 @@ void main() {
     tester,
   ) async {
     final repo = InMemoryCreatureRepository();
-    await repo.save(const Creature(food: 30, speciesId: 'axolotl'));
+    await repo.save(const Creature(food: 30, speciesId: 'pfuetzling'));
     await tester.pumpWidget(
       ProviderScope(
         overrides: [creatureRepositoryProvider.overrideWithValue(repo)],
@@ -39,7 +39,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Wasser-Axolotl'), findsOneWidget);
+    expect(find.text('Pfützling'), findsOneWidget);
 
     await tester.tap(find.text('Wegschicken'));
     await tester.pumpAndSettle();

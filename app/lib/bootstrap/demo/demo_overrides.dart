@@ -27,7 +27,9 @@ import 'package:wandoo/features/walk_summary/walk_summary.dart';
 /// Wie `appOverrides`, aber alles im Speicher und ohne Gerät: eine erfundene
 /// Stadt, simulierte Gänge, keine Datenbank, kein Netz.
 List<Override> demoOverrides() => [
-  creatureRepositoryProvider.overrideWithValue(InMemoryCreatureRepository()),
+  creatureRepositoryProvider.overrideWithValue(
+    InMemoryCreatureRepository(_startCreature()),
+  ),
   knownSegmentsRepositoryProvider.overrideWithValue(
     InMemoryKnownSegmentsRepository(),
   ),
@@ -51,4 +53,16 @@ class _DemoMapData implements MapDataSource {
   @override
   Future<List<RoadSegment>> segmentsNear(List<GeoPoint> points) async =>
       DemoTown.segments;
+}
+
+/// `?wesen=funkel` startet die Demo mit diesem Wesen geschlüpft und allen
+/// Arten im Album, um die 3D-Modelle anzusehen. Ohne Angabe: ein Ei.
+Creature _startCreature() {
+  final id = Uri.base.queryParameters['wesen'];
+  if (id == null) return const Creature();
+  return Creature(
+    food: GrowthStage.adult.foodNeeded,
+    speciesId: SpeciesCatalog.byId(id).id,
+    seenSpecies: {for (final s in SpeciesCatalog.all) s.id},
+  );
 }

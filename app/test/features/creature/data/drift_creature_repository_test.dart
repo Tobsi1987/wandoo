@@ -40,10 +40,10 @@ void main() {
     final repo = DriftCreatureRepository(db);
     final released = DateTime(2026, 10, 2);
     await repo.save(
-      Creature(food: 30, speciesId: 'waschbaer', lastReleasedAt: released),
+      Creature(food: 30, speciesId: 'nebelfuchs', lastReleasedAt: released),
     );
     final loaded = await repo.load();
-    expect(loaded.speciesId, 'waschbaer');
+    expect(loaded.speciesId, 'nebelfuchs');
     expect(loaded.lastReleasedAt, released);
   });
 
@@ -56,14 +56,14 @@ void main() {
         food: 30,
         hat: CreatureHat.flowerCrown,
         neck: CreatureNeck.shellNecklace,
-        seenSpecies: {'axolotl'},
+        seenSpecies: {'pfuetzling'},
         luckyEgg: true,
       ),
     );
     final loaded = await repo.load();
     expect(loaded.hat, CreatureHat.flowerCrown);
     expect(loaded.neck, CreatureNeck.shellNecklace);
-    expect(loaded.seenSpecies, {'axolotl'});
+    expect(loaded.seenSpecies, {'pfuetzling'});
     expect(loaded.luckyEgg, isTrue);
   });
 }

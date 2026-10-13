@@ -5,12 +5,34 @@ import 'package:wandoo/features/creature/domain/species.dart';
 
 /// Alle Tierarten. Neue Arten kommen nur hier dazu (und ihr Aussehen in
 /// `presentation/species_looks.dart`); ids nie ändern oder wiederverwenden.
+/// Unbekannte ids (z. B. die vier Platzhalter-Arten vor den 20 Wesen)
+/// werden über [byId] zu [fallback].
 abstract final class SpeciesCatalog {
   static const all = <Species>[
-    Species(id: 'aehrenhase', name: 'Ährenhäschen', rarity: Rarity.common),
-    Species(id: 'moosbaer', name: 'Moosbärchen', rarity: Rarity.common),
-    Species(id: 'axolotl', name: 'Wasser-Axolotl', rarity: Rarity.rare),
-    Species(id: 'waschbaer', name: 'Laternen-Waschbär', rarity: Rarity.epic),
+    Species(id: 'funkel', name: 'Funkel', rarity: Rarity.common),
+    Species(id: 'moosel', name: 'Moosel', rarity: Rarity.common),
+    Species(id: 'pfuetzling', name: 'Pfützling', rarity: Rarity.common),
+    Species(id: 'kieselchen', name: 'Kieselchen', rarity: Rarity.common),
+    Species(id: 'pustel', name: 'Pustel', rarity: Rarity.common),
+    Species(id: 'schnirp', name: 'Schnirp', rarity: Rarity.common),
+    Species(id: 'brummli', name: 'Brummli', rarity: Rarity.common),
+    Species(id: 'zapfi', name: 'Zapfi', rarity: Rarity.common),
+    Species(id: 'laternchen', name: 'Laternchen', rarity: Rarity.common),
+    Species(id: 'wolkenwuff', name: 'Wolkenwuff', rarity: Rarity.rare),
+    Species(id: 'blitzmaus', name: 'Blitzmaus', rarity: Rarity.rare),
+    Species(id: 'blaetterdrache', name: 'Blätterdrache', rarity: Rarity.rare),
+    Species(id: 'pilzling', name: 'Pilzling', rarity: Rarity.rare),
+    Species(id: 'kristallis', name: 'Kristallis', rarity: Rarity.rare),
+    Species(id: 'fluffeule', name: 'Fluffeule', rarity: Rarity.rare),
+    Species(id: 'nebelfuchs', name: 'Nebelfuchs', rarity: Rarity.epic),
+    Species(id: 'glutling', name: 'Glutling', rarity: Rarity.epic),
+    Species(id: 'wellenwal', name: 'Wellenwal', rarity: Rarity.epic),
+    Species(id: 'aurora', name: 'Aurora', rarity: Rarity.epic),
+    Species(
+      id: 'sternschnuppe',
+      name: 'Sternschnuppe',
+      rarity: Rarity.legendary,
+    ),
   ];
 
   /// Für Spielstände ohne gespeicherte Art.

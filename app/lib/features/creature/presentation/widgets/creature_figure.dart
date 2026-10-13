@@ -5,15 +5,20 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
+import 'package:wandoo/features/creature/domain/growth_stage.dart';
+import 'package:wandoo/features/creature/domain/species_catalog.dart';
 import 'package:wandoo/features/creature/presentation/painting/creature_painter.dart';
 import 'package:wandoo/features/creature/presentation/painting/creature_shader_uniforms.dart';
+import 'package:wandoo/features/creature/presentation/species_looks.dart';
+import 'package:wandoo/features/creature/presentation/widgets/creature_model.dart';
 import 'package:wandoo/features/world/world.dart';
 
-/// Die Figur des Wesens: animiertes 3D aus `shaders/creature.frag`.
+/// Die Figur des Wesens: das 3D-Modell der Art, sonst animiertes 3D aus
+/// `shaders/creature.frag`.
 ///
-/// Der einzige Ort, der entscheidet, wie das Wesen aussieht. Sollen später
-/// Modelle vom Designer (.glb) die Figur ersetzen, wird nur dieses Widget
-/// getauscht. Solange der Shader lädt oder fehlt, zeigt es die 2D-Figur.
+/// Der einzige Ort, der entscheidet, wie das Wesen aussieht. Eier, Umrisse
+/// und Arten ohne Modell zeichnet der Shader; solange der Shader lädt oder
+/// fehlt, zeigt es die 2D-Figur.
 class CreatureFigure extends StatefulWidget {
   const CreatureFigure({
     required this.creature,
@@ -35,6 +40,10 @@ class CreatureFigure extends StatefulWidget {
   /// In Tests aus, damit `pumpAndSettle` zur Ruhe kommt.
   @visibleForTesting
   static bool animate = true;
+
+  /// In Tests aus: dort gibt es kein 3D.
+  @visibleForTesting
+  static bool models = true;
 
   static const shaderAsset =
       'lib/features/creature/presentation/shaders/creature.frag';
@@ -79,6 +88,26 @@ class _CreatureFigureState extends State<CreatureFigure>
   @override
   Widget build(BuildContext context) {
     final sleepy = widget.creature.isSluggish(DateTime.now());
+    final drawn = _drawn(sleepy);
+    final asset = _modelAsset();
+    if (asset == null) return drawn;
+    return CreatureModel(
+      asset: asset,
+      size: widget.size,
+      fallback: drawn,
+      sleepy: sleepy || (widget.world?.night ?? false),
+      grownUp: widget.creature.stage == GrowthStage.adult,
+      animate: CreatureFigure.animate,
+    );
+  }
+
+  String? _modelAsset() {
+    final c = widget.creature;
+    if (!CreatureFigure.models || widget.silhouette || !c.hatched) return null;
+    return speciesLooks[SpeciesCatalog.byId(c.speciesId).id]?.modelAsset;
+  }
+
+  Widget _drawn(bool sleepy) {
     final shader = _shader;
     if (shader != null) {
       return CustomPaint(
