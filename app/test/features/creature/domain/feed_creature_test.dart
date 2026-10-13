@@ -19,6 +19,15 @@ void main() {
     expect(identical(feed(creature, const {}, now), creature), isTrue);
   });
 
+  test('bekannte Wege machen satt, lassen aber nicht wachsen', () {
+    const creature = Creature(food: 5, traitPoints: {Trait.moss: 5});
+    final fed = feed(creature, const {}, now, knownSegments: 7);
+    expect(fed.food, 5);
+    expect(fed.traitPoints, {Trait.moss: 5});
+    expect(fed.lastFedAt, now);
+    expect(fed.isSluggish(now.add(const Duration(days: 1))), isFalse);
+  });
+
   test('wächst vom Ei zum Jungtier', () {
     final fed = feed(const Creature(food: 18), {EnvironmentType.city: 2}, now);
     expect(fed.stage, GrowthStage.juvenile);

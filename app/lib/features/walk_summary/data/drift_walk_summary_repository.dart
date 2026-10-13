@@ -26,6 +26,7 @@ class DriftWalkSummaryRepository implements WalkSummaryRepository {
             for (final e in s.streetsByEnvironment.entries) e.key.name: e.value,
           }),
           creatureGrew: s.creatureGrew,
+          knownSegmentCount: Value(s.knownSegmentCount),
         ),
       );
 
@@ -54,6 +55,7 @@ class DriftWalkSummaryRepository implements WalkSummaryRepository {
       newStreetCount: r.newStreetCount,
       bridgeCount: r.bridgeCount,
       creatureGrew: r.creatureGrew,
+      knownSegmentCount: r.knownSegmentCount,
       streetsByEnvironment: {
         for (final type in EnvironmentType.values)
           if (raw[type.name] is int) type: raw[type.name] as int,

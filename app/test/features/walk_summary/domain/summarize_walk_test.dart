@@ -55,6 +55,20 @@ void main() {
       newSegments: const {},
       creatureGrew: false,
     );
-    expect(summaryLines(empty).single, startsWith('Nichts Neues'));
+    expect(summaryLines(empty).single, startsWith('Wachsen tut es nur'));
+  });
+
+  test('bekannte Wege machen satt, aber nicht größer', () {
+    final known = const SummarizeWalk()(
+      walkId: 'w',
+      finishedAt: DateTime(2026),
+      newSegments: const {},
+      creatureGrew: false,
+      knownSegmentCount: 4,
+    );
+    expect(summaryLines(known), [
+      'Bekannte Wege: Dein Wesen ist satt.',
+      startsWith('Wachsen tut es nur'),
+    ]);
   });
 }
