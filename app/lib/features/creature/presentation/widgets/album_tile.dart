@@ -33,6 +33,7 @@ class AlbumTile extends StatelessWidget {
                     creature: _model,
                     size: 140,
                     silhouette: !seen,
+                    still: true,
                   ),
                 ),
               ),
