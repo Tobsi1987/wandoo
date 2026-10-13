@@ -42,6 +42,6 @@ final Map<String, SpeciesLook> speciesLooks = {
   'nebelfuchs': _model('nebelfuchs', 2),
   'glutling': _model('glutling', 1),
   'wellenwal': _model('wellenwal', 1),
-  'aurora': const SpeciesLook(placeholder: 2),
+  'aurora': _model('aurora', 2),
   'sternschnuppe': _model('sternschnuppe', 3),
 };
