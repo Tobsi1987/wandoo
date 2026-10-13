@@ -23,6 +23,7 @@ import 'package:wandoo/features/tracking/tracking.dart';
 import 'package:wandoo/features/treasure/data/in_memory_treasure_repository.dart';
 import 'package:wandoo/features/treasure/treasure.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
+import 'package:wandoo/features/world/world.dart';
 
 /// Wie `appOverrides`, aber alles im Speicher und ohne Gerät: eine erfundene
 /// Stadt, simulierte Gänge, keine Datenbank, kein Netz.
@@ -47,7 +48,15 @@ List<Override> demoOverrides() => [
   ),
   treasureRepositoryProvider.overrideWithValue(InMemoryTreasureRepository()),
   adventureRepositoryProvider.overrideWithValue(InMemoryAdventureRepository()),
+  if (_hour() case final hour?)
+    worldClockProvider.overrideWithValue(() {
+      final now = DateTime.now();
+      return DateTime(now.year, now.month, now.day, hour, now.minute);
+    }),
 ];
+
+/// `?uhr=8` zeigt die Welt um 8 Uhr, egal wie spät es ist.
+int? _hour() => int.tryParse(Uri.base.queryParameters['uhr'] ?? '');
 
 class _DemoMapData implements MapDataSource {
   @override
