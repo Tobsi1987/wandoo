@@ -16,6 +16,7 @@ part 'app_database.g.dart';
     RecordedWalks,
     WalkSummaries,
     TreasureStates,
+    AdventureStates,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -25,7 +26,7 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase.open() => AppDatabase(driftDatabase(name: 'wandoo'));
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -43,6 +44,7 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(recordedWalks, recordedWalks.finished);
       }
       if (from < 7) await _upgradeTo7(m, from);
+      if (from < 8) await m.createTable(adventureStates);
     },
   );
 
