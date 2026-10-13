@@ -1,3 +1,8 @@
 # core/database
 
-Hier entsteht die lokale Drift-Datenbank (SQLite) mit Migrationen. Features legen ihre Tabellen in ihrem eigenen `data/`-Ordner an.
+Lokale Drift-Datenbank (SQLite). Das Schema liegt zentral in `tables.dart`,
+damit `core` keine Features kennen muss. Die Repositories, die Zeilen in
+Domänenobjekte übersetzen, liegen in den `data/`-Ordnern der Features.
+
+Nach Schemaänderungen: `dart run build_runner build` im Ordner `app/`
+und `schemaVersion` erhöhen.
