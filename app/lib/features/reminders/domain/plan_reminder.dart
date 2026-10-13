@@ -1,35 +1,64 @@
 import 'package:wandoo/features/reminders/domain/reminder.dart';
 
-/// Plant die nächste sanfte Erinnerung: erst wenn das Wesen träge wird,
-/// und nur tagsüber. Keine Strafe, kein Druck.
+/// Plant sanfte Erinnerungen nach dem letzten Gang: an den nächsten drei
+/// Tagen höchstens eine am Tag, immer am Nachmittag, nie abends. Danach ist
+/// Ruhe. Keine Strafe, kein Druck.
 class PlanReminder {
-  const PlanReminder({
-    this.after = const Duration(days: 3),
-    this.earliestHour = 10,
-    this.latestHour = 19,
-  });
+  const PlanReminder({this.days = 3, this.hour = 16});
 
-  /// Nach so langer Zeit ohne Neues wird erinnert.
-  final Duration after;
-  final int earliestHour;
+  /// An so vielen Tagen nach dem letzten Gang wird erinnert.
+  final int days;
 
-  /// Ab dieser Stunde wird auf den nächsten Morgen verschoben.
-  final int latestHour;
+  /// Uhrzeit der Erinnerung (nach der Schule, vor dem Abend).
+  final int hour;
 
-  /// `null`, solange das Wesen noch nie gefüttert wurde.
-  Reminder? call(DateTime? lastFedAt) {
-    if (lastFedAt == null) return null;
-    return Reminder(
-      at: _daytime(lastFedAt.toLocal().add(after)),
-      title: 'Dein Wesen döst',
-      body: 'Ein neuer Weg würde es wecken. Ganz ohne Eile.',
-    );
+  /// Erinnerungen nach dem Gang am [lastWalkAt]; [name] ist der Name des
+  /// Wesens, null für ein Ei. Ohne Gang keine Erinnerung.
+  List<Reminder> call(DateTime? lastWalkAt, {String? name}) {
+    if (lastWalkAt == null) return const [];
+    final day = lastWalkAt.toLocal();
+    return [
+      for (var i = 1; i <= days; i++)
+        _text(
+          DateTime(day.year, day.month, day.day + i, hour),
+          name,
+          (i - 1) % 3,
+        ),
+    ];
   }
 
-  DateTime _daytime(DateTime at) {
-    final morning = DateTime(at.year, at.month, at.day, earliestHour);
-    if (at.isBefore(morning)) return morning;
-    if (at.hour < latestHour) return at;
-    return DateTime(at.year, at.month, at.day + 1, earliestHour);
+  static Reminder _text(DateTime at, String? name, int which) {
+    final (title, body) = name == null
+        ? switch (which) {
+            0 => (
+              'Dein Ei ist ganz warm',
+              'Nimm es mit nach draußen, vielleicht schlüpft bald etwas.',
+            ),
+            1 => (
+              'Im Ei rumpelt es',
+              'Ein kleiner Spaziergang hilft deinem Ei beim Schlüpfen.',
+            ),
+            _ => (
+              'Dein Ei wartet auf dich',
+              'Draußen an der frischen Luft wird es am schnellsten warm.',
+            ),
+          }
+        : switch (which) {
+            0 => (
+              '$name möchte raus',
+              'Hast du Lust auf einen kleinen Spaziergang? $name kommt gern '
+                  'mit.',
+            ),
+            1 => (
+              '$name ist neugierig',
+              'Gibt es eine Straße, die ihr noch nie gegangen seid? $name '
+                  'würde sie gern entdecken.',
+            ),
+            _ => (
+              '$name denkt an dich',
+              'Schon ein kurzer Gang macht $name eine große Freude.',
+            ),
+          };
+    return Reminder(at: at, title: title, body: body);
   }
 }

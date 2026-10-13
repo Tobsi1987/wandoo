@@ -3,7 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wandoo/features/creature/creature.dart';
+import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/home/presentation/home_actions.dart';
+import 'package:wandoo/features/petting/petting.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
 import 'package:wandoo/features/world/world.dart';
@@ -57,11 +59,7 @@ class HomeScreen extends ConsumerWidget {
                       Expanded(
                         child: Center(
                           child: SingleChildScrollView(
-                            child: CreatureCard(
-                              walking: walking,
-                              details: !showSummary,
-                              figureSize: _figureSize(box, showSummary),
-                            ),
+                            child: _creature(world, walking, showSummary, box),
                           ),
                         ),
                       ),
@@ -79,6 +77,22 @@ class HomeScreen extends ConsumerWidget {
       ),
     );
   }
+
+  /// Das Wesen zum Streicheln, mit Herzen und Tagebuch.
+  static Widget _creature(
+    WorldState world,
+    bool walking,
+    bool summary,
+    BoxConstraints box,
+  ) => CreatureCard(
+    walking: walking,
+    details: !summary,
+    figureSize: _figureSize(box, summary),
+    figureWrap: (figure) =>
+        Pettable(asleep: world.night && !walking, child: figure),
+    below: const [HeartsBar()],
+    actions: const [DiaryButton()],
+  );
 
   static double _figureSize(BoxConstraints box, bool small) {
     final size = math.min(box.maxWidth * 0.7, box.maxHeight * 0.38);

@@ -145,8 +145,7 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
           _Moment.jump => CelebrationPose.jump(t),
           null => CelebrationPose(egg: _egg != null),
         };
-        final egg = _egg;
-        final shown = pose.egg && egg != null ? egg : widget.creature;
+        final shown = pose.egg ? _egg ?? widget.creature : widget.creature;
         return Stack(
           clipBehavior: Clip.none,
           alignment: Alignment.center,
@@ -166,15 +165,18 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
   }
 
   /// Was ein geriggtes Modell dazu tut; beim Mitlaufen geht es einfach.
+  /// Ohne eigenen Moment gilt eine Bewegung von außen (Streicheln).
+  Widget _moving(CelebrationPose pose, Creature shown) => CreatureMotion(
+    motion: _motion(pose) ?? CreatureMotion.of(context),
+    child: widget.builder(shown),
+  );
+
   Motion? _motion(CelebrationPose pose) => switch (_playing) {
     _ when widget.cheer => null,
     _Moment.hatch => pose.greeting > 0 ? Motion.wave : Motion.happy,
     _Moment.hop || _Moment.jump => Motion.happy,
     null => null,
   };
-
-  Widget _moving(CelebrationPose pose, Creature shown) =>
-      CreatureMotion(motion: _motion(pose), child: widget.builder(shown));
 
   Widget _posed(CelebrationPose pose, Creature shown) {
     final size = widget.size;

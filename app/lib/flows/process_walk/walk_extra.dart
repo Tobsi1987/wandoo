@@ -1,4 +1,5 @@
 import 'package:geo_engine/geo_engine.dart';
+import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
 
 /// Was ein Gang ergeben hat, für Extras wie Fundstücke oder Abenteuer.
@@ -9,6 +10,8 @@ class WalkOutcome {
     required this.newSegmentsByEnvironment,
     this.nearby = const [],
     this.freshIds = const {},
+    this.before = const Creature(),
+    this.after = const Creature(),
   });
 
   final Track track;
@@ -20,6 +23,10 @@ class WalkOutcome {
 
   /// Abschnitte, die mit diesem Gang neu bekannt wurden.
   final Set<String> freshIds;
+
+  /// Das Wesen vor und nach dem Gang (gefüttert, Meter gezählt).
+  final Creature before;
+  final Creature after;
 }
 
 /// Ein Zusatz, der nach jedem Gang läuft und Zeilen für die

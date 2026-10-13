@@ -19,3 +19,4 @@ export 'presentation/creature_card.dart';
 export 'presentation/creature_labels.dart';
 export 'presentation/widgets/creature_avatar.dart';
 export 'presentation/widgets/creature_figure.dart';
+export 'presentation/widgets/model_motions.dart' show CreatureMotion, Motion;

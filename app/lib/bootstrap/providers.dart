@@ -14,10 +14,14 @@ import 'package:wandoo/features/adventures/adventures.dart';
 import 'package:wandoo/features/adventures/data/drift_adventure_repository.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/creature/data/drift_creature_repository.dart';
+import 'package:wandoo/features/diary/data/drift_diary_repository.dart';
+import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/discovery/data/drift_known_segments_repository.dart';
 import 'package:wandoo/features/discovery/discovery.dart';
 import 'package:wandoo/features/home_widget/data/home_widget_publisher.dart';
 import 'package:wandoo/features/home_widget/home_widget.dart';
+import 'package:wandoo/features/petting/data/drift_friendship_repository.dart';
+import 'package:wandoo/features/petting/petting.dart';
 import 'package:wandoo/features/reminders/data/local_notification_scheduler.dart';
 import 'package:wandoo/features/reminders/reminders.dart';
 import 'package:wandoo/features/share/data/share_plus_image_sharer.dart';
@@ -60,6 +64,10 @@ Future<List<Override>> appOverrides() async {
     ),
     treasureRepositoryProvider.overrideWithValue(DriftTreasureRepository(db)),
     adventureRepositoryProvider.overrideWithValue(DriftAdventureRepository(db)),
+    diaryRepositoryProvider.overrideWithValue(DriftDiaryRepository(db)),
+    friendshipRepositoryProvider.overrideWithValue(
+      DriftFriendshipRepository(db),
+    ),
     weatherSourceProvider.overrideWithValue(
       CachedWeatherSource(OpenMeteoWeatherSource()),
     ),

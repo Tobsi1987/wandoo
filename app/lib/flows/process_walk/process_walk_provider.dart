@@ -2,13 +2,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wandoo/core/map_data/map_data_providers.dart';
 import 'package:wandoo/features/adventures/adventures.dart';
 import 'package:wandoo/features/creature/creature.dart';
+import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/discovery/discovery.dart';
 import 'package:wandoo/features/environment/environment.dart';
+import 'package:wandoo/features/petting/petting.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
 import 'package:wandoo/features/treasure/treasure.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
 import 'package:wandoo/flows/process_walk/extras/adventure_extra.dart';
+import 'package:wandoo/flows/process_walk/extras/diary_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/district_extra.dart';
+import 'package:wandoo/flows/process_walk/extras/friendship_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/treasure_extra.dart';
 import 'package:wandoo/flows/process_walk/pending_walk_processor.dart';
 import 'package:wandoo/flows/process_walk/process_walk.dart';
@@ -28,6 +32,14 @@ final processWalkProvider = Provider<ProcessWalk>(
         adventures: ref.watch(adventureRepositoryProvider),
         chests: ref.watch(treasureRepositoryProvider),
         creatures: ref.watch(creatureRepositoryProvider),
+      ),
+      DiaryExtra(
+        ref.watch(diaryRepositoryProvider),
+        remember: ref.watch(rememberWalkProvider),
+      ),
+      FriendshipExtra(
+        ref.watch(friendshipRepositoryProvider),
+        rules: ref.watch(befriendCreatureProvider),
       ),
     ],
   ),

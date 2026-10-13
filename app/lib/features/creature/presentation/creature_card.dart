@@ -13,6 +13,9 @@ class CreatureCard extends ConsumerWidget {
     this.walking = false,
     this.figureSize = 220,
     this.details = true,
+    this.figureWrap,
+    this.below = const [],
+    this.actions = const [],
     super.key,
   });
 
@@ -22,6 +25,15 @@ class CreatureCard extends ConsumerWidget {
 
   /// Merkmale, Weltsatz und "Wegschicken" zeigen.
   final bool details;
+
+  /// Legt etwas um die Figur, zum Beispiel Streicheln.
+  final Widget Function(Widget figure)? figureWrap;
+
+  /// Steht immer unter Name und Stufe, zum Beispiel Herzen.
+  final List<Widget> below;
+
+  /// Knöpfe neben "Wegschicken", nur mit [details] und nicht unterwegs.
+  final List<Widget> actions;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,13 +59,22 @@ class CreatureCard extends ConsumerWidget {
       figureSize: figureSize,
       inScene: true,
       walking: walking,
+      figureWrap: figureWrap,
       footer: [
+        ...below,
         if (details && line != null)
           Padding(
             padding: const EdgeInsets.only(top: 8),
             child: Text(line, textAlign: TextAlign.center),
           ),
-        if (details && !walking) ReleaseButton(creature: c),
+        if (details && !walking)
+          Wrap(
+            alignment: WrapAlignment.center,
+            children: [
+              ...actions,
+              ReleaseButton(creature: c),
+            ],
+          ),
       ],
     );
   }

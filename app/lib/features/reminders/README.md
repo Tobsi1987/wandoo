@@ -1,11 +1,13 @@
 # reminders
 
-**Zweck:** Schickt sanfte Erinnerungen, wenn lange nichts Neues entdeckt wurde.
+**Zweck:** Schickt sanfte Erinnerungen, wenn eine Weile niemand draußen war.
 
-**Bekommt:** den Zeitpunkt der letzten Fütterung (über den Flow
-`flows/creature_reminder`).
+**Bekommt:** den Zeitpunkt des letzten Gangs (der letzten Fütterung) und den
+Namen des Wesens über den Flow `flows/creature_reminder`.
 
-**Liefert:** `PlanReminder` (drei Tage nach der letzten Fütterung, nur
-zwischen 10 und 19 Uhr) und `ReminderScheduler`. Die Umsetzung
-`LocalNotificationScheduler` plant eine lokale Benachrichtigung; es gibt nie
-mehr als eine, jede Fütterung verschiebt sie. Kein Server, keine Push-Dienste.
+**Liefert:** `PlanReminder`: an den drei Tagen nach dem letzten Gang je eine
+Erinnerung um 16 Uhr, also höchstens eine am Tag und nie abends, mit dem
+Namen des Wesens ("Aurora möchte raus"); danach ist Ruhe. `ReminderScheduler`
+mit der Umsetzung `LocalNotificationScheduler` plant lokale
+Benachrichtigungen; jeder Gang ersetzt die geplanten. Kein Server, keine
+Push-Dienste.
