@@ -33,4 +33,17 @@ void main() {
     expect(loaded.traitPoints, {Trait.moss: 7});
     expect(loaded.lastFedAt, fedAt);
   });
+
+  test('merkt sich Tierart und letztes Wegschicken', () async {
+    final db = testDatabase();
+    addTearDown(db.close);
+    final repo = DriftCreatureRepository(db);
+    final released = DateTime(2026, 10, 2);
+    await repo.save(
+      Creature(food: 30, speciesId: 'waschbaer', lastReleasedAt: released),
+    );
+    final loaded = await repo.load();
+    expect(loaded.speciesId, 'waschbaer');
+    expect(loaded.lastReleasedAt, released);
+  });
 }

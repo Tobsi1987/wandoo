@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:geo_engine/geo_engine.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
+import 'package:wandoo/features/creature/domain/species_catalog.dart';
 import 'package:wandoo/features/creature/domain/trait.dart';
 
 /// Füttert das Wesen nach einem Gang.
@@ -8,9 +11,11 @@ import 'package:wandoo/features/creature/domain/trait.dart';
 /// nicht träge. Wachsen lassen es nur neue Abschnitte, und ihre Umgebung
 /// stärkt das passende Merkmal.
 class FeedCreature {
-  const FeedCreature({this.foodPerSegment = 1});
+  FeedCreature({this.foodPerSegment = 1, Random? random})
+    : _random = random ?? Random();
 
   final int foodPerSegment;
+  final Random _random;
 
   Creature call(
     Creature creature,
@@ -30,10 +35,17 @@ class FeedCreature {
         traits.update(trait, (n) => n + count, ifAbsent: () => count);
       }
     });
-    return creature.copyWith(
+    final fed = creature.copyWith(
       food: creature.food + total * foodPerSegment,
       traitPoints: traits,
       lastFedAt: now,
     );
+    return _hatch(fed);
+  }
+
+  /// Schlüpft das Ei, wird die Tierart zufällig gezogen und bleibt dann.
+  Creature _hatch(Creature after) {
+    if (!after.hatched || after.speciesId != null) return after;
+    return after.copyWith(speciesId: SpeciesCatalog.pick(_random).id);
   }
 }

@@ -3,7 +3,13 @@ import 'package:wandoo/features/creature/domain/trait.dart';
 
 /// Das Wesen des Spielers.
 class Creature {
-  const Creature({this.food = 0, this.traitPoints = const {}, this.lastFedAt});
+  const Creature({
+    this.food = 0,
+    this.traitPoints = const {},
+    this.lastFedAt,
+    this.speciesId,
+    this.lastReleasedAt,
+  });
 
   /// Ohne Neues wird das Wesen nach dieser Zeit träge (keine Bestrafung).
   static const sluggishAfter = Duration(days: 3);
@@ -15,6 +21,14 @@ class Creature {
   final Map<Trait, int> traitPoints;
 
   final DateTime? lastFedAt;
+
+  /// Beim Schlüpfen zufällig gezogene Tierart (`Species.id`), danach fest.
+  final String? speciesId;
+
+  /// Wann zuletzt ein Wesen weggeschickt wurde; bleibt beim neuen Ei.
+  final DateTime? lastReleasedAt;
+
+  bool get hatched => stage != GrowthStage.egg;
 
   GrowthStage get stage => GrowthStage.forFood(food);
 
@@ -31,6 +45,13 @@ class Creature {
     return best;
   }
 
+  /// Das zweitstärkste Merkmal; es färbt Muster ins Fell.
+  Trait? get accentTrait {
+    final ranked = traitPoints.entries.where((e) => e.value > 0).toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    return ranked.length > 1 ? ranked[1].key : null;
+  }
+
   bool isSluggish(DateTime now) {
     final fed = lastFedAt;
     return fed != null && now.difference(fed) > sluggishAfter;
@@ -40,11 +61,14 @@ class Creature {
     int? food,
     Map<Trait, int>? traitPoints,
     DateTime? lastFedAt,
+    String? speciesId,
   }) {
     return Creature(
       food: food ?? this.food,
       traitPoints: traitPoints ?? this.traitPoints,
       lastFedAt: lastFedAt ?? this.lastFedAt,
+      speciesId: speciesId ?? this.speciesId,
+      lastReleasedAt: lastReleasedAt,
     );
   }
 }

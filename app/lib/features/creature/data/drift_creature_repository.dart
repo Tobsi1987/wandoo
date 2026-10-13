@@ -29,6 +29,8 @@ class DriftCreatureRepository implements CreatureRepository {
       food: row.food,
       traitPoints: _decodeTraits(row.traitPoints),
       lastFedAt: row.lastFedAt,
+      speciesId: row.speciesId,
+      lastReleasedAt: row.lastReleasedAt,
     );
   }
 
@@ -41,6 +43,8 @@ class DriftCreatureRepository implements CreatureRepository {
           food: Value(creature.food),
           traitPoints: Value(_encodeTraits(creature.traitPoints)),
           lastFedAt: Value(creature.lastFedAt),
+          speciesId: Value(creature.speciesId),
+          lastReleasedAt: Value(creature.lastReleasedAt),
         ),
       );
 

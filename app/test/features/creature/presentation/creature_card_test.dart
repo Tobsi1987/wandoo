@@ -18,12 +18,34 @@ void main() {
     expect(find.text('Ei'), findsOneWidget);
 
     await repo.save(
-      const FeedCreature()(const Creature(), {
+      FeedCreature()(const Creature(), {
         EnvironmentType.forest: 25,
       }, DateTime(2026, 10, 13)),
     );
     await tester.pumpAndSettle();
-    expect(find.text('Jungtier'), findsOneWidget);
+    expect(find.textContaining('Jungtier'), findsOneWidget);
     expect(find.text('Moos 25'), findsOneWidget);
+  });
+
+  testWidgets('Wegschicken legt ein neues Ei hin, dann ist Pause', (
+    tester,
+  ) async {
+    final repo = InMemoryCreatureRepository();
+    await repo.save(const Creature(food: 30, speciesId: 'axolotl'));
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [creatureRepositoryProvider.overrideWithValue(repo)],
+        child: const MaterialApp(home: Scaffold(body: CreatureCard())),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Wasser-Axolotl'), findsOneWidget);
+
+    await tester.tap(find.text('Wegschicken'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Wegschicken'));
+    await tester.pumpAndSettle();
+    expect(find.text('Ei'), findsOneWidget);
+    expect((await repo.load()).lastReleasedAt, isNotNull);
   });
 }

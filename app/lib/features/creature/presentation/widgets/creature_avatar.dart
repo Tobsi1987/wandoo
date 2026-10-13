@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
+import 'package:wandoo/features/creature/domain/species_catalog.dart';
 import 'package:wandoo/features/creature/presentation/creature_labels.dart';
 import 'package:wandoo/features/creature/presentation/widgets/creature_figure.dart';
 import 'package:wandoo/features/creature/presentation/widgets/trait_badge.dart';
@@ -17,6 +18,10 @@ class CreatureAvatar extends StatelessWidget {
   /// Kantenlänge der gezeichneten Figur.
   final double figureSize;
 
+  String get _title => creature.hatched
+      ? SpeciesCatalog.byId(creature.speciesId).name
+      : stageLabel(creature.stage);
+
   @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
@@ -24,11 +29,16 @@ class CreatureAvatar extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Semantics(
-          label: 'Dein Wesen: ${stageLabel(creature.stage)}',
+          label: 'Dein Wesen: $_title',
           child: CreatureFigure(creature: creature, size: figureSize),
         ),
         const SizedBox(height: 8),
-        Text(stageLabel(creature.stage), style: text.headlineMedium),
+        Text(_title, style: text.headlineMedium),
+        if (creature.hatched)
+          Text(
+            '${stageLabel(creature.stage)} · '
+            '${rarityLabel(SpeciesCatalog.byId(creature.speciesId).rarity)}',
+          ),
         const SizedBox(height: 8),
         Text('${creature.food} neue Abschnitte gefressen'),
         const SizedBox(height: 16),
