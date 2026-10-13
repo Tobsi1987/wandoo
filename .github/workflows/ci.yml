@@ -44,3 +44,16 @@ jobs:
       - name: Debug-APK bauen
         working-directory: app
         run: flutter build apk --debug
+
+  web-demo:
+    runs-on: ubuntu-latest
+    needs: check
+    steps:
+      - uses: actions/checkout@v5
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Browser-Demo bauen
+        working-directory: app
+        run: flutter build web -t lib/main_demo.dart --no-web-resources-cdn --pwa-strategy=none

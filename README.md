@@ -16,8 +16,6 @@ Regeln: [docs/architecture.md](docs/architecture.md).
 
 ```sh
 flutter pub get
-# Einmalig die Plattform-Ordner erzeugen:
-cd app && flutter create --platforms=ios,android --org app.wandoo . && cd ..
 # Optional: Pre-Commit-Hooks
 lefthook install
 ```
@@ -36,6 +34,18 @@ Debug-Schlüssel signiert und nur für Testgeräte gedacht.
 
 Kartendaten lädt die App beim ersten Gang einer Gegend live von
 OpenStreetMap (Overpass) und speichert sie dann auf dem Gerät.
+
+## Demo ohne Gerät
+
+`app/lib/main_demo.dart` startet die App mit einer erfundenen Stadt und
+simulierten Gängen im Zeitraffer, alles nur im Speicher (Verdrahtung in
+`app/lib/bootstrap/demo/`). Läuft im Browser oder auf jedem Gerät:
+
+```sh
+cd app && flutter run -d chrome -t lib/main_demo.dart
+# Statische Seite im Telefonrahmen (web/index.html):
+flutter build web -t lib/main_demo.dart --no-web-resources-cdn --pwa-strategy=none
+```
 
 ## Prüfen
 

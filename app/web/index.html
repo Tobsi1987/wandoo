@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Wandoo zum Ausprobieren: simulierte Spaziergänge in einer erfundenen Stadt.">
+  <title>Wandoo Demo</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style>
+    :root {
+      --bg: #eef3ea; --text: #1b2a1f; --muted: #55665a;
+      --frame: #1f2621; --card: #ffffff; --accent: #4e7d3a;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #141a15; --text: #e4ece2; --muted: #9fb0a2;
+        --frame: #000000; --card: #1d251f; --accent: #8fc274;
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #141a15; --text: #e4ece2; --muted: #9fb0a2;
+      --frame: #000000; --card: #1d251f; --accent: #8fc274;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+      font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      gap: 48px; padding: 24px 16px; flex-wrap: wrap;
+    }
+    .phone {
+      width: 390px; max-width: 100%; height: 800px; max-height: calc(100vh - 48px);
+      background: var(--frame); border-radius: 44px; padding: 12px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .25); flex-shrink: 0;
+    }
+    #phone-screen {
+      position: relative; width: 100%; height: 100%;
+      border-radius: 32px; overflow: hidden; background: var(--card);
+    }
+    #phone-loading {
+      position: absolute; inset: 0; display: grid; place-items: center;
+      color: var(--muted); font-size: 15px;
+    }
+    .guide { max-width: 360px; }
+    .guide h1 { font-size: 28px; margin: 0 0 8px; }
+    .guide p { color: var(--muted); margin: 0 0 16px; }
+    .guide ol { padding-left: 20px; margin: 0 0 16px; }
+    .guide li { margin-bottom: 8px; }
+    .guide b { color: var(--accent); }
+    @media (max-width: 860px) { .guide { order: -1; } }
+  </style>
+</head>
+<body>
+  <div class="phone">
+    <div id="phone-screen"><div id="phone-loading">Wandoo lädt …</div></div>
+  </div>
+  <section class="guide">
+    <h1>Wandoo zum Ausprobieren</h1>
+    <p>Die echte App, nur im Browser: Statt GPS läuft ein simulierter
+      Spaziergang im Zeitraffer durch eine erfundene Kleinstadt.</p>
+    <ol>
+      <li>Auf <b>Losgehen</b> tippen und ein paar Sekunden warten.</li>
+      <li><b>Gang beenden</b>: Das Wesen frisst die neuen Wege, eine
+        Zusammenfassung erscheint.</li>
+      <li>Oben rechts die <b>Entdeckungskarte</b> öffnen: bekannte Straßen in
+        Grün, dazu der Anteil, der noch unbekannt ist.</li>
+      <li>Nach rund zwei Gängen schlüpft das Ei. Über <b>Teilen</b> entsteht
+        das Bild des Wesens.</li>
+    </ol>
+    <p>Westen ist Wohngebiet, die Mitte Felder, der Osten Wald und der Norden
+      ein Fluss. Nichts wird gespeichert: Neu laden setzt alles zurück.</p>
+  </section>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
