@@ -1,0 +1,54 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:wandoo/features/creature/creature.dart';
+import 'package:wandoo/features/creature/presentation/widgets/creature_celebration.dart';
+
+void main() {
+  const egg = Creature(food: 19);
+  const hatched = Creature(food: 25, speciesId: 'funkel');
+
+  Widget host(Creature c) => MaterialApp(
+    home: CreatureCelebration(
+      creature: c,
+      size: 100,
+      builder: (c) => Text(c.hatched ? 'Wesen' : 'Ei'),
+    ),
+  );
+
+  tearDown(() => CreatureFigure.animate = false);
+
+  testWidgets('beim Schlüpfen springt erst das Ei auf, dann kommt das Wesen', (
+    tester,
+  ) async {
+    CreatureFigure.animate = true;
+    await tester.pumpWidget(host(egg));
+    await tester.pumpWidget(host(hatched));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Ei'), findsOneWidget);
+    await tester.pump(const Duration(milliseconds: 1000));
+    expect(find.text('Wesen'), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.text('Wesen'), findsOneWidget);
+    expect(find.text('Ei'), findsNothing);
+  });
+
+  testWidgets('ohne Animation steht das Wesen sofort da', (tester) async {
+    await tester.pumpWidget(host(egg));
+    await tester.pumpWidget(host(hatched));
+    await tester.pump();
+    expect(find.text('Wesen'), findsOneWidget);
+    expect(find.text('Ei'), findsNothing);
+  });
+
+  testWidgets('nach dem Fressen hüpft es und landet wieder', (tester) async {
+    CreatureFigure.animate = true;
+    await tester.pumpWidget(host(hatched));
+    await tester.pumpWidget(host(hatched.copyWith(food: 30)));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 250));
+    final moved = tester.getTopLeft(find.text('Wesen'));
+    await tester.pumpAndSettle();
+    expect(tester.getTopLeft(find.text('Wesen')).dy, greaterThan(moved.dy));
+  });
+}

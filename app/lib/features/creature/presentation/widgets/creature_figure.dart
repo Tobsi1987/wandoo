@@ -47,6 +47,9 @@ class CreatureFigure extends StatefulWidget {
   @visibleForTesting
   static bool animate = true;
 
+  /// Ob Figuren sich bewegen dürfen (in Tests nicht).
+  static bool get moving => animate;
+
   /// In Tests aus: dort gibt es kein 3D.
   @visibleForTesting
   static bool models = true;
@@ -57,6 +60,17 @@ class CreatureFigure extends StatefulWidget {
   static final Future<FragmentProgram?> _program = FragmentProgram.fromAsset(
     shaderAsset,
   ).then<FragmentProgram?>((p) => p, onError: (Object _) => null);
+
+  /// Lädt das 3D-Modell von [creature] vorab, falls es eins gibt.
+  static Future<void> preload(Creature creature) async {
+    final asset = _modelAssetOf(creature);
+    if (asset != null) await CreatureModel.preload(asset);
+  }
+
+  static String? _modelAssetOf(Creature c) {
+    if (!models || !c.hatched) return null;
+    return speciesLooks[SpeciesCatalog.byId(c.speciesId).id]?.modelAsset;
+  }
 
   @override
   State<CreatureFigure> createState() => _CreatureFigureState();
@@ -98,6 +112,7 @@ class _CreatureFigureState extends State<CreatureFigure>
     final asset = _modelAsset();
     if (asset == null) return drawn;
     final c = widget.creature;
+    final night = widget.world?.night ?? false;
     return CreatureModel(
       asset: asset,
       anchors: ModelAnchors.of(SpeciesCatalog.byId(c.speciesId).id),
@@ -105,17 +120,15 @@ class _CreatureFigureState extends State<CreatureFigure>
       neck: c.neck,
       size: widget.size,
       fallback: drawn,
-      sleepy: sleepy || (widget.world?.night ?? false),
+      sleepy: sleepy || night,
+      night: night,
       grownUp: c.stage == GrowthStage.adult,
       animate: CreatureFigure.animate && !widget.still,
     );
   }
 
-  String? _modelAsset() {
-    final c = widget.creature;
-    if (!CreatureFigure.models || widget.silhouette || !c.hatched) return null;
-    return speciesLooks[SpeciesCatalog.byId(c.speciesId).id]?.modelAsset;
-  }
+  String? _modelAsset() =>
+      widget.silhouette ? null : CreatureFigure._modelAssetOf(widget.creature);
 
   Widget _drawn(bool sleepy) {
     final shader = _shader;

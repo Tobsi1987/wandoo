@@ -7,6 +7,7 @@ import 'package:vector_math/vector_math.dart' as vm;
 import 'package:wandoo/features/creature/domain/outfit.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_accessories.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_anchors.dart';
+import 'package:wandoo/features/creature/presentation/widgets/model_overlays.dart';
 
 /// Ein 3D-Modell (.glb) des Wesens, das als Ganzes atmet, schwankt und
 /// schläft. Das Aussehen bleibt genau so, wie es aus Meshy kommt.
@@ -21,6 +22,7 @@ class CreatureModel extends StatefulWidget {
     this.sleepy = false,
     this.grownUp = true,
     this.animate = true,
+    this.night = false,
     this.anchors = ModelAnchors.fallback,
     this.hat,
     this.neck,
@@ -37,6 +39,9 @@ class CreatureModel extends StatefulWidget {
   final bool grownUp;
   final bool animate;
 
+  /// Nachts schwirren Glühwürmchen um das Wesen.
+  final bool night;
+
   /// Wo [hat] und [neck] auf diesem Modell sitzen.
   final ModelAnchors anchors;
   final CreatureHat? hat;
@@ -47,6 +52,9 @@ class CreatureModel extends StatefulWidget {
     onError: (Object _) => false,
   );
   static final _models = <String, Future<Node?>>{};
+
+  /// Lädt das Modell vorab, damit es beim ersten Zeigen sofort da ist.
+  static Future<void> preload(String asset) => _load(asset);
 
   static Future<Node?> _load(String asset) => _models[asset] ??= _ready.then(
     (ok) => ok
@@ -61,6 +69,7 @@ class CreatureModel extends StatefulWidget {
 class _CreatureModelState extends State<CreatureModel> {
   final _scene = Scene();
   final _pivot = Node();
+  final _time = ValueNotifier<double>(0);
   Node? _outfit;
   bool _loaded = false;
 
@@ -121,21 +130,37 @@ class _CreatureModelState extends State<CreatureModel> {
   }
 
   @override
+  void dispose() {
+    _time.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (!_loaded) return widget.fallback;
     return SizedBox.square(
       dimension: widget.size,
-      child: SceneView(
-        _scene,
-        autoTick: widget.animate,
-        maxFrameRate: 30,
-        camera: PerspectiveCamera(
-          position: vm.Vector3(0, 0.6, -1.75),
-          target: vm.Vector3(0, 0.46, 0),
-        ),
-        onTick: (elapsed, _) {
-          if (widget.animate) _pose(elapsed.inMicroseconds / 1e6);
-        },
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          const CustomPaint(painter: ModelShadow()),
+          SceneView(
+            _scene,
+            autoTick: widget.animate,
+            maxFrameRate: 30,
+            camera: PerspectiveCamera(
+              position: vm.Vector3(0, 0.6, -1.75),
+              target: vm.Vector3(0, 0.46, 0),
+            ),
+            onTick: (elapsed, _) {
+              if (!widget.animate) return;
+              _time.value = elapsed.inMicroseconds / 1e6;
+              _pose(_time.value);
+            },
+          ),
+          if (widget.night)
+            IgnorePointer(child: CustomPaint(painter: Fireflies(_time))),
+        ],
       ),
     );
   }
