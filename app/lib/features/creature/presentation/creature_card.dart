@@ -41,16 +41,13 @@ class CreatureCard extends ConsumerWidget {
         : c.hatched
         ? 'Juhu, ein Ausflug! Dein Wesen läuft mit.'
         : 'Dein Ei kommt mit auf den Ausflug.';
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        CreatureAvatar(
-          creature: c,
-          world: world,
-          figureSize: figureSize,
-          inScene: true,
-          walking: walking,
-        ),
+    return CreatureAvatar(
+      creature: c,
+      world: world,
+      figureSize: figureSize,
+      inScene: true,
+      walking: walking,
+      footer: [
         if (details && line != null)
           Padding(
             padding: const EdgeInsets.only(top: 8),

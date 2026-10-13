@@ -27,6 +27,7 @@ class DriftWalkSummaryRepository implements WalkSummaryRepository {
           }),
           creatureGrew: s.creatureGrew,
           knownSegmentCount: Value(s.knownSegmentCount),
+          distanceMeters: Value(s.distanceMeters),
           extraLines: Value(jsonEncode(s.extraLines)),
         ),
       );
@@ -57,6 +58,7 @@ class DriftWalkSummaryRepository implements WalkSummaryRepository {
       bridgeCount: r.bridgeCount,
       creatureGrew: r.creatureGrew,
       knownSegmentCount: r.knownSegmentCount,
+      distanceMeters: r.distanceMeters,
       extraLines: [
         for (final line in jsonDecode(r.extraLines) as List<dynamic>)
           line as String,

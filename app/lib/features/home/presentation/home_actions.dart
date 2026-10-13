@@ -8,36 +8,18 @@ import 'package:wandoo/features/treasure/treasure.dart';
 
 /// Die Knöpfe oben rechts auf dem Startbildschirm.
 List<Widget> homeActions(BuildContext context) => [
-  _action(
-    context,
-    'Wochen-Abenteuer',
-    Icons.flag_outlined,
-    AdventureScreen.path,
-  ),
-  _action(
-    context,
-    'Sammelalbum',
-    Icons.collections_bookmark_outlined,
-    AlbumScreen.path,
-  ),
-  _action(
-    context,
-    'Schatzkiste',
-    Icons.inventory_2_outlined,
-    TreasureScreen.path,
-  ),
-  _action(context, 'Wesen teilen', Icons.ios_share, ShareScreen.path),
-  _action(
-    context,
-    'Entdeckungskarte',
-    Icons.map_outlined,
-    DiscoveryMapScreen.path,
-  ),
+  _action(context, 'Wochen-Abenteuer', 'adventures', AdventureScreen.path),
+  _action(context, 'Sammelalbum', 'album', AlbumScreen.path),
+  _action(context, 'Schatzkiste', 'treasure', TreasureScreen.path),
+  _action(context, 'Wesen teilen', 'share', ShareScreen.path),
+  _action(context, 'Entdeckungskarte', 'map', DiscoveryMapScreen.path),
 ];
 
-Widget _action(BuildContext context, String tip, IconData icon, String path) =>
+/// Gemalte Icons aus `assets/ui/` (Midjourney).
+Widget _action(BuildContext context, String tip, String icon, String path) =>
     IconButton(
       tooltip: tip,
-      icon: Icon(icon),
+      padding: const EdgeInsets.all(4),
+      icon: Image.asset('assets/ui/$icon.png', width: 36, height: 36),
       onPressed: () => context.push(path),
     );

@@ -18,6 +18,6 @@ class TreasureExtra implements WalkExtra {
     if (found.isEmpty) return const [];
     final chest = await _chests.load();
     await _chests.save(chest.add(found));
-    return [?foundLine(found)];
+    return foundLines(found);
   }
 }

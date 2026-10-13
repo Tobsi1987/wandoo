@@ -11,6 +11,7 @@ class SummarizeWalk {
     required Map<RoadSegment, EnvironmentType> newSegments,
     required bool creatureGrew,
     int knownSegmentCount = 0,
+    int distanceMeters = 0,
   }) {
     final streetsByEnvironment = <EnvironmentType, Set<String>>{};
     newSegments.forEach((segment, type) {
@@ -32,6 +33,7 @@ class SummarizeWalk {
           if (s.areaTags['bridge'] == 'yes') s.streetId,
       }.length,
       creatureGrew: creatureGrew,
+      distanceMeters: distanceMeters,
     );
   }
 }

@@ -13,6 +13,7 @@ import 'package:wandoo/features/creature/presentation/species_looks.dart';
 import 'package:wandoo/features/creature/presentation/widgets/creature_model.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_anchors.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_eyes.dart';
+import 'package:wandoo/features/creature/presentation/widgets/model_loader.dart';
 import 'package:wandoo/features/world/world.dart';
 
 /// Die Figur des Wesens: das 3D-Modell der Art, sonst animiertes 3D aus
@@ -69,7 +70,7 @@ class CreatureFigure extends StatefulWidget {
   /// Lädt das 3D-Modell von [creature] vorab, falls es eins gibt.
   static Future<void> preload(Creature creature) async {
     final asset = _modelAssetOf(creature);
-    if (asset != null) await CreatureModel.preload(asset);
+    if (asset != null) await ModelLoader.load(asset);
   }
 
   /// Ob [creature] als 3D-Modell gezeigt wird.
@@ -126,6 +127,7 @@ class _CreatureFigureState extends State<CreatureFigure>
       anchors: ModelAnchors.of(SpeciesCatalog.byId(c.speciesId).id),
       eyes: modelEyes[SpeciesCatalog.byId(c.speciesId).id],
       eyesClosed: night && !widget.awake,
+      walking: widget.awake,
       hat: c.hat,
       neck: c.neck,
       size: widget.size,

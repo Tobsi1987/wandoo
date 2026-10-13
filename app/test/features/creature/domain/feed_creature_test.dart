@@ -22,12 +22,30 @@ void main() {
   });
 
   test('bekannte Wege machen satt, lassen aber nicht wachsen', () {
-    const creature = Creature(food: 5, traitPoints: {Trait.moss: 5});
+    const creature = Creature(
+      food: 25,
+      speciesId: 'funkel',
+      traitPoints: {Trait.moss: 5},
+    );
     final fed = feed(creature, const {}, now, knownSegments: 7);
-    expect(fed.food, 5);
+    expect(fed.food, 25);
     expect(fed.traitPoints, {Trait.moss: 5});
     expect(fed.lastFedAt, now);
     expect(fed.isSluggish(now.add(const Duration(days: 1))), isFalse);
+  });
+
+  test('bekannte Wege wärmen ein Ei bis zum Schlüpfen', () {
+    final warm = feed(const Creature(food: 5), const {}, now, knownSegments: 7);
+    expect(warm.food, 12);
+    expect(warm.hatched, isFalse);
+    final hatched = feed(
+      warm,
+      {EnvironmentType.city: 2},
+      now,
+      knownSegments: 30,
+    );
+    expect(hatched.food, GrowthStage.juvenile.foodNeeded);
+    expect(hatched.speciesId, isNotNull);
   });
 
   test('wächst vom Ei zum Jungtier', () {

@@ -20,11 +20,9 @@ String rewardLabel(Quest q) {
 }
 
 /// Zeile für die Zusammenfassung nach einem Gang.
-String questDoneLine(Quest q) =>
-    'Abenteuer geschafft: ${questLabel(q)}. Belohnung: ${rewardLabel(q)}';
+String questDoneLine(Quest q) => '🏆 Abenteuer geschafft: ${rewardLabel(q)}';
 
-const bonusLine =
-    'Alle Wochen-Abenteuer geschafft! Dein nächstes Ei ist ein Glücks-Ei.';
+const bonusLine = '🍀 Alle Abenteuer geschafft: Glücks-Ei!';
 
 String _ways(EnvironmentType? place) => switch (place) {
   EnvironmentType.forest => 'Waldwege',

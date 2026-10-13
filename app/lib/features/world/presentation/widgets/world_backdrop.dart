@@ -6,6 +6,9 @@ import 'package:wandoo/features/world/presentation/widgets/weather_layer.dart';
 
 /// Die Welt des Wesens über den ganzen Bildschirm: Himmel nach Tageszeit,
 /// Wetter und eine Wiese, auf der das Wesen steht.
+///
+/// Gibt es für die Tageszeit ein gemaltes Bild, steht es dahinter; sonst
+/// zeichnet es Himmel und Wiese selbst.
 class WorldBackdrop extends StatelessWidget {
   const WorldBackdrop({required this.world, this.groundAt = 0.6, super.key});
 
@@ -14,8 +17,52 @@ class WorldBackdrop extends StatelessWidget {
   /// Wo die Wiese beginnt, als Anteil der Höhe von oben.
   final double groundAt;
 
+  /// Gemalte Hintergründe (Midjourney) je Tageszeit, dazu wie stark das
+  /// Bild vergrößert wird, damit der Horizont über den Füßen des Wesens
+  /// liegt.
+  static const Map<Daytime, (String, double)> pictures = {
+    Daytime.morning: ('assets/world/morning.jpg', 1.3),
+    Daytime.day: ('assets/world/day.jpg', 1.3),
+    Daytime.evening: ('assets/world/evening.jpg', 1.6),
+    Daytime.night: ('assets/world/night.jpg', 2.3),
+  };
+
   @override
-  Widget build(BuildContext context) => DecoratedBox(
+  Widget build(BuildContext context) {
+    final picture = pictures[world.daytime];
+    if (picture == null) return _drawn();
+    final (asset, zoom) = picture;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        LayoutBuilder(
+          builder: (context, box) => Stack(
+            children: [
+              // Größer und unten bündig: So rückt der Horizont des Bilds
+              // nach oben und das Wesen steht auf der Wiese.
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: box.maxHeight * zoom,
+                child: Image.asset(
+                  asset,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.bottomCenter,
+                  errorBuilder: (_, _, _) => _drawn(),
+                ),
+              ),
+            ],
+          ),
+        ),
+        // Der gemalte Mond liegt oberhalb des Ausschnitts, Sterne und Mond
+        // zeichnet daher weiter die Wetterschicht.
+        WeatherLayer(world: world, painted: !world.night),
+      ],
+    );
+  }
+
+  Widget _drawn() => DecoratedBox(
     decoration: BoxDecoration(
       gradient: LinearGradient(
         begin: Alignment.topCenter,

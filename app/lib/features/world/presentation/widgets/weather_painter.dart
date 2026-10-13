@@ -6,17 +6,23 @@ import 'package:wandoo/features/world/domain/world_state.dart';
 
 /// Zeichnet Himmel und Wetter; [clock] läuft einmal pro Minute von 0 bis 1.
 class WeatherPainter extends CustomPainter {
-  WeatherPainter({required this.world, required this.clock})
-    : super(repaint: clock);
+  WeatherPainter({
+    required this.world,
+    required this.clock,
+    this.painted = false,
+  }) : super(repaint: clock);
 
   final WorldState world;
   final Animation<double> clock;
+
+  /// Ein gemaltes Bild bringt Sterne, Mond und Sonne schon mit.
+  final bool painted;
 
   double get _t => clock.value * 60;
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (world.night) _stars(canvas, size);
+    if (world.night && !painted) _stars(canvas, size);
     switch (world.weather) {
       case Weather.rain:
         _rain(canvas, size, 40);
@@ -27,7 +33,7 @@ class WeatherPainter extends CustomPainter {
         _snow(canvas, size);
       case Weather.fog:
         _fog(canvas, size);
-      case Weather.clear when !world.night:
+      case Weather.clear when !world.night && !painted:
         _sun(canvas, size);
       case Weather.clear || Weather.cloudy || null:
         break;

@@ -41,5 +41,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/creatures/
+    - assets/world/
+    - assets/ui/
   shaders:
     - lib/features/creature/presentation/shaders/creature.frag

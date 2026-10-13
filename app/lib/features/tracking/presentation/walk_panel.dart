@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wandoo/features/tracking/application/tracking_providers.dart';
 import 'package:wandoo/features/tracking/domain/walk_session.dart';
+import 'package:wandoo/features/tracking/presentation/start_button.dart';
 
 /// Knopf zum Starten und Beenden eines Gangs, mit Strecke während des Gangs.
 class WalkPanel extends ConsumerWidget {
@@ -37,11 +38,7 @@ class WalkPanel extends ConsumerWidget {
             label: const Text('Gang beenden'),
           )
         else
-          FilledButton.icon(
-            onPressed: controller.start,
-            icon: const Icon(Icons.directions_walk),
-            label: const Text('Losgehen'),
-          ),
+          StartButton(onPressed: controller.start),
       ],
     );
   }

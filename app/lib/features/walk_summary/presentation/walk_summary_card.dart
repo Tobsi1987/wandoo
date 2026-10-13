@@ -4,8 +4,9 @@ import 'package:wandoo/features/walk_summary/application/walk_summary_providers.
 import 'package:wandoo/features/walk_summary/domain/walk_summary.dart';
 import 'package:wandoo/features/walk_summary/presentation/summary_parts.dart';
 
-/// Zeigt, was der letzte Gang gebracht hat: groß die neuen Straßen,
-/// darunter die Umgebungen und das Besondere. Verschwindet nach "Weiter".
+/// Zeigt, was der letzte Gang gebracht hat: oben zwei große Zahlen,
+/// darunter die Umgebungen und als kleine Schilder alles Mitgebrachte.
+/// Verschwindet nach "Weiter".
 class WalkSummaryCard extends ConsumerWidget {
   const WalkSummaryCard({super.key});
 
@@ -13,21 +14,25 @@ class WalkSummaryCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final summary = ref.watch(latestUnseenSummaryProvider).value;
     if (summary == null) return const SizedBox.shrink();
+    final text = Theme.of(context).textTheme;
     return Semantics(
       label: 'Dein letzter Gang',
       container: true,
       child: Card(
         margin: EdgeInsets.zero,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (summary.foundNothing)
-                const KnownWaysHeader()
-              else
-                NewStreetsHeader(summary: summary),
-              ..._details(summary),
+              Text(
+                summary.foundNothing ? 'Dein Wesen ist satt' : 'Toller Gang!',
+                style: text.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 8),
+              SummaryStats(summary: summary),
+              ..._places(summary, text),
+              ..._news(summary),
               const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
@@ -45,24 +50,31 @@ class WalkSummaryCard extends ConsumerWidget {
     );
   }
 
-  List<Widget> _details(WalkSummary summary) {
-    final places = placeChips(summary);
+  List<Widget> _places(WalkSummary summary, TextTheme text) {
+    final line = summary.foundNothing
+        ? 'Wachsen tut es nur auf neuen Straßen.'
+        : placesLine(summary);
+    if (line.isEmpty) return const [];
+    return [
+      const SizedBox(height: 6),
+      Text(line, style: text.bodyMedium, textAlign: TextAlign.center),
+    ];
+  }
+
+  List<Widget> _news(WalkSummary summary) {
     final news = [
-      if (summary.creatureGrew) 'Dein Wesen ist gewachsen!',
+      if (summary.creatureGrew) '🌱 Dein Wesen ist gewachsen!',
       ...summary.extraLines,
     ];
+    if (news.isEmpty) return const [];
     return [
-      if (places.isNotEmpty) ...[
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 6,
-          runSpacing: 6,
-          alignment: WrapAlignment.center,
-          children: places,
-        ),
-      ],
-      if (news.isNotEmpty) const SizedBox(height: 12),
-      for (final line in news) HighlightRow(text: line),
+      const SizedBox(height: 12),
+      Wrap(
+        spacing: 6,
+        runSpacing: 6,
+        alignment: WrapAlignment.center,
+        children: [for (final line in news) NewsPill(text: line)],
+      ),
     ];
   }
 }

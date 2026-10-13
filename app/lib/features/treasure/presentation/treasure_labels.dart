@@ -26,16 +26,18 @@ String accessoryName(Accessory a) => switch (a) {
   Accessory.sparkleScarf => 'Glitzerschal',
 };
 
-/// "Gefunden: 2 Eicheln, 1 Muschel" – Zeile für die Zusammenfassung.
-String? foundLine(List<Find> found) {
-  if (found.isEmpty) return null;
+/// "🌰 2 Eicheln", "🐚 1 Muschel" – je Fundstück eine Zeile für die
+/// Zusammenfassung.
+List<String> foundLines(List<Find> found) {
   final counts = <Find, int>{};
   for (final f in found) {
     counts.update(f, (n) => n + 1, ifAbsent: () => 1);
   }
-  final parts = [
+  return [
     for (final e in counts.entries)
-      '${e.value} ${e.value == 1 ? findNames(e.key).$1 : findNames(e.key).$2}',
+      '${findEmoji(e.key)} ${e.value} ${_name(e.key, e.value)}',
   ];
-  return 'Gefunden: ${parts.join(', ')}';
 }
+
+String _name(Find f, int count) =>
+    count == 1 ? findNames(f).$1 : findNames(f).$2;

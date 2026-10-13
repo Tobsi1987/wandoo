@@ -59,7 +59,9 @@ void main() {
       final second = await process(track);
       expect(second.newSegmentCount, 0);
       expect(second.summary.knownSegmentCount, 1);
-      expect(second.creature.food, 1);
+      // Ein Ei wärmt auch der bekannte Weg, Merkmale wachsen aber nicht.
+      expect(second.creature.food, 2);
+      expect(second.creature.traitPoints, {Trait.moss: 1});
       expect(second.creature.lastFedAt, isNotNull);
     },
   );
@@ -83,6 +85,6 @@ void main() {
     final result = await process(track);
     final chest = await chests.load();
     expect(chest.count(Find.acorn) + chest.count(Find.starShard), 1);
-    expect(result.summary.extraLines.single, startsWith('Gefunden: '));
+    expect(result.summary.extraLines.single, isNotEmpty);
   });
 }
