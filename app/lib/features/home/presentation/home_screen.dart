@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
+import 'package:wandoo/features/walk_summary/walk_summary.dart';
 
 /// Startbildschirm: das Wesen und der Knopf für den nächsten Gang.
 class HomeScreen extends StatelessWidget {
@@ -18,6 +19,8 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             children: [
               Expanded(child: Center(child: CreatureCard())),
+              WalkSummaryCard(),
+              SizedBox(height: 16),
               WalkPanel(),
             ],
           ),

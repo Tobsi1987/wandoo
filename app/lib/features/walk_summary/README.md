@@ -2,6 +2,6 @@
 
 **Zweck:** Zeigt nach dem Gang, was neu war (+3 neue Straßen, 1 Waldstück).
 
-**Bekommt:** TODO
+**Bekommt:** Neue Abschnitte mit Umgebung aus `flows/process_walk`.
 
-**Liefert:** TODO
+**Liefert:** `WalkSummary` (gespeichert) und `WalkSummaryCard` für den Startbildschirm.

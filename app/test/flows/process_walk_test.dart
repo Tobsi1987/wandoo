@@ -8,6 +8,8 @@ import 'package:wandoo/features/discovery/discovery.dart';
 import 'package:wandoo/features/environment/environment.dart';
 import 'package:wandoo/flows/process_walk/process_walk.dart';
 
+import '../support/fake_walk_summary_repository.dart';
+
 class _ForestPath implements MapDataSource {
   @override
   Future<List<RoadSegment>> segmentsNear(List<GeoPoint> points) async => [
@@ -43,6 +45,7 @@ void main() {
         ),
         classify: const ClassifySegments(),
         creatures: InMemoryCreatureRepository(),
+        summaries: FakeWalkSummaryRepository(),
       );
       final first = await process(track);
       expect(first.newSegmentCount, 1);

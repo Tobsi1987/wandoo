@@ -23,6 +23,7 @@ class RoadSplitter {
 
   Iterable<RoadSegment> _splitRoad(OsmRoad road, Map<int, int> usage) sync* {
     final streetId = road.tags['name'] ?? 'w${road.id}';
+    final ownTags = {if (road.tags['bridge'] == 'yes') 'bridge': 'yes'};
     final last = road.points.length - 1;
     var start = 0;
     var length = 0.0;
@@ -37,6 +38,7 @@ class RoadSplitter {
           start: road.points[start],
           end: road.points[i],
           streetId: streetId,
+          areaTags: ownTags,
         );
         start = i;
         length = 0;

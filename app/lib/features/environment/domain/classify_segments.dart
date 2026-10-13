@@ -8,4 +8,9 @@ class ClassifySegments {
 
   Map<EnvironmentType, int> call(List<RoadSegment> segments) =>
       classifier.countByType(segments);
+
+  /// Umgebung je Abschnitt.
+  Map<RoadSegment, EnvironmentType> each(List<RoadSegment> segments) => {
+    for (final s in segments) s: classifier.classify(s),
+  };
 }

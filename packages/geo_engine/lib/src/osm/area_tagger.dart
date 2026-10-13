@@ -8,7 +8,8 @@ import 'package:geo_engine/src/osm/polygon.dart';
 ///
 /// Gewählt wird die kleinste Fläche, in der die Mitte des Abschnitts
 /// liegt (ein Park im Wohngebiet schlägt das Wohngebiet). Liegt ein
-/// Gewässer näher als [waterMeters], kommt dessen Tag dazu.
+/// Gewässer näher als [waterMeters], kommt dessen Tag dazu. Eigene Tags des
+/// Abschnitts (zum Beispiel `bridge`) bleiben erhalten.
 class AreaTagger {
   const AreaTagger({this.waterMeters = 40});
 
@@ -36,7 +37,10 @@ class AreaTagger {
     List<({OsmArea area, Bounds bounds})> areas,
     List<({OsmWaterLine line, Bounds bounds})> waters,
   ) {
-    final tags = <String, String>{...?_smallestArea(mid, areas)?.tags};
+    final tags = <String, String>{
+      ...s.areaTags,
+      ...?_smallestArea(mid, areas)?.tags,
+    };
     for (final w in waters) {
       if (w.bounds.contains(mid) && _near(mid, w.line.points)) {
         tags['waterway'] = w.line.tags['waterway'] ?? 'river';

@@ -16,6 +16,8 @@ import 'package:wandoo/features/discovery/data/drift_known_segments_repository.d
 import 'package:wandoo/features/discovery/discovery.dart';
 import 'package:wandoo/features/tracking/data/drift_recorded_walk_repository.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
+import 'package:wandoo/features/walk_summary/data/drift_walk_summary_repository.dart';
+import 'package:wandoo/features/walk_summary/walk_summary.dart';
 
 /// Kompositionswurzel: Hier und nur hier werden Schnittstellen mit
 /// Umsetzungen verbunden.
@@ -36,6 +38,9 @@ Future<List<Override>> appOverrides() async {
     locationSourceProvider.overrideWithValue(const GeolocatorLocationSource()),
     recordedWalkRepositoryProvider.overrideWithValue(
       DriftRecordedWalkRepository(db),
+    ),
+    walkSummaryRepositoryProvider.overrideWithValue(
+      DriftWalkSummaryRepository(db),
     ),
   ];
 }
