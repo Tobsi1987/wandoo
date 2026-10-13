@@ -129,7 +129,9 @@ class _CreatureModelState extends State<CreatureModel> {
       unawaited(CreatureModel._load(widget.asset).then(_show));
     } else if (_loaded) {
       if (old.hat != widget.hat || old.neck != widget.neck) _dress();
-      _pose(0);
+      // Mit der aktuellen Zeit, sonst springt die Figur bei jedem Neuaufbau
+      // kurz in die Ausgangshaltung (sieht beim Laufen wie Zittern aus).
+      _pose(_time.value);
     }
   }
 

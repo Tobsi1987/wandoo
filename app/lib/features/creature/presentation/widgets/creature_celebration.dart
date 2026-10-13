@@ -37,7 +37,7 @@ class CreatureCelebration extends StatefulWidget {
   State<CreatureCelebration> createState() => _CreatureCelebrationState();
 }
 
-enum _Moment { hop, hatch }
+enum _Moment { hop, jump, hatch }
 
 class _CreatureCelebrationState extends State<CreatureCelebration>
     with SingleTickerProviderStateMixin {
@@ -54,7 +54,7 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
   @override
   void initState() {
     super.initState();
-    if (widget.cheer) _pending = _Moment.hop;
+    if (widget.cheer) _pending = _Moment.jump;
   }
 
   @override
@@ -65,9 +65,10 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
     if (!before.hatched && now.hatched) {
       _pending = _Moment.hatch;
       _egg = before;
-    } else if ((now.food > before.food || (widget.cheer && !old.cheer)) &&
-        _pending == null) {
+    } else if (now.food > before.food && _pending == null) {
       _pending = _Moment.hop;
+    } else if (widget.cheer && !old.cheer && _pending == null) {
+      _pending = _Moment.jump;
     }
     _maybeStart();
   }
@@ -95,7 +96,11 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
         if (!mounted) return;
         setState(() => _playing = moment);
         _controller.duration = Duration(
-          milliseconds: moment == _Moment.hatch ? 4400 : 1100,
+          milliseconds: switch (moment) {
+            _Moment.hatch => 4400,
+            _Moment.hop => 1100,
+            _Moment.jump => 650,
+          },
         );
         unawaited(_controller.forward(from: 0).whenComplete(_done));
       }),
@@ -110,9 +115,9 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
     });
     if (widget.cheer) {
       _again?.cancel();
-      _again = Timer(const Duration(milliseconds: 700), () {
+      _again = Timer(const Duration(milliseconds: 450), () {
         if (!mounted || !widget.cheer || _pending != null) return;
-        _pending = _Moment.hop;
+        _pending = _Moment.jump;
         _maybeStart();
       });
     }
@@ -135,6 +140,7 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
         final pose = switch (_playing) {
           _Moment.hatch => CelebrationPose.hatch(t),
           _Moment.hop => CelebrationPose.hop(t),
+          _Moment.jump => CelebrationPose.jump(t),
           null => CelebrationPose(egg: _egg != null),
         };
         final egg = _egg;
@@ -161,7 +167,7 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
     final size = widget.size;
     // Mit 3D-Modell dreht sich das Modell selbst, sonst nur ein Umklappen.
     final flat = CreatureFigure.hasModel(shown) ? 1.0 : math.cos(pose.spin);
-    final stretch = pose.lift / 0.14;
+    final stretch = pose.stretch;
     return Transform.translate(
       offset: Offset(0, -size * pose.lift),
       child: Transform.rotate(
