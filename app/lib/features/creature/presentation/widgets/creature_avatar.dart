@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/domain/species_catalog.dart';
 import 'package:wandoo/features/creature/presentation/creature_labels.dart';
+import 'package:wandoo/features/creature/presentation/widgets/creature_celebration.dart';
 import 'package:wandoo/features/creature/presentation/widgets/creature_figure.dart';
 import 'package:wandoo/features/creature/presentation/widgets/trait_badge.dart';
 import 'package:wandoo/features/world/world.dart';
@@ -28,10 +29,11 @@ class CreatureAvatar extends StatelessWidget {
       : stageLabel(creature.stage);
 
   Widget _figure() {
-    final figure = CreatureFigure(
+    final figure = CreatureCelebration(
       creature: creature,
       size: figureSize,
-      world: world,
+      builder: (c) =>
+          CreatureFigure(creature: c, size: figureSize, world: world),
     );
     final w = world;
     return w == null ? figure : SkyBox(world: w, child: figure);
