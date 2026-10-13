@@ -11,4 +11,5 @@ export 'domain/weather_source.dart';
 export 'domain/world_state.dart';
 export 'presentation/widgets/sky_box.dart';
 export 'presentation/widgets/weather_layer.dart';
+export 'presentation/widgets/world_backdrop.dart';
 export 'presentation/world_labels.dart';

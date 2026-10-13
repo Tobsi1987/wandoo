@@ -13,6 +13,8 @@ class CreatureAvatar extends StatelessWidget {
     required this.creature,
     this.figureSize = 180,
     this.world,
+    this.inScene = false,
+    this.walking = false,
     super.key,
   });
 
@@ -24,6 +26,12 @@ class CreatureAvatar extends StatelessWidget {
   /// Kantenlänge der gezeichneten Figur.
   final double figureSize;
 
+  /// Steht schon in der Welt (Startseite): kein eigenes Himmelsfenster.
+  final bool inScene;
+
+  /// Während eines Gangs: wach und hüpft vor Freude.
+  final bool walking;
+
   String get _title => creature.hatched
       ? SpeciesCatalog.byId(creature.speciesId).name
       : stageLabel(creature.stage);
@@ -32,11 +40,23 @@ class CreatureAvatar extends StatelessWidget {
     final figure = CreatureCelebration(
       creature: creature,
       size: figureSize,
-      builder: (c) =>
-          CreatureFigure(creature: c, size: figureSize, world: world),
+      cheer: walking,
+      builder: (c) => CreatureFigure(
+        creature: c,
+        size: figureSize,
+        world: world,
+        awake: walking,
+      ),
     );
     final w = world;
-    return w == null ? figure : SkyBox(world: w, child: figure);
+    return w == null || inScene ? figure : SkyBox(world: w, child: figure);
+  }
+
+  String get _subtitle {
+    final food = '${creature.food} neue Abschnitte gefressen';
+    if (!creature.hatched) return food;
+    final rarity = SpeciesCatalog.byId(creature.speciesId).rarity;
+    return '${stageLabel(creature.stage)} · ${rarityLabel(rarity)} · $food';
   }
 
   @override
@@ -47,17 +67,16 @@ class CreatureAvatar extends StatelessWidget {
       children: [
         Semantics(label: 'Dein Wesen: $_title', child: _figure()),
         const SizedBox(height: 8),
-        Text(_title, style: text.headlineMedium),
-        if (creature.hatched)
-          Text(
-            '${stageLabel(creature.stage)} · '
-            '${rarityLabel(SpeciesCatalog.byId(creature.speciesId).rarity)}',
-          ),
+        Text(
+          _title,
+          style: text.headlineMedium?.copyWith(fontWeight: FontWeight.w600),
+        ),
+        Text(_subtitle, style: text.bodySmall, textAlign: TextAlign.center),
         const SizedBox(height: 8),
-        Text('${creature.food} neue Abschnitte gefressen'),
-        const SizedBox(height: 16),
         Wrap(
-          spacing: 8,
+          spacing: 6,
+          runSpacing: 6,
+          alignment: WrapAlignment.center,
           children: [
             for (final entry in creature.traitPoints.entries)
               TraitBadge(trait: entry.key, points: entry.value),

@@ -11,6 +11,19 @@ class TraitBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Chip(label: Text('${traitLabel(trait)} $points'));
+    final colors = Theme.of(context).colorScheme;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.surface.withValues(alpha: 0.7),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        child: Text(
+          '${traitLabel(trait)} $points',
+          style: Theme.of(context).textTheme.labelLarge,
+        ),
+      ),
+    );
   }
 }

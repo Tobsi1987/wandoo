@@ -19,6 +19,7 @@ void setCreatureUniforms(
   required bool sleepy,
   bool silhouette = false,
   WorldState? world,
+  bool awake = false,
 }) {
   final egg = creature.stage == GrowthStage.egg;
   final accent = egg ? creature.dominantTrait : creature.accentTrait;
@@ -39,7 +40,7 @@ void setCreatureUniforms(
     (creature.hat?.index ?? -1) + 1.0,
     (creature.neck?.index ?? -1) + 1.0,
     if (silhouette) 1 else 0,
-    if (world?.night ?? false) 1 else 0,
+    if ((world?.night ?? false) && !awake) 1 else 0,
     (world?.eggTheme.index ?? -1) + 1.0,
   ];
   for (var i = 0; i < values.length; i++) {

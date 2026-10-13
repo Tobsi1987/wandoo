@@ -20,6 +20,7 @@ class CreatureCelebration extends StatefulWidget {
     required this.creature,
     required this.size,
     required this.builder,
+    this.cheer = false,
     super.key,
   });
 
@@ -28,6 +29,9 @@ class CreatureCelebration extends StatefulWidget {
 
   /// Baut die Figur; beim Schlüpfen kurz noch für das alte Ei.
   final Widget Function(Creature creature) builder;
+
+  /// Hüpft immer wieder vor Freude, zum Beispiel während eines Gangs.
+  final bool cheer;
 
   @override
   State<CreatureCelebration> createState() => _CreatureCelebrationState();
@@ -44,6 +48,15 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
   /// Das Ei vor dem Schlüpfen, solange es noch zu sehen ist.
   Creature? _egg;
 
+  /// Nächster Freudenhüpfer beim Jubeln.
+  Timer? _again;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.cheer) _pending = _Moment.hop;
+  }
+
   @override
   void didUpdateWidget(CreatureCelebration old) {
     super.didUpdateWidget(old);
@@ -52,7 +65,8 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
     if (!before.hatched && now.hatched) {
       _pending = _Moment.hatch;
       _egg = before;
-    } else if (now.food > before.food && _pending == null) {
+    } else if ((now.food > before.food || (widget.cheer && !old.cheer)) &&
+        _pending == null) {
       _pending = _Moment.hop;
     }
     _maybeStart();
@@ -94,10 +108,19 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
       _playing = null;
       _egg = null;
     });
+    if (widget.cheer) {
+      _again?.cancel();
+      _again = Timer(const Duration(milliseconds: 700), () {
+        if (!mounted || !widget.cheer || _pending != null) return;
+        _pending = _Moment.hop;
+        _maybeStart();
+      });
+    }
   }
 
   @override
   void dispose() {
+    _again?.cancel();
     _controller.dispose();
     super.dispose();
   }
