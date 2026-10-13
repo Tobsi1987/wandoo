@@ -6,16 +6,18 @@ import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 import 'package:wandoo/features/creature/domain/outfit.dart';
 import 'package:wandoo/features/creature/presentation/widgets/creature_spin.dart';
+import 'package:wandoo/features/creature/presentation/widgets/drag_turn.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_accessories.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_anchors.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_eyes.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_overlays.dart';
+import 'package:wandoo/features/creature/presentation/widgets/model_loader.dart';
+import 'package:wandoo/features/creature/presentation/widgets/model_stage.dart';
 
 /// Ein 3D-Modell (.glb) des Wesens, das als Ganzes atmet, schwankt und
 /// schläft. Das Aussehen bleibt genau so, wie es aus Meshy kommt.
 ///
-/// Bis das Modell geladen ist, oder wenn das Gerät kein 3D kann, steht
-/// [fallback] an seiner Stelle.
+/// Bis das Modell geladen ist, bleibt der Platz leer. Kann das Gerät kein
+/// 3D, steht [fallback] an seiner Stelle. Wischen dreht das Wesen.
 class CreatureModel extends StatefulWidget {
   const CreatureModel({
     required this.asset,
@@ -55,20 +57,8 @@ class CreatureModel extends StatefulWidget {
   final EyeSpot? eyes;
   final bool eyesClosed;
 
-  static final Future<bool> _ready = Scene.initializeStaticResources().then(
-    (_) => true,
-    onError: (Object _) => false,
-  );
-  static final _models = <String, Future<Node?>>{};
-
   /// Lädt das Modell vorab, damit es beim ersten Zeigen sofort da ist.
-  static Future<void> preload(String asset) => _load(asset);
-
-  static Future<Node?> _load(String asset) => _models[asset] ??= _ready.then(
-    (ok) => ok
-        ? Node.fromGlbAsset(asset).then<Node?>((n) => n, onError: (_) => null)
-        : null,
-  );
+  static Future<void> preload(String asset) => ModelLoader.load(asset);
 
   @override
   State<CreatureModel> createState() => _CreatureModelState();
@@ -81,6 +71,10 @@ class _CreatureModelState extends State<CreatureModel> {
   Node? _outfit;
   Node? _lids;
   bool _loaded = false;
+  bool _failed = false;
+
+  /// Vom Wischen, siehe [DragTurn].
+  final _drag = ValueNotifier<double>(0);
 
   /// Zusätzliche Drehung von außen, siehe [CreatureSpin].
   double _spin = 0;
@@ -91,15 +85,32 @@ class _CreatureModelState extends State<CreatureModel> {
     _scene
       ..exposure = 1.35
       ..add(_pivot);
-    unawaited(CreatureModel._load(widget.asset).then(_show));
+    _drag.addListener(() => _pose(_time.value));
+    _start();
+  }
+
+  /// Schon geladene Modelle sofort zeigen, ohne leeres Bild dazwischen.
+  void _start() {
+    final asset = widget.asset;
+    if (ModelLoader.isDone(asset)) {
+      _add(ModelLoader.ready(asset));
+    } else {
+      unawaited(ModelLoader.load(asset).then(_show));
+    }
   }
 
   void _show(Node? model) {
-    if (!mounted || model == null) return;
+    if (!mounted) return;
+    setState(() => _add(model));
+  }
+
+  void _add(Node? model) {
+    _failed = model == null;
+    if (model == null) return;
     _pivot.add(model.clone());
     _dress();
     _pose(0);
-    setState(() => _loaded = true);
+    _loaded = true;
   }
 
   /// Hut, Halsschmuck und Schlaf-Lider neu anziehen.
@@ -129,7 +140,10 @@ class _CreatureModelState extends State<CreatureModel> {
       ..scale = vm.Vector3.all(scale)
       ..position = vm.Vector3(0, bob.abs() * scale, 0)
       ..rotation =
-          vm.Quaternion.axisAngle(vm.Vector3(0, 1, 0), look + _spin) *
+          vm.Quaternion.axisAngle(
+            vm.Vector3(0, 1, 0),
+            look + _spin + _drag.value,
+          ) *
           vm.Quaternion.axisAngle(vm.Vector3(0, 0, 1), tilt);
   }
 
@@ -141,7 +155,7 @@ class _CreatureModelState extends State<CreatureModel> {
       _outfit = null;
       _lids = null;
       _loaded = false;
-      unawaited(CreatureModel._load(widget.asset).then(_show));
+      _start();
     } else if (_loaded) {
       if (old.hat != widget.hat ||
           old.neck != widget.neck ||
@@ -157,6 +171,7 @@ class _CreatureModelState extends State<CreatureModel> {
   @override
   void dispose() {
     _time.dispose();
+    _drag.dispose();
     super.dispose();
   }
 
@@ -167,31 +182,17 @@ class _CreatureModelState extends State<CreatureModel> {
       _spin = spin;
       if (_loaded) _pose(_time.value);
     }
-    if (!_loaded) return widget.fallback;
-    return SizedBox.square(
-      dimension: widget.size,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          const CustomPaint(painter: ModelShadow()),
-          SceneView(
-            _scene,
-            autoTick: widget.animate,
-            maxFrameRate: 30,
-            camera: PerspectiveCamera(
-              position: vm.Vector3(0, 0.6, -1.75),
-              target: vm.Vector3(0, 0.46, 0),
-            ),
-            onTick: (elapsed, _) {
-              if (!widget.animate) return;
-              _time.value = elapsed.inMicroseconds / 1e6;
-              _pose(_time.value);
-            },
-          ),
-          if (widget.night)
-            IgnorePointer(child: CustomPaint(painter: Fireflies(_time))),
-        ],
-      ),
+    if (_failed) return widget.fallback;
+    if (!_loaded) return SizedBox.square(dimension: widget.size);
+    final view = ModelStage(
+      scene: _scene,
+      size: widget.size,
+      animate: widget.animate,
+      night: widget.night,
+      time: _time,
+      onTime: _pose,
     );
+    if (!widget.animate) return view;
+    return DragTurn(angle: _drag, size: widget.size, child: view);
   }
 }

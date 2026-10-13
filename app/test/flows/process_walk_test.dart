@@ -59,7 +59,9 @@ void main() {
       final second = await process(track);
       expect(second.newSegmentCount, 0);
       expect(second.summary.knownSegmentCount, 1);
-      expect(second.creature.food, 1);
+      // Ein Ei wärmt auch der bekannte Weg, Merkmale wachsen aber nicht.
+      expect(second.creature.food, 2);
+      expect(second.creature.traitPoints, {Trait.moss: 1});
       expect(second.creature.lastFedAt, isNotNull);
     },
   );

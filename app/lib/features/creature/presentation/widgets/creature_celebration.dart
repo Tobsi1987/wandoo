@@ -110,8 +110,10 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
   void _done() {
     if (!mounted) return;
     setState(() {
+      // Ein Freudensprung, der noch zu Ende läuft, während das Schlüpfen
+      // schon wartet, darf das Ei nicht wegnehmen.
+      if (_playing == _Moment.hatch) _egg = null;
       _playing = null;
-      _egg = null;
     });
     if (widget.cheer) {
       _again?.cancel();
