@@ -17,6 +17,12 @@ class DriftKnownSegmentsRepository implements KnownSegmentsRepository {
   }
 
   @override
+  Stream<Set<String>> watchKnownIds() => _db
+      .select(_db.knownSegments)
+      .watch()
+      .map((rows) => {for (final row in rows) row.segmentId});
+
+  @override
   Future<void> addAll(Set<String> ids) async {
     if (ids.isEmpty) return;
     final now = _clock();

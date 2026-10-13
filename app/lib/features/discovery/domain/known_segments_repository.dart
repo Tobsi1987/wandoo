@@ -3,4 +3,7 @@ abstract interface class KnownSegmentsRepository {
   Future<Set<String>> knownIds();
 
   Future<void> addAll(Set<String> ids);
+
+  /// Meldet die bekannten Abschnitte jetzt und nach jeder Änderung.
+  Stream<Set<String>> watchKnownIds();
 }
