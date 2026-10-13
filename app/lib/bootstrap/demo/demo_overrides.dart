@@ -58,11 +58,17 @@ class _DemoMapData implements MapDataSource {
 /// `?wesen=funkel` startet die Demo mit diesem Wesen geschlüpft und allen
 /// Arten im Album, um die 3D-Modelle anzusehen. Ohne Angabe: ein Ei.
 Creature _startCreature() {
-  final id = Uri.base.queryParameters['wesen'];
+  final query = Uri.base.queryParameters;
+  final id = query['wesen'];
   if (id == null) return const Creature();
   return Creature(
     food: GrowthStage.adult.foodNeeded,
     speciesId: SpeciesCatalog.byId(id).id,
     seenSpecies: {for (final s in SpeciesCatalog.all) s.id},
+    hat: _named(CreatureHat.values, query['hut']),
+    neck: _named(CreatureNeck.values, query['hals']),
   );
 }
+
+T? _named<T extends Enum>(List<T> values, String? name) =>
+    values.where((v) => v.name == name).firstOrNull;

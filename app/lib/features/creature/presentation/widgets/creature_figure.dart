@@ -11,6 +11,7 @@ import 'package:wandoo/features/creature/presentation/painting/creature_painter.
 import 'package:wandoo/features/creature/presentation/painting/creature_shader_uniforms.dart';
 import 'package:wandoo/features/creature/presentation/species_looks.dart';
 import 'package:wandoo/features/creature/presentation/widgets/creature_model.dart';
+import 'package:wandoo/features/creature/presentation/widgets/model_anchors.dart';
 import 'package:wandoo/features/world/world.dart';
 
 /// Die Figur des Wesens: das 3D-Modell der Art, sonst animiertes 3D aus
@@ -25,6 +26,7 @@ class CreatureFigure extends StatefulWidget {
     this.size = 180,
     this.silhouette = false,
     this.world,
+    this.still = false,
     super.key,
   });
 
@@ -36,6 +38,10 @@ class CreatureFigure extends StatefulWidget {
 
   /// Nacht und Jahreszeit; ohne Angabe Tag und schlichtes Ei.
   final WorldState? world;
+
+  /// Steht still, z. B. im Album: viele Figuren auf einmal bleiben so
+  /// sparsam.
+  final bool still;
 
   /// In Tests aus, damit `pumpAndSettle` zur Ruhe kommt.
   @visibleForTesting
@@ -74,7 +80,7 @@ class _CreatureFigureState extends State<CreatureFigure>
     if (!mounted || program == null) return;
     setState(() => _shader = program.fragmentShader());
     final reduced = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
-    if (CreatureFigure.animate && !reduced) _ticker.start();
+    if (CreatureFigure.animate && !widget.still && !reduced) _ticker.start();
   }
 
   @override
@@ -91,13 +97,17 @@ class _CreatureFigureState extends State<CreatureFigure>
     final drawn = _drawn(sleepy);
     final asset = _modelAsset();
     if (asset == null) return drawn;
+    final c = widget.creature;
     return CreatureModel(
       asset: asset,
+      anchors: ModelAnchors.of(SpeciesCatalog.byId(c.speciesId).id),
+      hat: c.hat,
+      neck: c.neck,
       size: widget.size,
       fallback: drawn,
       sleepy: sleepy || (widget.world?.night ?? false),
-      grownUp: widget.creature.stage == GrowthStage.adult,
-      animate: CreatureFigure.animate,
+      grownUp: c.stage == GrowthStage.adult,
+      animate: CreatureFigure.animate && !widget.still,
     );
   }
 
