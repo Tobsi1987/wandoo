@@ -5,7 +5,10 @@ import 'package:wandoo/features/walk_summary/domain/walk_summary.dart';
 /// "+3 neue Straßen", "1 Waldstück", "1 Brücke".
 List<String> summaryLines(WalkSummary summary) {
   if (summary.foundNothing) {
-    return const ['Nichts Neues dabei. Probier mal eine andere Abzweigung!'];
+    return [
+      if (summary.knownSegmentCount > 0) 'Bekannte Wege: Dein Wesen ist satt.',
+      _growOnlyOnNew,
+    ];
   }
   final streets = summary.newStreetCount;
   return [
@@ -17,6 +20,9 @@ List<String> summaryLines(WalkSummary summary) {
     if (summary.creatureGrew) 'Dein Wesen ist gewachsen!',
   ];
 }
+
+const _growOnlyOnNew =
+    'Wachsen tut es nur auf neuen Straßen. Probier mal eine andere Abzweigung!';
 
 String _bridgeLine(int n) => '$n ${n == 1 ? 'Brücke' : 'Brücken'}';
 

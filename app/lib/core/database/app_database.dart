@@ -19,13 +19,16 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase.open() => AppDatabase(driftDatabase(name: 'wandoo'));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (m, from, to) async {
       if (from < 2) await m.createTable(recordedWalks);
       if (from < 3) await m.createTable(walkSummaries);
+      if (from >= 3 && from < 4) {
+        await m.addColumn(walkSummaries, walkSummaries.knownSegmentCount);
+      }
     },
   );
 }

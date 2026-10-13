@@ -33,16 +33,23 @@ class ProcessWalk {
   Future<WalkResult> call(Track track, {DateTime? now}) async {
     final finishedAt = track.points.lastOrNull?.time ?? now ?? DateTime.now();
     final candidates = await mapData.segmentsNear(track.positions);
-    final newSegments = classify.each(await discover(track, candidates));
+    final discovery = await discover(track, candidates);
+    final newSegments = classify.each(discovery.fresh);
 
     final before = await creatures.load();
-    final after = feed(before, _count(newSegments), now ?? DateTime.now());
+    final after = feed(
+      before,
+      _count(newSegments),
+      now ?? DateTime.now(),
+      knownSegments: discovery.knownCount,
+    );
     await creatures.save(after);
 
     final summary = summarize(
       walkId: track.id,
       finishedAt: finishedAt,
       newSegments: newSegments,
+      knownSegmentCount: discovery.knownCount,
       creatureGrew: after.stage != before.stage,
     );
     await summaries.save(summary);
