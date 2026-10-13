@@ -28,6 +28,9 @@ import 'package:wandoo/features/treasure/data/drift_treasure_repository.dart';
 import 'package:wandoo/features/treasure/treasure.dart';
 import 'package:wandoo/features/walk_summary/data/drift_walk_summary_repository.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
+import 'package:wandoo/features/world/data/cached_weather_source.dart';
+import 'package:wandoo/features/world/data/open_meteo_weather_source.dart';
+import 'package:wandoo/features/world/world.dart';
 
 /// Kompositionswurzel: Hier und nur hier werden Schnittstellen mit
 /// Umsetzungen verbunden.
@@ -57,5 +60,8 @@ Future<List<Override>> appOverrides() async {
     ),
     treasureRepositoryProvider.overrideWithValue(DriftTreasureRepository(db)),
     adventureRepositoryProvider.overrideWithValue(DriftAdventureRepository(db)),
+    weatherSourceProvider.overrideWithValue(
+      CachedWeatherSource(OpenMeteoWeatherSource()),
+    ),
   ];
 }
