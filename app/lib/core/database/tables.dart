@@ -9,6 +9,10 @@ class CreatureStates extends Table {
   TextColumn get traitPoints => text().withDefault(const Constant('{}'))();
   DateTimeColumn get lastFedAt => dateTime().nullable()();
 
+  /// `Species.id`, gezogen beim Schlüpfen (seit Schema 5).
+  TextColumn get speciesId => text().nullable()();
+  DateTimeColumn get lastReleasedAt => dateTime().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }

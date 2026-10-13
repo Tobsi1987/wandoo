@@ -51,8 +51,38 @@ class $CreatureStatesTable extends CreatureStates
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _speciesIdMeta = const VerificationMeta(
+    'speciesId',
+  );
   @override
-  List<GeneratedColumn> get $columns => [id, food, traitPoints, lastFedAt];
+  late final GeneratedColumn<String> speciesId = GeneratedColumn<String>(
+    'species_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastReleasedAtMeta = const VerificationMeta(
+    'lastReleasedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastReleasedAt =
+      GeneratedColumn<DateTime>(
+        'last_released_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    food,
+    traitPoints,
+    lastFedAt,
+    speciesId,
+    lastReleasedAt,
+  ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -89,6 +119,21 @@ class $CreatureStatesTable extends CreatureStates
         lastFedAt.isAcceptableOrUnknown(data['last_fed_at']!, _lastFedAtMeta),
       );
     }
+    if (data.containsKey('species_id')) {
+      context.handle(
+        _speciesIdMeta,
+        speciesId.isAcceptableOrUnknown(data['species_id']!, _speciesIdMeta),
+      );
+    }
+    if (data.containsKey('last_released_at')) {
+      context.handle(
+        _lastReleasedAtMeta,
+        lastReleasedAt.isAcceptableOrUnknown(
+          data['last_released_at']!,
+          _lastReleasedAtMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -114,6 +159,14 @@ class $CreatureStatesTable extends CreatureStates
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_fed_at'],
       ),
+      speciesId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}species_id'],
+      ),
+      lastReleasedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_released_at'],
+      ),
     );
   }
 
@@ -130,11 +183,17 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
   /// Merkmalspunkte als JSON, z. B. `{"moss":3}`.
   final String traitPoints;
   final DateTime? lastFedAt;
+
+  /// `Species.id`, gezogen beim Schlüpfen (seit Schema 5).
+  final String? speciesId;
+  final DateTime? lastReleasedAt;
   const CreatureState({
     required this.id,
     required this.food,
     required this.traitPoints,
     this.lastFedAt,
+    this.speciesId,
+    this.lastReleasedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -144,6 +203,12 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
     map['trait_points'] = Variable<String>(traitPoints);
     if (!nullToAbsent || lastFedAt != null) {
       map['last_fed_at'] = Variable<DateTime>(lastFedAt);
+    }
+    if (!nullToAbsent || speciesId != null) {
+      map['species_id'] = Variable<String>(speciesId);
+    }
+    if (!nullToAbsent || lastReleasedAt != null) {
+      map['last_released_at'] = Variable<DateTime>(lastReleasedAt);
     }
     return map;
   }
@@ -156,6 +221,12 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
       lastFedAt: lastFedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastFedAt),
+      speciesId: speciesId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(speciesId),
+      lastReleasedAt: lastReleasedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastReleasedAt),
     );
   }
 
@@ -169,6 +240,8 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
       food: serializer.fromJson<int>(json['food']),
       traitPoints: serializer.fromJson<String>(json['traitPoints']),
       lastFedAt: serializer.fromJson<DateTime?>(json['lastFedAt']),
+      speciesId: serializer.fromJson<String?>(json['speciesId']),
+      lastReleasedAt: serializer.fromJson<DateTime?>(json['lastReleasedAt']),
     );
   }
   @override
@@ -179,6 +252,8 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
       'food': serializer.toJson<int>(food),
       'traitPoints': serializer.toJson<String>(traitPoints),
       'lastFedAt': serializer.toJson<DateTime?>(lastFedAt),
+      'speciesId': serializer.toJson<String?>(speciesId),
+      'lastReleasedAt': serializer.toJson<DateTime?>(lastReleasedAt),
     };
   }
 
@@ -187,11 +262,17 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
     int? food,
     String? traitPoints,
     Value<DateTime?> lastFedAt = const Value.absent(),
+    Value<String?> speciesId = const Value.absent(),
+    Value<DateTime?> lastReleasedAt = const Value.absent(),
   }) => CreatureState(
     id: id ?? this.id,
     food: food ?? this.food,
     traitPoints: traitPoints ?? this.traitPoints,
     lastFedAt: lastFedAt.present ? lastFedAt.value : this.lastFedAt,
+    speciesId: speciesId.present ? speciesId.value : this.speciesId,
+    lastReleasedAt: lastReleasedAt.present
+        ? lastReleasedAt.value
+        : this.lastReleasedAt,
   );
   CreatureState copyWithCompanion(CreatureStatesCompanion data) {
     return CreatureState(
@@ -201,6 +282,10 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
           ? data.traitPoints.value
           : this.traitPoints,
       lastFedAt: data.lastFedAt.present ? data.lastFedAt.value : this.lastFedAt,
+      speciesId: data.speciesId.present ? data.speciesId.value : this.speciesId,
+      lastReleasedAt: data.lastReleasedAt.present
+          ? data.lastReleasedAt.value
+          : this.lastReleasedAt,
     );
   }
 
@@ -210,13 +295,16 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
           ..write('id: $id, ')
           ..write('food: $food, ')
           ..write('traitPoints: $traitPoints, ')
-          ..write('lastFedAt: $lastFedAt')
+          ..write('lastFedAt: $lastFedAt, ')
+          ..write('speciesId: $speciesId, ')
+          ..write('lastReleasedAt: $lastReleasedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, food, traitPoints, lastFedAt);
+  int get hashCode =>
+      Object.hash(id, food, traitPoints, lastFedAt, speciesId, lastReleasedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -224,7 +312,9 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
           other.id == this.id &&
           other.food == this.food &&
           other.traitPoints == this.traitPoints &&
-          other.lastFedAt == this.lastFedAt);
+          other.lastFedAt == this.lastFedAt &&
+          other.speciesId == this.speciesId &&
+          other.lastReleasedAt == this.lastReleasedAt);
 }
 
 class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
@@ -232,29 +322,39 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
   final Value<int> food;
   final Value<String> traitPoints;
   final Value<DateTime?> lastFedAt;
+  final Value<String?> speciesId;
+  final Value<DateTime?> lastReleasedAt;
   const CreatureStatesCompanion({
     this.id = const Value.absent(),
     this.food = const Value.absent(),
     this.traitPoints = const Value.absent(),
     this.lastFedAt = const Value.absent(),
+    this.speciesId = const Value.absent(),
+    this.lastReleasedAt = const Value.absent(),
   });
   CreatureStatesCompanion.insert({
     this.id = const Value.absent(),
     this.food = const Value.absent(),
     this.traitPoints = const Value.absent(),
     this.lastFedAt = const Value.absent(),
+    this.speciesId = const Value.absent(),
+    this.lastReleasedAt = const Value.absent(),
   });
   static Insertable<CreatureState> custom({
     Expression<int>? id,
     Expression<int>? food,
     Expression<String>? traitPoints,
     Expression<DateTime>? lastFedAt,
+    Expression<String>? speciesId,
+    Expression<DateTime>? lastReleasedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (food != null) 'food': food,
       if (traitPoints != null) 'trait_points': traitPoints,
       if (lastFedAt != null) 'last_fed_at': lastFedAt,
+      if (speciesId != null) 'species_id': speciesId,
+      if (lastReleasedAt != null) 'last_released_at': lastReleasedAt,
     });
   }
 
@@ -263,12 +363,16 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
     Value<int>? food,
     Value<String>? traitPoints,
     Value<DateTime?>? lastFedAt,
+    Value<String?>? speciesId,
+    Value<DateTime?>? lastReleasedAt,
   }) {
     return CreatureStatesCompanion(
       id: id ?? this.id,
       food: food ?? this.food,
       traitPoints: traitPoints ?? this.traitPoints,
       lastFedAt: lastFedAt ?? this.lastFedAt,
+      speciesId: speciesId ?? this.speciesId,
+      lastReleasedAt: lastReleasedAt ?? this.lastReleasedAt,
     );
   }
 
@@ -287,6 +391,12 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
     if (lastFedAt.present) {
       map['last_fed_at'] = Variable<DateTime>(lastFedAt.value);
     }
+    if (speciesId.present) {
+      map['species_id'] = Variable<String>(speciesId.value);
+    }
+    if (lastReleasedAt.present) {
+      map['last_released_at'] = Variable<DateTime>(lastReleasedAt.value);
+    }
     return map;
   }
 
@@ -296,7 +406,9 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
           ..write('id: $id, ')
           ..write('food: $food, ')
           ..write('traitPoints: $traitPoints, ')
-          ..write('lastFedAt: $lastFedAt')
+          ..write('lastFedAt: $lastFedAt, ')
+          ..write('speciesId: $speciesId, ')
+          ..write('lastReleasedAt: $lastReleasedAt')
           ..write(')'))
         .toString();
   }
@@ -1468,6 +1580,8 @@ typedef $$CreatureStatesTableCreateCompanionBuilder =
       Value<int> food,
       Value<String> traitPoints,
       Value<DateTime?> lastFedAt,
+      Value<String?> speciesId,
+      Value<DateTime?> lastReleasedAt,
     });
 typedef $$CreatureStatesTableUpdateCompanionBuilder =
     CreatureStatesCompanion Function({
@@ -1475,6 +1589,8 @@ typedef $$CreatureStatesTableUpdateCompanionBuilder =
       Value<int> food,
       Value<String> traitPoints,
       Value<DateTime?> lastFedAt,
+      Value<String?> speciesId,
+      Value<DateTime?> lastReleasedAt,
     });
 
 class $$CreatureStatesTableFilterComposer
@@ -1503,6 +1619,16 @@ class $$CreatureStatesTableFilterComposer
 
   ColumnFilters<DateTime> get lastFedAt => $composableBuilder(
     column: $table.lastFedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get speciesId => $composableBuilder(
+    column: $table.speciesId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastReleasedAt => $composableBuilder(
+    column: $table.lastReleasedAt,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1535,6 +1661,16 @@ class $$CreatureStatesTableOrderingComposer
     column: $table.lastFedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get speciesId => $composableBuilder(
+    column: $table.speciesId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastReleasedAt => $composableBuilder(
+    column: $table.lastReleasedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CreatureStatesTableAnnotationComposer
@@ -1559,6 +1695,14 @@ class $$CreatureStatesTableAnnotationComposer
 
   GeneratedColumn<DateTime> get lastFedAt =>
       $composableBuilder(column: $table.lastFedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get speciesId =>
+      $composableBuilder(column: $table.speciesId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastReleasedAt => $composableBuilder(
+    column: $table.lastReleasedAt,
+    builder: (column) => column,
+  );
 }
 
 class $$CreatureStatesTableTableManager
@@ -1598,11 +1742,15 @@ class $$CreatureStatesTableTableManager
                 Value<int> food = const Value.absent(),
                 Value<String> traitPoints = const Value.absent(),
                 Value<DateTime?> lastFedAt = const Value.absent(),
+                Value<String?> speciesId = const Value.absent(),
+                Value<DateTime?> lastReleasedAt = const Value.absent(),
               }) => CreatureStatesCompanion(
                 id: id,
                 food: food,
                 traitPoints: traitPoints,
                 lastFedAt: lastFedAt,
+                speciesId: speciesId,
+                lastReleasedAt: lastReleasedAt,
               ),
           createCompanionCallback:
               ({
@@ -1610,11 +1758,15 @@ class $$CreatureStatesTableTableManager
                 Value<int> food = const Value.absent(),
                 Value<String> traitPoints = const Value.absent(),
                 Value<DateTime?> lastFedAt = const Value.absent(),
+                Value<String?> speciesId = const Value.absent(),
+                Value<DateTime?> lastReleasedAt = const Value.absent(),
               }) => CreatureStatesCompanion.insert(
                 id: id,
                 food: food,
                 traitPoints: traitPoints,
                 lastFedAt: lastFedAt,
+                speciesId: speciesId,
+                lastReleasedAt: lastReleasedAt,
               ),
           withReferenceMapper: (p0) => p0
               .map(

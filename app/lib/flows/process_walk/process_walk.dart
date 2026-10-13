@@ -12,15 +12,15 @@ import 'package:wandoo/flows/process_walk/walk_result.dart';
 /// Der einzige Ort, der diese Features verbindet. Keines davon kennt die
 /// anderen.
 class ProcessWalk {
-  const ProcessWalk({
+  ProcessWalk({
     required this.mapData,
     required this.discover,
     required this.classify,
     required this.creatures,
     required this.summaries,
-    this.feed = const FeedCreature(),
+    FeedCreature? feed,
     this.summarize = const SummarizeWalk(),
-  });
+  }) : feed = feed ?? FeedCreature();
 
   final MapDataSource mapData;
   final DiscoverSegments discover;
