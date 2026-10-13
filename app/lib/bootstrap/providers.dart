@@ -22,6 +22,8 @@ import 'package:wandoo/features/share/data/share_plus_image_sharer.dart';
 import 'package:wandoo/features/share/share.dart';
 import 'package:wandoo/features/tracking/data/drift_recorded_walk_repository.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
+import 'package:wandoo/features/treasure/data/drift_treasure_repository.dart';
+import 'package:wandoo/features/treasure/treasure.dart';
 import 'package:wandoo/features/walk_summary/data/drift_walk_summary_repository.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
 
@@ -51,5 +53,6 @@ Future<List<Override>> appOverrides() async {
     walkSummaryRepositoryProvider.overrideWithValue(
       DriftWalkSummaryRepository(db),
     ),
+    treasureRepositoryProvider.overrideWithValue(DriftTreasureRepository(db)),
   ];
 }

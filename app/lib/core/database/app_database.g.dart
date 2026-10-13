@@ -74,6 +74,51 @@ class $CreatureStatesTable extends CreatureStates
         type: DriftSqlType.dateTime,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _hatMeta = const VerificationMeta('hat');
+  @override
+  late final GeneratedColumn<String> hat = GeneratedColumn<String>(
+    'hat',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _neckMeta = const VerificationMeta('neck');
+  @override
+  late final GeneratedColumn<String> neck = GeneratedColumn<String>(
+    'neck',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _seenSpeciesMeta = const VerificationMeta(
+    'seenSpecies',
+  );
+  @override
+  late final GeneratedColumn<String> seenSpecies = GeneratedColumn<String>(
+    'seen_species',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  static const VerificationMeta _luckyEggMeta = const VerificationMeta(
+    'luckyEgg',
+  );
+  @override
+  late final GeneratedColumn<bool> luckyEgg = GeneratedColumn<bool>(
+    'lucky_egg',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("lucky_egg" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -82,6 +127,10 @@ class $CreatureStatesTable extends CreatureStates
     lastFedAt,
     speciesId,
     lastReleasedAt,
+    hat,
+    neck,
+    seenSpecies,
+    luckyEgg,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -134,6 +183,33 @@ class $CreatureStatesTable extends CreatureStates
         ),
       );
     }
+    if (data.containsKey('hat')) {
+      context.handle(
+        _hatMeta,
+        hat.isAcceptableOrUnknown(data['hat']!, _hatMeta),
+      );
+    }
+    if (data.containsKey('neck')) {
+      context.handle(
+        _neckMeta,
+        neck.isAcceptableOrUnknown(data['neck']!, _neckMeta),
+      );
+    }
+    if (data.containsKey('seen_species')) {
+      context.handle(
+        _seenSpeciesMeta,
+        seenSpecies.isAcceptableOrUnknown(
+          data['seen_species']!,
+          _seenSpeciesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('lucky_egg')) {
+      context.handle(
+        _luckyEggMeta,
+        luckyEgg.isAcceptableOrUnknown(data['lucky_egg']!, _luckyEggMeta),
+      );
+    }
     return context;
   }
 
@@ -167,6 +243,22 @@ class $CreatureStatesTable extends CreatureStates
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_released_at'],
       ),
+      hat: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hat'],
+      ),
+      neck: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}neck'],
+      ),
+      seenSpecies: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}seen_species'],
+      )!,
+      luckyEgg: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}lucky_egg'],
+      )!,
     );
   }
 
@@ -187,6 +279,14 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
   /// `Species.id`, gezogen beim Schlüpfen (seit Schema 5).
   final String? speciesId;
   final DateTime? lastReleasedAt;
+
+  /// Deko als Name von `CreatureHat`/`CreatureNeck` (seit Schema 7).
+  final String? hat;
+  final String? neck;
+
+  /// Je geschlüpfte Arten als JSON-Liste, fürs Sammelalbum.
+  final String seenSpecies;
+  final bool luckyEgg;
   const CreatureState({
     required this.id,
     required this.food,
@@ -194,6 +294,10 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
     this.lastFedAt,
     this.speciesId,
     this.lastReleasedAt,
+    this.hat,
+    this.neck,
+    required this.seenSpecies,
+    required this.luckyEgg,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -210,6 +314,14 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
     if (!nullToAbsent || lastReleasedAt != null) {
       map['last_released_at'] = Variable<DateTime>(lastReleasedAt);
     }
+    if (!nullToAbsent || hat != null) {
+      map['hat'] = Variable<String>(hat);
+    }
+    if (!nullToAbsent || neck != null) {
+      map['neck'] = Variable<String>(neck);
+    }
+    map['seen_species'] = Variable<String>(seenSpecies);
+    map['lucky_egg'] = Variable<bool>(luckyEgg);
     return map;
   }
 
@@ -227,6 +339,10 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
       lastReleasedAt: lastReleasedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(lastReleasedAt),
+      hat: hat == null && nullToAbsent ? const Value.absent() : Value(hat),
+      neck: neck == null && nullToAbsent ? const Value.absent() : Value(neck),
+      seenSpecies: Value(seenSpecies),
+      luckyEgg: Value(luckyEgg),
     );
   }
 
@@ -242,6 +358,10 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
       lastFedAt: serializer.fromJson<DateTime?>(json['lastFedAt']),
       speciesId: serializer.fromJson<String?>(json['speciesId']),
       lastReleasedAt: serializer.fromJson<DateTime?>(json['lastReleasedAt']),
+      hat: serializer.fromJson<String?>(json['hat']),
+      neck: serializer.fromJson<String?>(json['neck']),
+      seenSpecies: serializer.fromJson<String>(json['seenSpecies']),
+      luckyEgg: serializer.fromJson<bool>(json['luckyEgg']),
     );
   }
   @override
@@ -254,6 +374,10 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
       'lastFedAt': serializer.toJson<DateTime?>(lastFedAt),
       'speciesId': serializer.toJson<String?>(speciesId),
       'lastReleasedAt': serializer.toJson<DateTime?>(lastReleasedAt),
+      'hat': serializer.toJson<String?>(hat),
+      'neck': serializer.toJson<String?>(neck),
+      'seenSpecies': serializer.toJson<String>(seenSpecies),
+      'luckyEgg': serializer.toJson<bool>(luckyEgg),
     };
   }
 
@@ -264,6 +388,10 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
     Value<DateTime?> lastFedAt = const Value.absent(),
     Value<String?> speciesId = const Value.absent(),
     Value<DateTime?> lastReleasedAt = const Value.absent(),
+    Value<String?> hat = const Value.absent(),
+    Value<String?> neck = const Value.absent(),
+    String? seenSpecies,
+    bool? luckyEgg,
   }) => CreatureState(
     id: id ?? this.id,
     food: food ?? this.food,
@@ -273,6 +401,10 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
     lastReleasedAt: lastReleasedAt.present
         ? lastReleasedAt.value
         : this.lastReleasedAt,
+    hat: hat.present ? hat.value : this.hat,
+    neck: neck.present ? neck.value : this.neck,
+    seenSpecies: seenSpecies ?? this.seenSpecies,
+    luckyEgg: luckyEgg ?? this.luckyEgg,
   );
   CreatureState copyWithCompanion(CreatureStatesCompanion data) {
     return CreatureState(
@@ -286,6 +418,12 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
       lastReleasedAt: data.lastReleasedAt.present
           ? data.lastReleasedAt.value
           : this.lastReleasedAt,
+      hat: data.hat.present ? data.hat.value : this.hat,
+      neck: data.neck.present ? data.neck.value : this.neck,
+      seenSpecies: data.seenSpecies.present
+          ? data.seenSpecies.value
+          : this.seenSpecies,
+      luckyEgg: data.luckyEgg.present ? data.luckyEgg.value : this.luckyEgg,
     );
   }
 
@@ -297,14 +435,28 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
           ..write('traitPoints: $traitPoints, ')
           ..write('lastFedAt: $lastFedAt, ')
           ..write('speciesId: $speciesId, ')
-          ..write('lastReleasedAt: $lastReleasedAt')
+          ..write('lastReleasedAt: $lastReleasedAt, ')
+          ..write('hat: $hat, ')
+          ..write('neck: $neck, ')
+          ..write('seenSpecies: $seenSpecies, ')
+          ..write('luckyEgg: $luckyEgg')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, food, traitPoints, lastFedAt, speciesId, lastReleasedAt);
+  int get hashCode => Object.hash(
+    id,
+    food,
+    traitPoints,
+    lastFedAt,
+    speciesId,
+    lastReleasedAt,
+    hat,
+    neck,
+    seenSpecies,
+    luckyEgg,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -314,7 +466,11 @@ class CreatureState extends DataClass implements Insertable<CreatureState> {
           other.traitPoints == this.traitPoints &&
           other.lastFedAt == this.lastFedAt &&
           other.speciesId == this.speciesId &&
-          other.lastReleasedAt == this.lastReleasedAt);
+          other.lastReleasedAt == this.lastReleasedAt &&
+          other.hat == this.hat &&
+          other.neck == this.neck &&
+          other.seenSpecies == this.seenSpecies &&
+          other.luckyEgg == this.luckyEgg);
 }
 
 class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
@@ -324,6 +480,10 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
   final Value<DateTime?> lastFedAt;
   final Value<String?> speciesId;
   final Value<DateTime?> lastReleasedAt;
+  final Value<String?> hat;
+  final Value<String?> neck;
+  final Value<String> seenSpecies;
+  final Value<bool> luckyEgg;
   const CreatureStatesCompanion({
     this.id = const Value.absent(),
     this.food = const Value.absent(),
@@ -331,6 +491,10 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
     this.lastFedAt = const Value.absent(),
     this.speciesId = const Value.absent(),
     this.lastReleasedAt = const Value.absent(),
+    this.hat = const Value.absent(),
+    this.neck = const Value.absent(),
+    this.seenSpecies = const Value.absent(),
+    this.luckyEgg = const Value.absent(),
   });
   CreatureStatesCompanion.insert({
     this.id = const Value.absent(),
@@ -339,6 +503,10 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
     this.lastFedAt = const Value.absent(),
     this.speciesId = const Value.absent(),
     this.lastReleasedAt = const Value.absent(),
+    this.hat = const Value.absent(),
+    this.neck = const Value.absent(),
+    this.seenSpecies = const Value.absent(),
+    this.luckyEgg = const Value.absent(),
   });
   static Insertable<CreatureState> custom({
     Expression<int>? id,
@@ -347,6 +515,10 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
     Expression<DateTime>? lastFedAt,
     Expression<String>? speciesId,
     Expression<DateTime>? lastReleasedAt,
+    Expression<String>? hat,
+    Expression<String>? neck,
+    Expression<String>? seenSpecies,
+    Expression<bool>? luckyEgg,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -355,6 +527,10 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
       if (lastFedAt != null) 'last_fed_at': lastFedAt,
       if (speciesId != null) 'species_id': speciesId,
       if (lastReleasedAt != null) 'last_released_at': lastReleasedAt,
+      if (hat != null) 'hat': hat,
+      if (neck != null) 'neck': neck,
+      if (seenSpecies != null) 'seen_species': seenSpecies,
+      if (luckyEgg != null) 'lucky_egg': luckyEgg,
     });
   }
 
@@ -365,6 +541,10 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
     Value<DateTime?>? lastFedAt,
     Value<String?>? speciesId,
     Value<DateTime?>? lastReleasedAt,
+    Value<String?>? hat,
+    Value<String?>? neck,
+    Value<String>? seenSpecies,
+    Value<bool>? luckyEgg,
   }) {
     return CreatureStatesCompanion(
       id: id ?? this.id,
@@ -373,6 +553,10 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
       lastFedAt: lastFedAt ?? this.lastFedAt,
       speciesId: speciesId ?? this.speciesId,
       lastReleasedAt: lastReleasedAt ?? this.lastReleasedAt,
+      hat: hat ?? this.hat,
+      neck: neck ?? this.neck,
+      seenSpecies: seenSpecies ?? this.seenSpecies,
+      luckyEgg: luckyEgg ?? this.luckyEgg,
     );
   }
 
@@ -397,6 +581,18 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
     if (lastReleasedAt.present) {
       map['last_released_at'] = Variable<DateTime>(lastReleasedAt.value);
     }
+    if (hat.present) {
+      map['hat'] = Variable<String>(hat.value);
+    }
+    if (neck.present) {
+      map['neck'] = Variable<String>(neck.value);
+    }
+    if (seenSpecies.present) {
+      map['seen_species'] = Variable<String>(seenSpecies.value);
+    }
+    if (luckyEgg.present) {
+      map['lucky_egg'] = Variable<bool>(luckyEgg.value);
+    }
     return map;
   }
 
@@ -408,7 +604,11 @@ class CreatureStatesCompanion extends UpdateCompanion<CreatureState> {
           ..write('traitPoints: $traitPoints, ')
           ..write('lastFedAt: $lastFedAt, ')
           ..write('speciesId: $speciesId, ')
-          ..write('lastReleasedAt: $lastReleasedAt')
+          ..write('lastReleasedAt: $lastReleasedAt, ')
+          ..write('hat: $hat, ')
+          ..write('neck: $neck, ')
+          ..write('seenSpecies: $seenSpecies, ')
+          ..write('luckyEgg: $luckyEgg')
           ..write(')'))
         .toString();
   }
@@ -1115,6 +1315,18 @@ class $WalkSummariesTable extends WalkSummaries
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _extraLinesMeta = const VerificationMeta(
+    'extraLines',
+  );
+  @override
+  late final GeneratedColumn<String> extraLines = GeneratedColumn<String>(
+    'extra_lines',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     walkId,
@@ -1126,6 +1338,7 @@ class $WalkSummariesTable extends WalkSummaries
     streetsByEnvironment,
     creatureGrew,
     seen,
+    extraLines,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1225,6 +1438,12 @@ class $WalkSummariesTable extends WalkSummaries
         seen.isAcceptableOrUnknown(data['seen']!, _seenMeta),
       );
     }
+    if (data.containsKey('extra_lines')) {
+      context.handle(
+        _extraLinesMeta,
+        extraLines.isAcceptableOrUnknown(data['extra_lines']!, _extraLinesMeta),
+      );
+    }
     return context;
   }
 
@@ -1270,6 +1489,10 @@ class $WalkSummariesTable extends WalkSummaries
         DriftSqlType.bool,
         data['${effectivePrefix}seen'],
       )!,
+      extraLines: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}extra_lines'],
+      )!,
     );
   }
 
@@ -1293,6 +1516,10 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
   final String streetsByEnvironment;
   final bool creatureGrew;
   final bool seen;
+
+  /// Zusätzliche Zeilen anderer Features als JSON-Liste, z. B. Fundstücke
+  /// (seit Schema 7).
+  final String extraLines;
   const WalkSummaryRow({
     required this.walkId,
     required this.finishedAt,
@@ -1303,6 +1530,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
     required this.streetsByEnvironment,
     required this.creatureGrew,
     required this.seen,
+    required this.extraLines,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1316,6 +1544,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
     map['streets_by_environment'] = Variable<String>(streetsByEnvironment);
     map['creature_grew'] = Variable<bool>(creatureGrew);
     map['seen'] = Variable<bool>(seen);
+    map['extra_lines'] = Variable<String>(extraLines);
     return map;
   }
 
@@ -1330,6 +1559,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
       streetsByEnvironment: Value(streetsByEnvironment),
       creatureGrew: Value(creatureGrew),
       seen: Value(seen),
+      extraLines: Value(extraLines),
     );
   }
 
@@ -1350,6 +1580,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
       ),
       creatureGrew: serializer.fromJson<bool>(json['creatureGrew']),
       seen: serializer.fromJson<bool>(json['seen']),
+      extraLines: serializer.fromJson<String>(json['extraLines']),
     );
   }
   @override
@@ -1365,6 +1596,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
       'streetsByEnvironment': serializer.toJson<String>(streetsByEnvironment),
       'creatureGrew': serializer.toJson<bool>(creatureGrew),
       'seen': serializer.toJson<bool>(seen),
+      'extraLines': serializer.toJson<String>(extraLines),
     };
   }
 
@@ -1378,6 +1610,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
     String? streetsByEnvironment,
     bool? creatureGrew,
     bool? seen,
+    String? extraLines,
   }) => WalkSummaryRow(
     walkId: walkId ?? this.walkId,
     finishedAt: finishedAt ?? this.finishedAt,
@@ -1388,6 +1621,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
     streetsByEnvironment: streetsByEnvironment ?? this.streetsByEnvironment,
     creatureGrew: creatureGrew ?? this.creatureGrew,
     seen: seen ?? this.seen,
+    extraLines: extraLines ?? this.extraLines,
   );
   WalkSummaryRow copyWithCompanion(WalkSummariesCompanion data) {
     return WalkSummaryRow(
@@ -1414,6 +1648,9 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
           ? data.creatureGrew.value
           : this.creatureGrew,
       seen: data.seen.present ? data.seen.value : this.seen,
+      extraLines: data.extraLines.present
+          ? data.extraLines.value
+          : this.extraLines,
     );
   }
 
@@ -1428,7 +1665,8 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
           ..write('knownSegmentCount: $knownSegmentCount, ')
           ..write('streetsByEnvironment: $streetsByEnvironment, ')
           ..write('creatureGrew: $creatureGrew, ')
-          ..write('seen: $seen')
+          ..write('seen: $seen, ')
+          ..write('extraLines: $extraLines')
           ..write(')'))
         .toString();
   }
@@ -1444,6 +1682,7 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
     streetsByEnvironment,
     creatureGrew,
     seen,
+    extraLines,
   );
   @override
   bool operator ==(Object other) =>
@@ -1457,7 +1696,8 @@ class WalkSummaryRow extends DataClass implements Insertable<WalkSummaryRow> {
           other.knownSegmentCount == this.knownSegmentCount &&
           other.streetsByEnvironment == this.streetsByEnvironment &&
           other.creatureGrew == this.creatureGrew &&
-          other.seen == this.seen);
+          other.seen == this.seen &&
+          other.extraLines == this.extraLines);
 }
 
 class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
@@ -1470,6 +1710,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
   final Value<String> streetsByEnvironment;
   final Value<bool> creatureGrew;
   final Value<bool> seen;
+  final Value<String> extraLines;
   final Value<int> rowid;
   const WalkSummariesCompanion({
     this.walkId = const Value.absent(),
@@ -1481,6 +1722,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
     this.streetsByEnvironment = const Value.absent(),
     this.creatureGrew = const Value.absent(),
     this.seen = const Value.absent(),
+    this.extraLines = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   WalkSummariesCompanion.insert({
@@ -1493,6 +1735,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
     required String streetsByEnvironment,
     required bool creatureGrew,
     this.seen = const Value.absent(),
+    this.extraLines = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : walkId = Value(walkId),
        finishedAt = Value(finishedAt),
@@ -1511,6 +1754,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
     Expression<String>? streetsByEnvironment,
     Expression<bool>? creatureGrew,
     Expression<bool>? seen,
+    Expression<String>? extraLines,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1524,6 +1768,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
         'streets_by_environment': streetsByEnvironment,
       if (creatureGrew != null) 'creature_grew': creatureGrew,
       if (seen != null) 'seen': seen,
+      if (extraLines != null) 'extra_lines': extraLines,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1538,6 +1783,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
     Value<String>? streetsByEnvironment,
     Value<bool>? creatureGrew,
     Value<bool>? seen,
+    Value<String>? extraLines,
     Value<int>? rowid,
   }) {
     return WalkSummariesCompanion(
@@ -1550,6 +1796,7 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
       streetsByEnvironment: streetsByEnvironment ?? this.streetsByEnvironment,
       creatureGrew: creatureGrew ?? this.creatureGrew,
       seen: seen ?? this.seen,
+      extraLines: extraLines ?? this.extraLines,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1586,6 +1833,9 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
     if (seen.present) {
       map['seen'] = Variable<bool>(seen.value);
     }
+    if (extraLines.present) {
+      map['extra_lines'] = Variable<String>(extraLines.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1604,7 +1854,252 @@ class WalkSummariesCompanion extends UpdateCompanion<WalkSummaryRow> {
           ..write('streetsByEnvironment: $streetsByEnvironment, ')
           ..write('creatureGrew: $creatureGrew, ')
           ..write('seen: $seen, ')
+          ..write('extraLines: $extraLines, ')
           ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TreasureStatesTable extends TreasureStates
+    with TableInfo<$TreasureStatesTable, TreasureState> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TreasureStatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _findsMeta = const VerificationMeta('finds');
+  @override
+  late final GeneratedColumn<String> finds = GeneratedColumn<String>(
+    'finds',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('{}'),
+  );
+  static const VerificationMeta _ownedMeta = const VerificationMeta('owned');
+  @override
+  late final GeneratedColumn<String> owned = GeneratedColumn<String>(
+    'owned',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('[]'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, finds, owned];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'treasure_states';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TreasureState> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('finds')) {
+      context.handle(
+        _findsMeta,
+        finds.isAcceptableOrUnknown(data['finds']!, _findsMeta),
+      );
+    }
+    if (data.containsKey('owned')) {
+      context.handle(
+        _ownedMeta,
+        owned.isAcceptableOrUnknown(data['owned']!, _ownedMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TreasureState map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TreasureState(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      finds: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}finds'],
+      )!,
+      owned: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}owned'],
+      )!,
+    );
+  }
+
+  @override
+  $TreasureStatesTable createAlias(String alias) {
+    return $TreasureStatesTable(attachedDatabase, alias);
+  }
+}
+
+class TreasureState extends DataClass implements Insertable<TreasureState> {
+  final int id;
+
+  /// Anzahl je `Find` als JSON, z. B. `{"acorn":2}`.
+  final String finds;
+
+  /// Gebastelte `Accessory`-Namen als JSON-Liste.
+  final String owned;
+  const TreasureState({
+    required this.id,
+    required this.finds,
+    required this.owned,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['finds'] = Variable<String>(finds);
+    map['owned'] = Variable<String>(owned);
+    return map;
+  }
+
+  TreasureStatesCompanion toCompanion(bool nullToAbsent) {
+    return TreasureStatesCompanion(
+      id: Value(id),
+      finds: Value(finds),
+      owned: Value(owned),
+    );
+  }
+
+  factory TreasureState.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TreasureState(
+      id: serializer.fromJson<int>(json['id']),
+      finds: serializer.fromJson<String>(json['finds']),
+      owned: serializer.fromJson<String>(json['owned']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'finds': serializer.toJson<String>(finds),
+      'owned': serializer.toJson<String>(owned),
+    };
+  }
+
+  TreasureState copyWith({int? id, String? finds, String? owned}) =>
+      TreasureState(
+        id: id ?? this.id,
+        finds: finds ?? this.finds,
+        owned: owned ?? this.owned,
+      );
+  TreasureState copyWithCompanion(TreasureStatesCompanion data) {
+    return TreasureState(
+      id: data.id.present ? data.id.value : this.id,
+      finds: data.finds.present ? data.finds.value : this.finds,
+      owned: data.owned.present ? data.owned.value : this.owned,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TreasureState(')
+          ..write('id: $id, ')
+          ..write('finds: $finds, ')
+          ..write('owned: $owned')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, finds, owned);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TreasureState &&
+          other.id == this.id &&
+          other.finds == this.finds &&
+          other.owned == this.owned);
+}
+
+class TreasureStatesCompanion extends UpdateCompanion<TreasureState> {
+  final Value<int> id;
+  final Value<String> finds;
+  final Value<String> owned;
+  const TreasureStatesCompanion({
+    this.id = const Value.absent(),
+    this.finds = const Value.absent(),
+    this.owned = const Value.absent(),
+  });
+  TreasureStatesCompanion.insert({
+    this.id = const Value.absent(),
+    this.finds = const Value.absent(),
+    this.owned = const Value.absent(),
+  });
+  static Insertable<TreasureState> custom({
+    Expression<int>? id,
+    Expression<String>? finds,
+    Expression<String>? owned,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (finds != null) 'finds': finds,
+      if (owned != null) 'owned': owned,
+    });
+  }
+
+  TreasureStatesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? finds,
+    Value<String>? owned,
+  }) {
+    return TreasureStatesCompanion(
+      id: id ?? this.id,
+      finds: finds ?? this.finds,
+      owned: owned ?? this.owned,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (finds.present) {
+      map['finds'] = Variable<String>(finds.value);
+    }
+    if (owned.present) {
+      map['owned'] = Variable<String>(owned.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TreasureStatesCompanion(')
+          ..write('id: $id, ')
+          ..write('finds: $finds, ')
+          ..write('owned: $owned')
           ..write(')'))
         .toString();
   }
@@ -1617,6 +2112,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $KnownSegmentsTable knownSegments = $KnownSegmentsTable(this);
   late final $RecordedWalksTable recordedWalks = $RecordedWalksTable(this);
   late final $WalkSummariesTable walkSummaries = $WalkSummariesTable(this);
+  late final $TreasureStatesTable treasureStates = $TreasureStatesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1626,6 +2122,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     knownSegments,
     recordedWalks,
     walkSummaries,
+    treasureStates,
   ];
 }
 
@@ -1637,6 +2134,10 @@ typedef $$CreatureStatesTableCreateCompanionBuilder =
       Value<DateTime?> lastFedAt,
       Value<String?> speciesId,
       Value<DateTime?> lastReleasedAt,
+      Value<String?> hat,
+      Value<String?> neck,
+      Value<String> seenSpecies,
+      Value<bool> luckyEgg,
     });
 typedef $$CreatureStatesTableUpdateCompanionBuilder =
     CreatureStatesCompanion Function({
@@ -1646,6 +2147,10 @@ typedef $$CreatureStatesTableUpdateCompanionBuilder =
       Value<DateTime?> lastFedAt,
       Value<String?> speciesId,
       Value<DateTime?> lastReleasedAt,
+      Value<String?> hat,
+      Value<String?> neck,
+      Value<String> seenSpecies,
+      Value<bool> luckyEgg,
     });
 
 class $$CreatureStatesTableFilterComposer
@@ -1684,6 +2189,26 @@ class $$CreatureStatesTableFilterComposer
 
   ColumnFilters<DateTime> get lastReleasedAt => $composableBuilder(
     column: $table.lastReleasedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hat => $composableBuilder(
+    column: $table.hat,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get neck => $composableBuilder(
+    column: $table.neck,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get seenSpecies => $composableBuilder(
+    column: $table.seenSpecies,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get luckyEgg => $composableBuilder(
+    column: $table.luckyEgg,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1726,6 +2251,26 @@ class $$CreatureStatesTableOrderingComposer
     column: $table.lastReleasedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get hat => $composableBuilder(
+    column: $table.hat,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get neck => $composableBuilder(
+    column: $table.neck,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get seenSpecies => $composableBuilder(
+    column: $table.seenSpecies,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get luckyEgg => $composableBuilder(
+    column: $table.luckyEgg,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CreatureStatesTableAnnotationComposer
@@ -1758,6 +2303,20 @@ class $$CreatureStatesTableAnnotationComposer
     column: $table.lastReleasedAt,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get hat =>
+      $composableBuilder(column: $table.hat, builder: (column) => column);
+
+  GeneratedColumn<String> get neck =>
+      $composableBuilder(column: $table.neck, builder: (column) => column);
+
+  GeneratedColumn<String> get seenSpecies => $composableBuilder(
+    column: $table.seenSpecies,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get luckyEgg =>
+      $composableBuilder(column: $table.luckyEgg, builder: (column) => column);
 }
 
 class $$CreatureStatesTableTableManager
@@ -1799,6 +2358,10 @@ class $$CreatureStatesTableTableManager
                 Value<DateTime?> lastFedAt = const Value.absent(),
                 Value<String?> speciesId = const Value.absent(),
                 Value<DateTime?> lastReleasedAt = const Value.absent(),
+                Value<String?> hat = const Value.absent(),
+                Value<String?> neck = const Value.absent(),
+                Value<String> seenSpecies = const Value.absent(),
+                Value<bool> luckyEgg = const Value.absent(),
               }) => CreatureStatesCompanion(
                 id: id,
                 food: food,
@@ -1806,6 +2369,10 @@ class $$CreatureStatesTableTableManager
                 lastFedAt: lastFedAt,
                 speciesId: speciesId,
                 lastReleasedAt: lastReleasedAt,
+                hat: hat,
+                neck: neck,
+                seenSpecies: seenSpecies,
+                luckyEgg: luckyEgg,
               ),
           createCompanionCallback:
               ({
@@ -1815,6 +2382,10 @@ class $$CreatureStatesTableTableManager
                 Value<DateTime?> lastFedAt = const Value.absent(),
                 Value<String?> speciesId = const Value.absent(),
                 Value<DateTime?> lastReleasedAt = const Value.absent(),
+                Value<String?> hat = const Value.absent(),
+                Value<String?> neck = const Value.absent(),
+                Value<String> seenSpecies = const Value.absent(),
+                Value<bool> luckyEgg = const Value.absent(),
               }) => CreatureStatesCompanion.insert(
                 id: id,
                 food: food,
@@ -1822,6 +2393,10 @@ class $$CreatureStatesTableTableManager
                 lastFedAt: lastFedAt,
                 speciesId: speciesId,
                 lastReleasedAt: lastReleasedAt,
+                hat: hat,
+                neck: neck,
+                seenSpecies: seenSpecies,
+                luckyEgg: luckyEgg,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -2233,6 +2808,7 @@ typedef $$WalkSummariesTableCreateCompanionBuilder =
       required String streetsByEnvironment,
       required bool creatureGrew,
       Value<bool> seen,
+      Value<String> extraLines,
       Value<int> rowid,
     });
 typedef $$WalkSummariesTableUpdateCompanionBuilder =
@@ -2246,6 +2822,7 @@ typedef $$WalkSummariesTableUpdateCompanionBuilder =
       Value<String> streetsByEnvironment,
       Value<bool> creatureGrew,
       Value<bool> seen,
+      Value<String> extraLines,
       Value<int> rowid,
     });
 
@@ -2300,6 +2877,11 @@ class $$WalkSummariesTableFilterComposer
 
   ColumnFilters<bool> get seen => $composableBuilder(
     column: $table.seen,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get extraLines => $composableBuilder(
+    column: $table.extraLines,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2357,6 +2939,11 @@ class $$WalkSummariesTableOrderingComposer
     column: $table.seen,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get extraLines => $composableBuilder(
+    column: $table.extraLines,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$WalkSummariesTableAnnotationComposer
@@ -2408,6 +2995,11 @@ class $$WalkSummariesTableAnnotationComposer
 
   GeneratedColumn<bool> get seen =>
       $composableBuilder(column: $table.seen, builder: (column) => column);
+
+  GeneratedColumn<String> get extraLines => $composableBuilder(
+    column: $table.extraLines,
+    builder: (column) => column,
+  );
 }
 
 class $$WalkSummariesTableTableManager
@@ -2450,6 +3042,7 @@ class $$WalkSummariesTableTableManager
                 Value<String> streetsByEnvironment = const Value.absent(),
                 Value<bool> creatureGrew = const Value.absent(),
                 Value<bool> seen = const Value.absent(),
+                Value<String> extraLines = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WalkSummariesCompanion(
                 walkId: walkId,
@@ -2461,6 +3054,7 @@ class $$WalkSummariesTableTableManager
                 streetsByEnvironment: streetsByEnvironment,
                 creatureGrew: creatureGrew,
                 seen: seen,
+                extraLines: extraLines,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -2474,6 +3068,7 @@ class $$WalkSummariesTableTableManager
                 required String streetsByEnvironment,
                 required bool creatureGrew,
                 Value<bool> seen = const Value.absent(),
+                Value<String> extraLines = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => WalkSummariesCompanion.insert(
                 walkId: walkId,
@@ -2485,6 +3080,7 @@ class $$WalkSummariesTableTableManager
                 streetsByEnvironment: streetsByEnvironment,
                 creatureGrew: creatureGrew,
                 seen: seen,
+                extraLines: extraLines,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -2521,6 +3117,169 @@ typedef $$WalkSummariesTableProcessedTableManager =
       WalkSummaryRow,
       PrefetchHooks Function()
     >;
+typedef $$TreasureStatesTableCreateCompanionBuilder =
+    TreasureStatesCompanion Function({
+      Value<int> id,
+      Value<String> finds,
+      Value<String> owned,
+    });
+typedef $$TreasureStatesTableUpdateCompanionBuilder =
+    TreasureStatesCompanion Function({
+      Value<int> id,
+      Value<String> finds,
+      Value<String> owned,
+    });
+
+class $$TreasureStatesTableFilterComposer
+    extends Composer<_$AppDatabase, $TreasureStatesTable> {
+  $$TreasureStatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get finds => $composableBuilder(
+    column: $table.finds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get owned => $composableBuilder(
+    column: $table.owned,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$TreasureStatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $TreasureStatesTable> {
+  $$TreasureStatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get finds => $composableBuilder(
+    column: $table.finds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get owned => $composableBuilder(
+    column: $table.owned,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$TreasureStatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TreasureStatesTable> {
+  $$TreasureStatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get finds =>
+      $composableBuilder(column: $table.finds, builder: (column) => column);
+
+  GeneratedColumn<String> get owned =>
+      $composableBuilder(column: $table.owned, builder: (column) => column);
+}
+
+class $$TreasureStatesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TreasureStatesTable,
+          TreasureState,
+          $$TreasureStatesTableFilterComposer,
+          $$TreasureStatesTableOrderingComposer,
+          $$TreasureStatesTableAnnotationComposer,
+          $$TreasureStatesTableCreateCompanionBuilder,
+          $$TreasureStatesTableUpdateCompanionBuilder,
+          (
+            TreasureState,
+            BaseReferences<_$AppDatabase, $TreasureStatesTable, TreasureState>,
+          ),
+          TreasureState,
+          PrefetchHooks Function()
+        > {
+  $$TreasureStatesTableTableManager(
+    _$AppDatabase db,
+    $TreasureStatesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TreasureStatesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TreasureStatesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TreasureStatesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> finds = const Value.absent(),
+                Value<String> owned = const Value.absent(),
+              }) => TreasureStatesCompanion(id: id, finds: finds, owned: owned),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> finds = const Value.absent(),
+                Value<String> owned = const Value.absent(),
+              }) => TreasureStatesCompanion.insert(
+                id: id,
+                finds: finds,
+                owned: owned,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$TreasureStatesTable, TreasureState>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $TreasureStatesTable,
+                    TreasureState
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$TreasureStatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TreasureStatesTable,
+      TreasureState,
+      $$TreasureStatesTableFilterComposer,
+      $$TreasureStatesTableOrderingComposer,
+      $$TreasureStatesTableAnnotationComposer,
+      $$TreasureStatesTableCreateCompanionBuilder,
+      $$TreasureStatesTableUpdateCompanionBuilder,
+      (
+        TreasureState,
+        BaseReferences<_$AppDatabase, $TreasureStatesTable, TreasureState>,
+      ),
+      TreasureState,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2533,4 +3292,6 @@ class $AppDatabaseManager {
       $$RecordedWalksTableTableManager(_db, _db.recordedWalks);
   $$WalkSummariesTableTableManager get walkSummaries =>
       $$WalkSummariesTableTableManager(_db, _db.walkSummaries);
+  $$TreasureStatesTableTableManager get treasureStates =>
+      $$TreasureStatesTableTableManager(_db, _db.treasureStates);
 }

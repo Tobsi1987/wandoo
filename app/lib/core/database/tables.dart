@@ -13,6 +13,14 @@ class CreatureStates extends Table {
   TextColumn get speciesId => text().nullable()();
   DateTimeColumn get lastReleasedAt => dateTime().nullable()();
 
+  /// Deko als Name von `CreatureHat`/`CreatureNeck` (seit Schema 7).
+  TextColumn get hat => text().nullable()();
+  TextColumn get neck => text().nullable()();
+
+  /// Je geschlüpfte Arten als JSON-Liste, fürs Sammelalbum.
+  TextColumn get seenSpecies => text().withDefault(const Constant('[]'))();
+  BoolColumn get luckyEgg => boolean().withDefault(const Constant(false))();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -57,6 +65,24 @@ class WalkSummaries extends Table {
   BoolColumn get creatureGrew => boolean()();
   BoolColumn get seen => boolean().withDefault(const Constant(false))();
 
+  /// Zusätzliche Zeilen anderer Features als JSON-Liste, z. B. Fundstücke
+  /// (seit Schema 7).
+  TextColumn get extraLines => text().withDefault(const Constant('[]'))();
+
   @override
   Set<Column<Object>> get primaryKey => {walkId};
+}
+
+/// Die Schatzkiste: Fundstücke und gebastelte Deko, eine Zeile.
+class TreasureStates extends Table {
+  IntColumn get id => integer()();
+
+  /// Anzahl je `Find` als JSON, z. B. `{"acorn":2}`.
+  TextColumn get finds => text().withDefault(const Constant('{}'))();
+
+  /// Gebastelte `Accessory`-Namen als JSON-Liste.
+  TextColumn get owned => text().withDefault(const Constant('[]'))();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
 }

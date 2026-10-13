@@ -25,6 +25,10 @@ class ReleaseCreature {
     if (!canRelease(creature, now)) {
       throw StateError('Wegschicken ist gerade nicht möglich.');
     }
-    return Creature(lastReleasedAt: now);
+    return Creature(
+      lastReleasedAt: now,
+      seenSpecies: creature.seenSpecies,
+      luckyEgg: creature.luckyEgg,
+    );
   }
 }

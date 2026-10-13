@@ -46,4 +46,24 @@ void main() {
     expect(loaded.speciesId, 'waschbaer');
     expect(loaded.lastReleasedAt, released);
   });
+
+  test('merkt sich Deko, Album und Glücks-Ei', () async {
+    final db = testDatabase();
+    addTearDown(db.close);
+    final repo = DriftCreatureRepository(db);
+    await repo.save(
+      const Creature(
+        food: 30,
+        hat: CreatureHat.flowerCrown,
+        neck: CreatureNeck.shellNecklace,
+        seenSpecies: {'axolotl'},
+        luckyEgg: true,
+      ),
+    );
+    final loaded = await repo.load();
+    expect(loaded.hat, CreatureHat.flowerCrown);
+    expect(loaded.neck, CreatureNeck.shellNecklace);
+    expect(loaded.seenSpecies, {'axolotl'});
+    expect(loaded.luckyEgg, isTrue);
+  });
 }

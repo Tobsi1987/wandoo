@@ -8,6 +8,7 @@ export 'domain/creature.dart';
 export 'domain/creature_repository.dart';
 export 'domain/feed_creature.dart';
 export 'domain/growth_stage.dart';
+export 'domain/outfit.dart';
 export 'domain/rarity.dart';
 export 'domain/release_creature.dart';
 export 'domain/species.dart';

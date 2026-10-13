@@ -11,6 +11,7 @@ class WalkSummary {
     required this.bridgeCount,
     required this.creatureGrew,
     this.knownSegmentCount = 0,
+    this.extraLines = const [],
   });
 
   final String walkId;
@@ -20,6 +21,22 @@ class WalkSummary {
   /// Schon bekannte Abschnitte, die wieder abgelaufen wurden. Sie machen
   /// das Wesen satt, lassen es aber nicht wachsen.
   final int knownSegmentCount;
+
+  /// Was andere Features zum Gang zu sagen haben, z. B. Fundstücke.
+  final List<String> extraLines;
+
+  /// Dieselbe Zusammenfassung mit weiteren Zeilen.
+  WalkSummary withExtraLines(List<String> lines) => WalkSummary(
+    walkId: walkId,
+    finishedAt: finishedAt,
+    newSegmentCount: newSegmentCount,
+    newStreetCount: newStreetCount,
+    streetsByEnvironment: streetsByEnvironment,
+    bridgeCount: bridgeCount,
+    creatureGrew: creatureGrew,
+    knownSegmentCount: knownSegmentCount,
+    extraLines: [...extraLines, ...lines],
+  );
 
   /// Verschiedene Straßen, auf denen mindestens ein neuer Abschnitt lag.
   final int newStreetCount;

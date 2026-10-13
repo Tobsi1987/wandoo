@@ -4,6 +4,7 @@ import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/discovery_map/discovery_map.dart';
 import 'package:wandoo/features/share/share.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
+import 'package:wandoo/features/treasure/treasure.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
 
 /// Startbildschirm: das Wesen und der Knopf für den nächsten Gang.
@@ -18,6 +19,11 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Wandoo'),
         actions: [
+          IconButton(
+            tooltip: 'Schatzkiste',
+            icon: const Icon(Icons.inventory_2_outlined),
+            onPressed: () => context.push(TreasureScreen.path),
+          ),
           IconButton(
             tooltip: 'Wesen teilen',
             icon: const Icon(Icons.ios_share),

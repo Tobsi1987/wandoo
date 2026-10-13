@@ -5,6 +5,7 @@ void bearParts(vec3 q, inout float d, inout float m) {
   vec3 e = vec3(abs(q.x) - gRadius.x * 0.62, q.y - gRadius.y * 0.78, q.z);
   d = smin(d, length(e) - 0.12 * gScale, 0.05);
   pick(d, m, length(q - vec3(0.0, -0.16, -gRadius.z)) - 0.1 * gScale, 1.0);
+  if (uHat > 0.5) return;  // Hut statt Blatt
   vec3 stem = vec3(0.0, gRadius.y * 0.95, 0.0);
   pick(d, m, sdCapsule(q, stem, stem + vec3(0.03, 0.1, 0.0), 0.012), 4.0);
   vec3 l = q - stem - vec3(0.09, 0.12, 0.0) * gScale;

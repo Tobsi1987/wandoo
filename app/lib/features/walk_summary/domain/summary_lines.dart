@@ -8,6 +8,7 @@ List<String> summaryLines(WalkSummary summary) {
     return [
       if (summary.knownSegmentCount > 0) 'Bekannte Wege: Dein Wesen ist satt.',
       _growOnlyOnNew,
+      ...summary.extraLines,
     ];
   }
   final streets = summary.newStreetCount;
@@ -18,6 +19,7 @@ List<String> summaryLines(WalkSummary summary) {
         _environmentLine(type, summary.streetsByEnvironment[type]!),
     if (summary.bridgeCount > 0) _bridgeLine(summary.bridgeCount),
     if (summary.creatureGrew) 'Dein Wesen ist gewachsen!',
+    ...summary.extraLines,
   ];
 }
 

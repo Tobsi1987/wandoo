@@ -4,6 +4,7 @@ import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/discovery/discovery.dart';
 import 'package:wandoo/features/environment/environment.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
+import 'package:wandoo/flows/process_walk/walk_extra.dart';
 import 'package:wandoo/flows/process_walk/walk_result.dart';
 
 /// Verarbeitet einen fertigen Gang: Spur, Entdeckung, Umgebung, Fütterung,
@@ -19,6 +20,7 @@ class ProcessWalk {
     required this.creatures,
     required this.summaries,
     FeedCreature? feed,
+    this.extras = const [],
     this.summarize = const SummarizeWalk(),
   }) : feed = feed ?? FeedCreature();
 
@@ -29,6 +31,9 @@ class ProcessWalk {
   final WalkSummaryRepository summaries;
   final FeedCreature feed;
   final SummarizeWalk summarize;
+
+  /// Läuft nach jedem Gang, z. B. Fundstücke und Abenteuer.
+  final List<WalkExtra> extras;
 
   Future<WalkResult> call(Track track, {DateTime? now}) async {
     final finishedAt = track.points.lastOrNull?.time ?? now ?? DateTime.now();
@@ -45,13 +50,21 @@ class ProcessWalk {
     );
     await creatures.save(after);
 
-    final summary = summarize(
+    var summary = summarize(
       walkId: track.id,
       finishedAt: finishedAt,
       newSegments: newSegments,
       knownSegmentCount: discovery.knownCount,
       creatureGrew: after.stage != before.stage,
     );
+    final outcome = WalkOutcome(
+      track: track,
+      summary: summary,
+      newSegmentsByEnvironment: _count(newSegments),
+    );
+    for (final extra in extras) {
+      summary = summary.withExtraLines(await extra.onWalk(outcome));
+    }
     await summaries.save(summary);
     return WalkResult(summary: summary, creature: after);
   }

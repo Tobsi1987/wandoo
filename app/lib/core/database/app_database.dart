@@ -10,7 +10,13 @@ part 'app_database.g.dart';
 /// Die Übersetzung in Domänenobjekte machen die Repositories in den
 /// `data/`-Ordnern der Features.
 @DriftDatabase(
-  tables: [CreatureStates, KnownSegments, RecordedWalks, WalkSummaries],
+  tables: [
+    CreatureStates,
+    KnownSegments,
+    RecordedWalks,
+    WalkSummaries,
+    TreasureStates,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase(super.e);
@@ -19,7 +25,7 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase.open() => AppDatabase(driftDatabase(name: 'wandoo'));
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -36,6 +42,22 @@ class AppDatabase extends _$AppDatabase {
       if (from >= 2 && from < 6) {
         await m.addColumn(recordedWalks, recordedWalks.finished);
       }
+      if (from < 7) await _upgradeTo7(m, from);
     },
   );
+
+  Future<void> _upgradeTo7(Migrator m, int from) async {
+    for (final column in [
+      creatureStates.hat,
+      creatureStates.neck,
+      creatureStates.seenSpecies,
+      creatureStates.luckyEgg,
+    ]) {
+      await m.addColumn(creatureStates, column);
+    }
+    if (from >= 3) {
+      await m.addColumn(walkSummaries, walkSummaries.extraLines);
+    }
+    await m.createTable(treasureStates);
+  }
 }

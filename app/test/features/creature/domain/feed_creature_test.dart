@@ -44,6 +44,15 @@ void main() {
     expect(later.speciesId, hatched.speciesId);
   });
 
+  test('geschlüpfte Art landet im Album, ein Glücks-Ei wird verbraucht', () {
+    const lucky = Creature(food: 19, luckyEgg: true, seenSpecies: {'moosbaer'});
+    final hatched = feed(lucky, {EnvironmentType.field: 1}, now);
+    final species = SpeciesCatalog.byId(hatched.speciesId);
+    expect(species.rarity, isNot(Rarity.common));
+    expect(hatched.seenSpecies, {'moosbaer', species.id});
+    expect(hatched.luckyEgg, isFalse);
+  });
+
   test('alte Spielstände ohne Art bekommen beim nächsten Gang eine', () {
     const old = Creature(food: 30, traitPoints: {Trait.moss: 30});
     final fed = feed(old, {EnvironmentType.forest: 1}, now);
