@@ -4,7 +4,8 @@ import 'package:wandoo/bootstrap/providers.dart';
 import 'package:wandoo/bootstrap/wandoo_app.dart';
 
 /// Startet die App mit allen verdrahteten Abhängigkeiten.
-void bootstrap() {
+Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(ProviderScope(overrides: appOverrides(), child: const WandooApp()));
+  final overrides = await appOverrides();
+  runApp(ProviderScope(overrides: overrides, child: const WandooApp()));
 }
