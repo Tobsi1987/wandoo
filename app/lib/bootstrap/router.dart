@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:wandoo/features/achievements/achievements.dart';
 import 'package:wandoo/features/adventures/adventures.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/den/den.dart';
@@ -48,6 +49,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: DenScreen.path,
       builder: (context, state) => const DenScreen(),
+    ),
+    GoRoute(
+      path: AchievementBookScreen.path,
+      builder: (context, state) => const AchievementBookScreen(),
     ),
     GoRoute(
       path: StarCatchScreen.path,

@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:geo_engine/geo_engine.dart';
 import 'package:wandoo/bootstrap/demo/demo_platform.dart';
+import 'package:wandoo/bootstrap/demo/demo_stats.dart';
 import 'package:wandoo/bootstrap/demo/demo_town.dart';
 import 'package:wandoo/bootstrap/demo/in_memory_recorded_walk_repository.dart';
 import 'package:wandoo/bootstrap/demo/in_memory_walk_summary_repository.dart';
@@ -8,6 +9,8 @@ import 'package:wandoo/bootstrap/demo/simulated_location_source.dart';
 import 'package:wandoo/core/location/location_providers.dart';
 import 'package:wandoo/core/map_data/map_data_providers.dart';
 import 'package:wandoo/core/map_data/map_data_source.dart';
+import 'package:wandoo/features/achievements/achievements.dart';
+import 'package:wandoo/features/achievements/data/in_memory_stats_repository.dart';
 import 'package:wandoo/features/adventures/adventures.dart';
 import 'package:wandoo/features/adventures/data/in_memory_adventure_repository.dart';
 import 'package:wandoo/features/creature/creature.dart';
@@ -60,6 +63,9 @@ List<Override> demoOverrides() {
     ),
     progressRepositoryProvider.overrideWithValue(
       InMemoryProgressRepository([?_progress()]),
+    ),
+    statsRepositoryProvider.overrideWithValue(
+      InMemoryStatsRepository(demoStats()),
     ),
     locationSourceProvider.overrideWithValue(
       SimulatedLocationSource(goal: () => scents.current?.target),

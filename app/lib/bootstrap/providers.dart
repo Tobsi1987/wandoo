@@ -10,6 +10,8 @@ import 'package:wandoo/core/map_data/map_data_providers.dart';
 import 'package:wandoo/core/map_data/overpass_client.dart';
 import 'package:wandoo/core/map_data/tile_cache.dart';
 import 'package:wandoo/core/map_data/tiled_map_data_source.dart';
+import 'package:wandoo/features/achievements/achievements.dart';
+import 'package:wandoo/features/achievements/data/drift_stats_repository.dart';
 import 'package:wandoo/features/adventures/adventures.dart';
 import 'package:wandoo/features/adventures/data/drift_adventure_repository.dart';
 import 'package:wandoo/features/creature/creature.dart';
@@ -89,6 +91,7 @@ Future<List<Override>> appOverrides() async {
     starCatchRepositoryProvider.overrideWithValue(DriftStarCatchRepository(db)),
     bellyRepositoryProvider.overrideWithValue(DriftBellyRepository(db)),
     progressRepositoryProvider.overrideWithValue(DriftProgressRepository(db)),
+    statsRepositoryProvider.overrideWithValue(DriftStatsRepository(db)),
     weatherSourceProvider.overrideWithValue(
       CachedWeatherSource(OpenMeteoWeatherSource()),
     ),
