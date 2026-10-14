@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:wandoo/features/achievements/achievements.dart';
 import 'package:wandoo/features/adventures/adventures.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/den/den.dart';
@@ -54,7 +55,7 @@ Widget _action(BuildContext context, String tip, String icon, String path) =>
       onPressed: () => context.push(path),
     );
 
-/// Was seltener gebraucht wird: teilen, Höhle, wegschicken.
+/// Was seltener gebraucht wird: Erfolge-Buch, teilen, Höhle, wegschicken.
 Future<void> _more(BuildContext context) => showModalBottomSheet<void>(
   context: context,
   showDragHandle: true,
@@ -65,6 +66,14 @@ Future<void> _more(BuildContext context) => showModalBottomSheet<void>(
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            TextButton.icon(
+              onPressed: () {
+                Navigator.pop(sheet);
+                unawaited(context.push(AchievementBookScreen.path));
+              },
+              icon: const Text('📖', style: TextStyle(fontSize: 24)),
+              label: const Text('Erfolge-Buch'),
+            ),
             TextButton.icon(
               onPressed: () {
                 Navigator.pop(sheet);
