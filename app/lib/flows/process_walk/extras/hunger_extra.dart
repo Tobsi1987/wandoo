@@ -14,10 +14,9 @@ class HungerExtra implements WalkExtra {
     final creature = outcome.after;
     if (!creature.hatched) return const [];
     final now = clock();
-    final stored = await bellies.load();
-    final belly = stored != null && stored.lineKey == creature.lineKey
-        ? stored
-        : Belly.full(creature.lineKey, now);
+    final belly =
+        await bellies.load(creature.lineKey) ??
+        Belly.full(creature.lineKey, now);
     final before = belly.fillAt(now);
     final after = belly.eat(outcome.summary.distanceMeters, now);
     await bellies.save(after);

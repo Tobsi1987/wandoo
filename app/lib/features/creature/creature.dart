@@ -6,6 +6,7 @@ library;
 export 'application/creature_providers.dart';
 export 'domain/creature.dart';
 export 'domain/creature_repository.dart';
+export 'domain/den_repository.dart';
 export 'domain/feed_creature.dart';
 export 'domain/growth_stage.dart';
 export 'domain/outfit.dart';

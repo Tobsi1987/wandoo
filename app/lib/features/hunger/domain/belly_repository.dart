@@ -1,13 +1,15 @@
 import 'package:wandoo/features/hunger/domain/belly.dart';
 import 'package:wandoo/features/hunger/domain/farewell.dart';
 
-/// Speichert den Hungerbalken und einen noch ungelesenen Abschiedsbrief.
+/// Speichert den Hungerbalken je Wesen (`Creature.lineKey`) und einen
+/// noch ungelesenen Abschiedsbrief.
 abstract interface class BellyRepository {
-  Future<Belly?> load();
+  /// null, solange das Wesen noch keinen Balken hat.
+  Future<Belly?> load(String lineKey);
 
   Future<void> save(Belly belly);
 
-  Stream<Belly?> watch();
+  Stream<Belly?> watch(String lineKey);
 
   Future<void> leaveLetter(Farewell? farewell);
 

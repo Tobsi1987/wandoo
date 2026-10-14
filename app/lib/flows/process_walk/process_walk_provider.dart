@@ -12,11 +12,13 @@ import 'package:wandoo/features/tracking/tracking.dart';
 import 'package:wandoo/features/treasure/treasure.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
 import 'package:wandoo/features/world/world.dart';
+import 'package:wandoo/flows/levels/gain_xp_provider.dart';
 import 'package:wandoo/flows/process_walk/extras/adventure_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/diary_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/district_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/friendship_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/hunger_extra.dart';
+import 'package:wandoo/flows/process_walk/extras/level_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/scent_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/treasure_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/weather_extra.dart';
@@ -47,6 +49,10 @@ final processWalkProvider = Provider<ProcessWalk>(
       FriendshipExtra(
         ref.watch(friendshipRepositoryProvider),
         rules: ref.watch(befriendCreatureProvider),
+      ),
+      LevelExtra(
+        gain: ref.watch(gainXpProvider),
+        scents: ref.watch(scentRepositoryProvider),
       ),
       ScentExtra(
         scents: ref.watch(scentRepositoryProvider),

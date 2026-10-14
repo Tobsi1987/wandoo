@@ -10,5 +10,5 @@ export 'domain/find.dart';
 export 'domain/treasure_chest.dart';
 export 'domain/treasure_repository.dart';
 export 'presentation/treasure_labels.dart'
-    show findEmoji, findNames, foundLines;
+    show accessoryName, findEmoji, findNames, foundLines;
 export 'presentation/treasure_screen.dart';

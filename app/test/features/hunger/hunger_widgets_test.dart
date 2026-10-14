@@ -9,7 +9,7 @@ import 'package:wandoo/features/hunger/hunger.dart';
 final _now = DateTime(2026, 10, 14, 12);
 
 Future<InMemoryBellyRepository> _pump(WidgetTester tester, Belly? belly) async {
-  final bellies = InMemoryBellyRepository(belly);
+  final bellies = InMemoryBellyRepository([?belly]);
   await tester.pumpWidget(
     ProviderScope(
       overrides: [

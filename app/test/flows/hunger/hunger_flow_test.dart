@@ -42,14 +42,14 @@ void main() {
       clock: () => _start,
     );
     expect(await check(), isNull);
-    expect((await bellies.load())?.fillAt(_start), 1);
+    expect((await bellies.load(_moosel.lineKey))?.fillAt(_start), 1);
   });
 
   test('zwei Tage leer: Brief, neues Ei, Album bleibt', () async {
     final creatures = InMemoryCreatureRepository(_moosel);
-    final bellies = InMemoryBellyRepository(
+    final bellies = InMemoryBellyRepository([
       Belly(lineKey: _moosel.lineKey, meters: 0, at: _start),
-    );
+    ]);
     final check = CheckHunger(
       creatures: creatures,
       bellies: bellies,
@@ -65,9 +65,9 @@ void main() {
   });
 
   test('Gehen füllt den Bauch und sagt es', () async {
-    final bellies = InMemoryBellyRepository(
+    final bellies = InMemoryBellyRepository([
       Belly(lineKey: _moosel.lineKey, meters: 1000, at: _start),
-    );
+    ]);
     final extra = HungerExtra(bellies, clock: () => _start);
     expect(await extra.onWalk(_walk(1500)), [
       '🍎 Moosel hat gegessen: Bauch zu 50 % voll',

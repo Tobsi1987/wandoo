@@ -4,9 +4,12 @@ import 'package:wandoo/bootstrap/router.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/home_widget/home_widget.dart';
 import 'package:wandoo/features/hunger/hunger.dart';
+import 'package:wandoo/features/levels/levels.dart';
+import 'package:wandoo/features/petting/petting.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
 import 'package:wandoo/flows/creature_reminder/creature_reminder_provider.dart';
 import 'package:wandoo/flows/hunger/check_hunger_provider.dart';
+import 'package:wandoo/flows/levels/gain_xp_provider.dart';
 import 'package:wandoo/flows/process_walk/process_walk_provider.dart';
 import 'package:wandoo/flows/scent/sniff_out_provider.dart';
 import 'package:wandoo/ui_kit/wandoo_theme.dart';
@@ -32,7 +35,22 @@ class WandooApp extends ConsumerWidget {
         _remind(ref);
         ref.read(syncHomeWidgetProvider)(value).ignore();
       })
-      ..listen(currentBellyProvider, (_, _) => _remind(ref));
+      ..listen(currentBellyProvider, (_, _) => _remind(ref))
+      // Jeder Freundschaftspunkt (Streicheln) bringt Erfahrung.
+      ..listen(friendshipProvider, (before, now) {
+        final old = before?.value;
+        final f = now.value;
+        final creature = ref.read(creatureProvider).value;
+        if (old == null || f == null || creature == null) return;
+        if (old.creatureKey != f.creatureKey || f.points <= old.points) return;
+        ref
+            .read(gainXpProvider)(
+              creature,
+              (f.points - old.points) * Xp.perFriendPoint,
+              announce: true,
+            )
+            .ignore();
+      });
     // Beim ersten Standort eines Gangs schnüffelt ein geschlüpftes Wesen.
     ref.listen(trackingControllerProvider, (before, now) {
       final here = now is WalkRecording ? now.position : null;
