@@ -8,6 +8,7 @@ import 'package:wandoo/features/home/presentation/home_actions.dart';
 import 'package:wandoo/features/petting/petting.dart';
 import 'package:wandoo/features/scent/scent.dart';
 import 'package:wandoo/features/sounds/sounds.dart';
+import 'package:wandoo/features/star_catch/star_catch.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
 import 'package:wandoo/features/world/world.dart';
@@ -66,9 +67,10 @@ class HomeScreen extends ConsumerWidget {
                           ),
                         ),
                       ),
-                      if (showSummary)
-                        const WalkSummaryCard()
-                      else ...[
+                      if (showSummary) ...[
+                        const StarCatchButton(),
+                        const WalkSummaryCard(),
+                      ] else ...[
                         const SniffBubble(),
                         const WalkPanel(),
                       ],
