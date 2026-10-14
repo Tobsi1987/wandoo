@@ -28,17 +28,22 @@ class AccessoryTile extends ConsumerWidget {
 
   String get _ownedLabel => _worn ? 'Trägt dein Wesen' : 'Gebastelt';
 
+  /// "🌰 2/6 · 🌺 3/3", oder dass der Bauplan noch fehlt.
+  String get _needs => chest.knows(accessory)
+      ? [
+          for (final e in accessory.recipe.entries)
+            '${findEmoji(e.key)} ${chest.count(e.key)}/${e.value}',
+        ].join(' · ')
+      : '📜 Bauplan fehlt, kommt mit einem Level-Aufstieg';
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final actions = ref.read(treasureActionsProvider);
-    final material = accessory.material;
     final owned = chest.owned.contains(accessory);
-    final cost =
-        '${findEmoji(material)} ${chest.count(material)}/${accessory.cost}';
     return Card(
       child: ListTile(
         title: Text(accessoryName(accessory)),
-        subtitle: Text(owned ? _ownedLabel : cost),
+        subtitle: Text(owned ? _ownedLabel : _needs),
         trailing: owned
             ? (creature.hatched
                   ? OutlinedButton(

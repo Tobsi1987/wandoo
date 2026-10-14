@@ -24,6 +24,30 @@ String accessoryName(Accessory a) => switch (a) {
   Accessory.starCrown => 'Sternenkrone',
   Accessory.shellNecklace => 'Muschelkette',
   Accessory.sparkleScarf => 'Glitzerschal',
+  Accessory.bow => 'Haarschleife',
+  Accessory.acornChain => 'Eichelkette',
+  Accessory.flowerLei => 'Blumenkette',
+  Accessory.bowTie => 'Fliege',
+  Accessory.mushroomCap => 'Pilzhut',
+  Accessory.strawHat => 'Strohhut',
+  Accessory.sailorCap => 'Matrosenmütze',
+  Accessory.partyHat => 'Partyhütchen',
+  Accessory.bell => 'Glöckchen',
+  Accessory.knitScarf => 'Ringelschal',
+  Accessory.bunnyEars => 'Hasenohren',
+  Accessory.antlers => 'Zweiggeweih',
+  Accessory.pearlNecklace => 'Perlenkette',
+  Accessory.topHat => 'Zylinder',
+  Accessory.medal => 'Sternmedaille',
+  Accessory.wizardHat => 'Zauberhut',
+  Accessory.cape => 'Umhang',
+  Accessory.starHalo => 'Sternenkranz',
+};
+
+String craftTierName(CraftTier t) => switch (t) {
+  CraftTier.simple => 'Einfach',
+  CraftTier.medium => 'Etwas schwerer',
+  CraftTier.rare => 'Selten, mit Bauplan',
 };
 
 /// "🌰 2 Eicheln", "🐚 1 Muschel" – je Fundstück eine Zeile für die

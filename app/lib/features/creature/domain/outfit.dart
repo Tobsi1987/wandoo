@@ -2,10 +2,35 @@ import 'package:meta/meta.dart';
 
 /// Was das Wesen auf dem Kopf trägt. Die Reihenfolge ist die Nummer im
 /// Shader (+1, 0 heißt nichts) und darf sich nicht ändern.
-enum CreatureHat { acornCap, flowerCrown, starCrown }
+enum CreatureHat {
+  acornCap,
+  flowerCrown,
+  starCrown,
+  bow,
+  mushroomCap,
+  strawHat,
+  sailorCap,
+  partyHat,
+  bunnyEars,
+  antlers,
+  topHat,
+  wizardHat,
+  starHalo,
+}
 
 /// Was das Wesen um den Hals trägt. Reihenfolge wie bei [CreatureHat].
-enum CreatureNeck { shellNecklace, sparkleScarf }
+enum CreatureNeck {
+  shellNecklace,
+  sparkleScarf,
+  acornChain,
+  flowerLei,
+  bowTie,
+  bell,
+  knitScarf,
+  pearlNecklace,
+  medal,
+  cape,
+}
 
 /// Was das Wesen bei Wetter dabeihat: Bei Regen einen Schirm, bei Schnee
 /// eine Mütze (die dann den Hut ersetzt).

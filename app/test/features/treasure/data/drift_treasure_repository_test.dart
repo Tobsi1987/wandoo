@@ -19,11 +19,13 @@ void main() {
     final repo = DriftTreasureRepository(db);
     final chest = const TreasureChest()
         .add([...List.filled(5, Find.poppy), Find.starShard])
-        .craft(Accessory.flowerCrown);
+        .craft(Accessory.flowerCrown)
+        .learn(Accessory.topHat);
     await repo.save(chest);
     final loaded = await repo.load();
     expect(loaded.count(Find.poppy), 1);
     expect(loaded.count(Find.starShard), 1);
     expect(loaded.owned, {Accessory.flowerCrown});
+    expect(loaded.plans, {Accessory.topHat});
   });
 }

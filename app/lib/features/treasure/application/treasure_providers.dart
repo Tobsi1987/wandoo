@@ -48,16 +48,11 @@ class TreasureActions {
   }
 }
 
-/// Wie ein Deko-Teil am Wesen heißt.
-CreatureHat? hatFor(Accessory a) => switch (a) {
-  Accessory.acornCap => CreatureHat.acornCap,
-  Accessory.flowerCrown => CreatureHat.flowerCrown,
-  Accessory.starCrown => CreatureHat.starCrown,
-  _ => null,
-};
+/// Wie ein Deko-Teil am Wesen heißt: gleicher Name wie in [CreatureHat]
+/// und [CreatureNeck].
+CreatureHat? hatFor(Accessory a) =>
+    a.slot == AccessorySlot.hat ? CreatureHat.values.asNameMap()[a.name] : null;
 
-CreatureNeck? neckFor(Accessory a) => switch (a) {
-  Accessory.shellNecklace => CreatureNeck.shellNecklace,
-  Accessory.sparkleScarf => CreatureNeck.sparkleScarf,
-  _ => null,
-};
+CreatureNeck? neckFor(Accessory a) => a.slot == AccessorySlot.neck
+    ? CreatureNeck.values.asNameMap()[a.name]
+    : null;

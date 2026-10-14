@@ -7,7 +7,8 @@ import 'package:wandoo/features/treasure/domain/find.dart';
 import 'package:wandoo/features/treasure/presentation/treasure_labels.dart';
 import 'package:wandoo/features/treasure/presentation/widgets/accessory_tile.dart';
 
-/// Schatzkiste: gesammelte Fundstücke und Deko zum Basteln und Anziehen.
+/// Schatzkiste: gesammelte Fundstücke und Deko zum Basteln und Anziehen,
+/// sortiert von einfach bis selten.
 class TreasureScreen extends ConsumerWidget {
   const TreasureScreen({super.key});
 
@@ -40,9 +41,22 @@ class TreasureScreen extends ConsumerWidget {
                       ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                for (final a in Accessory.values)
-                  AccessoryTile(accessory: a, chest: chest, creature: creature),
+                for (final tier in CraftTier.values) ...[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 20, 4, 6),
+                    child: Text(
+                      craftTierName(tier),
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  for (final a in Accessory.values)
+                    if (a.tier == tier)
+                      AccessoryTile(
+                        accessory: a,
+                        chest: chest,
+                        creature: creature,
+                      ),
+                ],
               ],
             ),
     );
