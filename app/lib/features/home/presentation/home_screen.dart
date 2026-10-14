@@ -113,7 +113,8 @@ class HomeScreen extends ConsumerWidget {
   /// Ton zum Moment: Jubel beim Schlüpfen, Freude übers Futter. Kurz
   /// warten, bis die Figur wirklich springt.
   static void _cheer(WidgetRef ref, CelebrationMoment moment, Creature c) {
-    final hatch = moment == CelebrationMoment.hatch;
+    final hatch =
+        moment == CelebrationMoment.hatch || moment == CelebrationMoment.evolve;
     Future<void>.delayed(
       Duration(milliseconds: hatch ? 1600 : 600),
       () => ref.read(playSoundProvider)(

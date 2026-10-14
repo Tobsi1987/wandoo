@@ -16,10 +16,11 @@ class SpeciesLook {
   final String? modelAsset;
 }
 
-SpeciesLook _model(String id, int placeholder) => SpeciesLook(
-  placeholder: placeholder,
-  modelAsset: 'assets/creatures/$id.glb',
-);
+SpeciesLook _model(String id, int placeholder) =>
+    SpeciesLook(placeholder: placeholder, modelAsset: modelAssetOf(id));
+
+/// Pfad des Modells mit der Id [id], z. B. `funkel2`.
+String modelAssetOf(String id) => 'assets/creatures/$id.glb';
 
 /// Aussehen je `Species.id`. Jede Art im `SpeciesCatalog` braucht hier
 /// einen Eintrag (ein Test prüft das).
@@ -45,3 +46,20 @@ final Map<String, SpeciesLook> speciesLooks = {
   'aurora': _model('aurora', 2),
   'sternschnuppe': _model('sternschnuppe', 3),
 };
+
+/// Eigene Modelle für Entwicklungsstufen: Art → Stufe → Modell-Id. Hut,
+/// Augen und Spuren stehen in den Tabellen unter dieser Id.
+const stageModels = <String, Map<int, String>>{
+  'funkel': {2: 'funkel2', 3: 'funkel3'},
+};
+
+/// Welches Modell [species] auf [stage] trägt und wie viele Stufen ihm
+/// noch fehlen. Ohne eigenes Modell zeigt es das der Stufe davor, etwas
+/// größer und mit Funkeln.
+({String id, int missing}) stageModelOf(String species, int stage) {
+  for (var s = stage; s > 1; s--) {
+    final id = stageModels[species]?[s];
+    if (id != null) return (id: id, missing: stage - s);
+  }
+  return (id: species, missing: stage - 1);
+}

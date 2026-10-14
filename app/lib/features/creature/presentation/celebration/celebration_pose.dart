@@ -16,6 +16,7 @@ class CelebrationPose {
     this.burst = 0,
     this.greeting = 0,
     this.stretch = 0,
+    this.glow = 0,
   });
 
   /// Schlüpfen: Ei zittert, platzt, Wesen springt mit einer Drehung
@@ -51,6 +52,26 @@ class CelebrationPose {
       sway: 0.26 * math.sin(2 * math.pi * 3 * w) * math.sin(math.pi * w),
       burst: burst,
       greeting: greeting,
+    );
+  }
+
+  /// Entwicklung: steigt auf und dreht sich immer schneller, ein Leuchten
+  /// hüllt es ein. Im hellsten Augenblick (Mitte) wechselt die Gestalt,
+  /// dann schwebt es herab, landet und Sterne fliegen.
+  factory CelebrationPose.evolve(double t) {
+    if (t <= 0 || t >= 1) return rest;
+    const peak = 0.5;
+    final up = Curves.easeInOut.transform((t / 0.4).clamp(0.0, 1.0));
+    final down = Curves.easeIn.transform(((t - 0.6) / 0.2).clamp(0.0, 1.0));
+    final rising = t < peak;
+    return CelebrationPose(
+      lift: 0.12 * (rising ? up : 1 - down),
+      spin: 6 * math.pi * Curves.easeIn.transform(math.min(t / peak, 1)),
+      glow: t < peak
+          ? Curves.easeIn.transform((t / peak).clamp(0.0, 1.0))
+          : 1 - ((t - peak) / 0.25).clamp(0.0, 1.0),
+      squash: (1 - (t - 0.8).abs() / 0.05).clamp(0.0, 1.0),
+      burst: ((t - peak) / (1 - peak)).clamp(0.0, 1.0),
     );
   }
 
@@ -97,6 +118,9 @@ class CelebrationPose {
 
   /// Streckung im Flug (0 = keine).
   final double stretch;
+
+  /// Leuchten um das Wesen bei der Entwicklung (0 bis 1).
+  final double glow;
 
   /// Wie sichtbar die Sprechblase "Hallo!" ist (0 bis 1).
   final double greeting;

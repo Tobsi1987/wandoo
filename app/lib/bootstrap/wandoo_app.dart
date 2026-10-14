@@ -88,7 +88,7 @@ class WandooApp extends ConsumerWidget {
         level: ref.watch(currentMudProvider),
         child: CreatureEvolution(
           creature: creature,
-          stage: ref.watch(progressProvider)?.stage ?? 1,
+          stage: ref.watch(evolutionStageProvider),
           child: child,
         ),
       ),

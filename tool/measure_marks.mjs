@@ -102,12 +102,14 @@ function measure(tris, a) {
     .map(([u, v]) => hit(tris, [u, 3, a.hatZ + v], [0, -1, 0]))
     .filter((h) => h && h[1] > a.hatY - a.r * 0.55 && h[1] < a.hatY + 0.04)
     .slice(0, 90);
-  const backY = a.neckY + (a.hatY - a.neckY) * 0.35;
-  const back = disc(0.17, 0.034)
+  const backAt = (y, z) => disc(0.17, 0.034)
     // Von innen nach hinten: so stört kein Schwanz hinter dem Rücken.
-    .map(([u, v]) => hit(tris, [u, backY + v, 0], [0, 0, -1], true))
+    .map(([u, v]) => hit(tris, [u, y + v, z], [0, 0, -1], true))
     .filter((h) => h && h[5] < -0.3)
     .slice(0, 60);
+  const back = backAt(a.neckY + (a.hatY - a.neckY) * 0.35, 0);
+  // Langer Hals (Entwicklungsstufen): Rücken liegt unter dem Hals.
+  if (!back.length) back.push(...backAt(a.neckY - 0.12, a.neckZ));
   const ringY = a.hatY - a.r * 0.3;
   const ring = [...Array(12).keys()].map((i) => {
     const t = (i / 12) * 2 * Math.PI, d = [-Math.sin(t), 0, -Math.cos(t)];

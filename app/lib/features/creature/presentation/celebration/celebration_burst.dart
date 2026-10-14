@@ -5,9 +5,12 @@ import 'package:flutter/material.dart';
 /// Was beim Schlüpfen aus dem Ei fliegt: ein heller Blitz, Schalenstücke
 /// und Funkelsterne. [progress] läuft von 0 (Ei springt auf) bis 1.
 class CelebrationBurst extends CustomPainter {
-  CelebrationBurst(this.progress);
+  CelebrationBurst(this.progress, {this.shards = true});
 
   final double progress;
+
+  /// Schalenstücke nur beim Schlüpfen, nicht bei der Entwicklung.
+  final bool shards;
 
   static const _shell = Color(0xFFFFF6E6);
   static const _shellEdge = Color(0xFFE8D5B5);
@@ -18,7 +21,7 @@ class CelebrationBurst extends CustomPainter {
     if (progress <= 0 || progress >= 1) return;
     final center = Offset(size.width * 0.5, size.height * 0.6);
     _flash(canvas, center, size.width);
-    for (var i = 0; i < 8; i++) {
+    for (var i = 0; i < (shards ? 8 : 0); i++) {
       _shard(canvas, center, size.width, i);
     }
     for (var i = 0; i < 12; i++) {
@@ -99,5 +102,6 @@ class CelebrationBurst extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CelebrationBurst old) => old.progress != progress;
+  bool shouldRepaint(CelebrationBurst old) =>
+      old.progress != progress || old.shards != shards;
 }

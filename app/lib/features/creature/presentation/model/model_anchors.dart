@@ -57,6 +57,8 @@ const modelAnchors = <String, ModelAnchors>{
   'brummli': ModelAnchors.measured(.85, .13, .28, .36, .23),
   'fluffeule': ModelAnchors.measured(.92, .05, .30, .5, .33, .05),
   'funkel': ModelAnchors.measured(.92, .10, .28, .47, .20),
+  'funkel2': ModelAnchors.measured(.94, .17, .18, .54, .10, .17),
+  'funkel3': ModelAnchors.measured(.82, .25, .10, .55, .07, .22),
   'glutling': ModelAnchors.measured(.76, .08, .26, .38, .16, .08),
   'kieselchen': ModelAnchors.measured(.98, 0, .30, .42, .40),
   'kristallis': ModelAnchors.measured(.85, .08, .28, .30, .22, .02),

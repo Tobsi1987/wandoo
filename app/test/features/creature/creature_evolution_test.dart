@@ -31,6 +31,11 @@ void main() {
       ),
     );
     expect(seen, [3, 1, 1]);
-    expect(CreatureEvolution.scaleFor(3), greaterThan(1));
+    // Eigene Stufenmodelle sind nie kleiner als Stufe 1.
+    expect(CreatureEvolution.scaleFor(stage: 2, missing: 0), greaterThan(1));
+    expect(
+      CreatureEvolution.scaleFor(stage: 3, missing: 0),
+      greaterThan(CreatureEvolution.scaleFor(stage: 2, missing: 0)),
+    );
   });
 }

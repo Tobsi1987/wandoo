@@ -152,7 +152,8 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
           CelebrationMoment.hatch => CelebrationPose.hatch(t),
           CelebrationMoment.hop => CelebrationPose.hop(t),
           CelebrationMoment.jump => CelebrationPose.jump(t),
-          null => CelebrationPose(egg: _egg != null),
+          null ||
+          CelebrationMoment.evolve => CelebrationPose(egg: _egg != null),
         };
         final shown = pose.egg ? _egg ?? widget.creature : widget.creature;
         return Stack(
@@ -176,7 +177,9 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
   Motion? _motion(CelebrationPose pose) => switch (_playing) {
     _ when widget.cheer => null,
     CelebrationMoment.hatch => pose.greeting > 0 ? Motion.wave : Motion.happy,
-    CelebrationMoment.hop || CelebrationMoment.jump => Motion.happy,
+    CelebrationMoment.hop ||
+    CelebrationMoment.jump ||
+    CelebrationMoment.evolve => Motion.happy,
     null => null,
   };
 
