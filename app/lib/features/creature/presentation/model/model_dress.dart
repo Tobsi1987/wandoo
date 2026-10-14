@@ -1,36 +1,33 @@
 import 'package:flutter_scene/scene.dart';
-import 'package:wandoo/features/creature/domain/outfit.dart';
-import 'package:wandoo/features/creature/presentation/model/model_anchors.dart';
+import 'package:wandoo/features/creature/presentation/marks/mark_surface.dart';
+import 'package:wandoo/features/creature/presentation/marks/model_marks.dart';
 import 'package:wandoo/features/creature/presentation/model/model_eyes.dart';
+import 'package:wandoo/features/creature/presentation/model/model_look.dart';
 import 'package:wandoo/features/creature/presentation/outfit/model_accessories.dart';
 
-/// Hut, Halsschmuck, Wetter-Sachen und Schlaf-Lider an einem 3D-Modell.
+/// Zieht einem 3D-Modell alles aus [ModelLook] an.
 class ModelDress {
-  Node? _outfit;
-  Node? _lids;
+  final _parts = <Node>[];
 
   /// Zieht alles neu an; [pivot] trägt das Modell.
-  void apply(
-    Node pivot, {
-    required ModelAnchors anchors,
-    required Outfit outfit,
-    required EyeSpot? eyes,
-    required bool eyesClosed,
-  }) {
-    _outfit?.detach();
-    _outfit = outfit.isEmpty ? null : modelAccessories(anchors, outfit);
-    if (_outfit case final outfit?) pivot.add(outfit);
-    _lids?.detach();
-    _lids = switch (eyes) {
-      final eyes? when eyesClosed => modelEyelids(eyes),
-      _ => null,
-    };
-    if (_lids case final lids?) pivot.add(lids);
+  void apply(Node pivot, ModelLook look) {
+    for (final part in _parts) {
+      part.detach();
+    }
+    _parts
+      ..clear()
+      ..addAll([
+        if ((MarkSurface.of(look.species), look.mark) case (
+          final surface?,
+          final mark?,
+        ))
+          ?modelMarks(surface, look.anchors, mark, headFree: look.headFree),
+        if (!look.outfit.isEmpty) modelAccessories(look.anchors, look.outfit),
+        if (look.eyes case final eyes? when look.eyesClosed) modelEyelids(eyes),
+      ])
+      ..forEach(pivot.add);
   }
 
   /// Nach `pivot.removeAll()`: nichts mehr angezogen.
-  void forget() {
-    _outfit = null;
-    _lids = null;
-  }
+  void forget() => _parts.clear();
 }

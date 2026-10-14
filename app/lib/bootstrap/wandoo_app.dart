@@ -71,7 +71,10 @@ class WandooApp extends ConsumerWidget {
       // nicht mehr in Knöpfe und Kacheln.
       builder: (context, child) => MediaQuery.withClampedTextScaling(
         maxScaleFactor: maxTextScale,
-        child: child!,
+        child: WorldMarksShown(
+          shown: ref.watch(marksShownProvider).value ?? true,
+          child: child!,
+        ),
       ),
     );
   }

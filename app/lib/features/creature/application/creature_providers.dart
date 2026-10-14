@@ -3,6 +3,7 @@ import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/domain/creature_repository.dart';
 import 'package:wandoo/features/creature/domain/den_repository.dart';
 import 'package:wandoo/features/creature/domain/feed_creature.dart';
+import 'package:wandoo/features/creature/domain/marks_setting_repository.dart';
 
 /// Wird in `bootstrap/providers.dart` mit einer Umsetzung belegt.
 final creatureRepositoryProvider = Provider<CreatureRepository>(
@@ -25,4 +26,14 @@ final denRepositoryProvider = Provider<DenRepository>(
 /// Wer gerade in der Höhle schläft.
 final sleeperProvider = StreamProvider<Sleeper?>(
   (ref) => ref.watch(denRepositoryProvider).watch(),
+);
+
+/// Wird in `bootstrap/providers.dart` mit einer Umsetzung belegt.
+final marksSettingRepositoryProvider = Provider<MarksSettingRepository>(
+  (ref) => throw UnimplementedError('In bootstrap/providers.dart setzen.'),
+);
+
+/// Ob das Wesen die Spuren der Welt zeigt (sonst sieht es normal aus).
+final marksShownProvider = StreamProvider<bool>(
+  (ref) => ref.watch(marksSettingRepositoryProvider).watchShown(),
 );

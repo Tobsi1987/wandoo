@@ -2,13 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_scene/scene.dart';
-import 'package:wandoo/features/creature/domain/outfit.dart';
+import 'package:wandoo/features/creature/presentation/marks/mark_surface.dart';
 import 'package:wandoo/features/creature/presentation/model/creature_spin.dart';
 import 'package:wandoo/features/creature/presentation/model/drag_turn.dart';
-import 'package:wandoo/features/creature/presentation/model/model_anchors.dart';
 import 'package:wandoo/features/creature/presentation/model/model_dress.dart';
-import 'package:wandoo/features/creature/presentation/model/model_eyes.dart';
 import 'package:wandoo/features/creature/presentation/model/model_loader.dart';
+import 'package:wandoo/features/creature/presentation/model/model_look.dart';
 import 'package:wandoo/features/creature/presentation/model/model_motions.dart';
 import 'package:wandoo/features/creature/presentation/model/model_pose.dart';
 import 'package:wandoo/features/creature/presentation/model/model_stage.dart';
@@ -27,10 +26,7 @@ class CreatureModel extends StatefulWidget {
     this.grownUp = true,
     this.animate = true,
     this.night = false,
-    this.anchors = ModelAnchors.fallback,
-    this.outfit = const Outfit(),
-    this.eyes,
-    this.eyesClosed = false,
+    this.look = const ModelLook(),
     this.walking = false,
     super.key,
   });
@@ -49,13 +45,8 @@ class CreatureModel extends StatefulWidget {
   /// Nachts schwirren Glühwürmchen um das Wesen.
   final bool night;
 
-  /// Wo Hut, Halsschmuck und Schirm auf diesem Modell sitzen.
-  final ModelAnchors anchors;
-  final Outfit outfit;
-
-  /// Wo die Augen sitzen; nur damit kann es sie im Schlaf schließen.
-  final EyeSpot? eyes;
-  final bool eyesClosed;
+  /// Spur der Welt, Hut, Halsschmuck und Lider.
+  final ModelLook look;
 
   /// Läuft gerade mit (Geh-Animation bei geriggten Modellen).
   final bool walking;
@@ -90,6 +81,9 @@ class _CreatureModelState extends State<CreatureModel> {
       ..add(_pivot);
     _drag.addListener(() => _pose(_time.value));
     _start();
+    if (!MarkSurface.isLoaded) {
+      unawaited(MarkSurface.load().then((_) => mounted ? _wear() : null));
+    }
   }
 
   /// Schon geladene Modelle sofort zeigen, ohne leeres Bild dazwischen.
@@ -116,14 +110,7 @@ class _CreatureModelState extends State<CreatureModel> {
   }
 
   void _wear() {
-    final w = widget;
-    _dress.apply(
-      _pivot,
-      anchors: w.anchors,
-      outfit: w.outfit,
-      eyes: w.eyes,
-      eyesClosed: w.eyesClosed,
-    );
+    if (_motions != null) _dress.apply(_pivot, widget.look);
   }
 
   /// Jedes Bild: Körper bewegen und die passende Rig-Animation zeigen.
@@ -152,9 +139,7 @@ class _CreatureModelState extends State<CreatureModel> {
       _loaded = false;
       _start();
     } else if (_loaded) {
-      if (old.outfit != widget.outfit || old.eyesClosed != widget.eyesClosed) {
-        _wear();
-      }
+      if (old.look != widget.look) _wear();
       // Mit der aktuellen Zeit, sonst springt die Figur bei jedem Neuaufbau
       // kurz in die Ausgangshaltung (sieht beim Laufen wie Zittern aus).
       _pose(_time.value);
@@ -183,7 +168,7 @@ class _CreatureModelState extends State<CreatureModel> {
       size: widget.size,
       animate: widget.animate,
       night: widget.night,
-      asleep: widget.eyesClosed && widget.eyes != null,
+      asleep: widget.look.asleep,
       time: _time,
       onTime: _tick,
     );

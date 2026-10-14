@@ -15,6 +15,7 @@ import 'package:wandoo/features/adventures/data/in_memory_adventure_repository.d
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/creature/data/in_memory_creature_repository.dart';
 import 'package:wandoo/features/creature/data/in_memory_den_repository.dart';
+import 'package:wandoo/features/creature/data/in_memory_marks_setting_repository.dart';
 import 'package:wandoo/features/den/data/in_memory_room_repository.dart';
 import 'package:wandoo/features/den/den.dart';
 import 'package:wandoo/features/diary/data/in_memory_diary_repository.dart';
@@ -79,6 +80,9 @@ List<Override> _stores() => [
     InMemoryCreatureRepository(demoCreature()),
   ),
   denRepositoryProvider.overrideWithValue(InMemoryDenRepository()),
+  marksSettingRepositoryProvider.overrideWithValue(
+    InMemoryMarksSettingRepository(),
+  ),
   knownSegmentsRepositoryProvider.overrideWithValue(
     InMemoryKnownSegmentsRepository(),
   ),

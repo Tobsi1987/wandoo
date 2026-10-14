@@ -7,10 +7,13 @@ import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/domain/growth_stage.dart';
 import 'package:wandoo/features/creature/domain/outfit.dart';
 import 'package:wandoo/features/creature/domain/species_catalog.dart';
+import 'package:wandoo/features/creature/domain/world_mark.dart';
+import 'package:wandoo/features/creature/presentation/marks/world_marks_shown.dart';
 import 'package:wandoo/features/creature/presentation/model/creature_model.dart';
 import 'package:wandoo/features/creature/presentation/model/model_anchors.dart';
 import 'package:wandoo/features/creature/presentation/model/model_eyes.dart';
 import 'package:wandoo/features/creature/presentation/model/model_loader.dart';
+import 'package:wandoo/features/creature/presentation/model/model_look.dart';
 import 'package:wandoo/features/creature/presentation/painting/creature_painter.dart';
 import 'package:wandoo/features/creature/presentation/painting/creature_shader_painter.dart';
 import 'package:wandoo/features/creature/presentation/painting/creature_shader_uniforms.dart';
@@ -123,13 +126,18 @@ class _CreatureFigureState extends State<CreatureFigure>
     if (asset == null) return drawn;
     final c = widget.creature;
     final night = widget.world?.night ?? false;
+    final species = SpeciesCatalog.byId(c.speciesId).id;
     return CreatureModel(
       asset: asset,
-      anchors: ModelAnchors.of(SpeciesCatalog.byId(c.speciesId).id),
-      eyes: modelEyes[SpeciesCatalog.byId(c.speciesId).id],
-      eyesClosed: night && !widget.awake,
+      look: ModelLook(
+        species: species,
+        anchors: ModelAnchors.of(species),
+        outfit: Outfit(hat: c.hat, neck: c.neck, gear: _gear()),
+        mark: WorldMarksShown.of(context) ? WorldMark.of(c) : null,
+        eyes: modelEyes[species],
+        eyesClosed: night && !widget.awake,
+      ),
       walking: widget.awake,
-      outfit: Outfit(hat: c.hat, neck: c.neck, gear: _gear()),
       size: widget.size,
       fallback: drawn,
       sleepy: sleepy || (night && !widget.awake),
