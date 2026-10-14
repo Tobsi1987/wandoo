@@ -18,6 +18,8 @@ import 'package:wandoo/features/discovery/data/in_memory_known_segments_reposito
 import 'package:wandoo/features/discovery/discovery.dart';
 import 'package:wandoo/features/discovery_map/discovery_map.dart';
 import 'package:wandoo/features/home_widget/home_widget.dart';
+import 'package:wandoo/features/hunger/data/in_memory_belly_repository.dart';
+import 'package:wandoo/features/hunger/hunger.dart';
 import 'package:wandoo/features/petting/data/in_memory_friendship_repository.dart';
 import 'package:wandoo/features/petting/petting.dart';
 import 'package:wandoo/features/reminders/reminders.dart';
@@ -49,6 +51,9 @@ List<Override> demoOverrides() {
     ),
     starCatchRepositoryProvider.overrideWithValue(
       InMemoryStarCatchRepository(),
+    ),
+    bellyRepositoryProvider.overrideWithValue(
+      InMemoryBellyRepository(_belly()),
     ),
     locationSourceProvider.overrideWithValue(
       SimulatedLocationSource(goal: () => scents.current?.target),
@@ -107,6 +112,22 @@ class _FixedWeather implements WeatherSource {
   final Weather weather;
   @override
   Future<Weather?> current(GeoPoint place) async => weather;
+}
+
+/// `?hunger=leer` startet mit leerem Bauch, `?hunger=weg` so, dass das
+/// Wesen gleich auszieht (mit `?wesen=…`).
+Belly? _belly() {
+  final hungry = switch (Uri.base.queryParameters['hunger']) {
+    'leer' => const Duration(hours: 2),
+    'weg' => Belly.leavesAfter + const Duration(minutes: 1),
+    _ => null,
+  };
+  if (hungry == null) return null;
+  return Belly(
+    lineKey: _startCreature().lineKey,
+    meters: 0,
+    at: DateTime.now().subtract(hungry),
+  );
 }
 
 /// `?uhr=8` zeigt die Welt um 8 Uhr, egal wie spät es ist.

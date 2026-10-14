@@ -25,10 +25,14 @@ class ReleaseCreature {
     if (!canRelease(creature, now)) {
       throw StateError('Wegschicken ist gerade nicht möglich.');
     }
-    return Creature(
-      lastReleasedAt: now,
-      seenSpecies: creature.seenSpecies,
-      luckyEgg: creature.luckyEgg,
-    );
+    return runAway(creature, now);
   }
+
+  /// Das Wesen zieht von selbst aus (zum Beispiel vor Hunger): neues Ei,
+  /// ohne auf die Wartezeit zu achten. Album und Glücksei bleiben.
+  Creature runAway(Creature creature, DateTime now) => Creature(
+    lastReleasedAt: now,
+    seenSpecies: creature.seenSpecies,
+    luckyEgg: creature.luckyEgg,
+  );
 }

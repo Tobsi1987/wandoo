@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wandoo/bootstrap/router.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/home_widget/home_widget.dart';
+import 'package:wandoo/features/hunger/hunger.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
 import 'package:wandoo/flows/creature_reminder/creature_reminder_provider.dart';
+import 'package:wandoo/flows/hunger/check_hunger_provider.dart';
 import 'package:wandoo/flows/process_walk/process_walk_provider.dart';
 import 'package:wandoo/flows/scent/sniff_out_provider.dart';
 import 'package:wandoo/ui_kit/wandoo_theme.dart';
@@ -20,13 +22,17 @@ class WandooApp extends ConsumerWidget {
         ref.read(pendingWalkProcessorProvider).processAll().ignore();
       }
     });
-    // Nach jeder Fütterung: Erinnerung neu planen, Widget auffrischen.
-    ref.listen(creatureProvider, (_, creature) {
-      final value = creature.value;
-      if (value == null) return;
-      ref.read(syncCreatureReminderProvider)(value).ignore();
-      ref.read(syncHomeWidgetProvider)(value).ignore();
-    });
+    // Nach jeder Fütterung: Hunger prüfen, Erinnerung neu planen, Widget
+    // auffrischen.
+    ref
+      ..listen(creatureProvider, (_, creature) {
+        final value = creature.value;
+        if (value == null) return;
+        ref.read(checkHungerProvider)().ignore();
+        _remind(ref);
+        ref.read(syncHomeWidgetProvider)(value).ignore();
+      })
+      ..listen(currentBellyProvider, (_, _) => _remind(ref));
     // Beim ersten Standort eines Gangs schnüffelt ein geschlüpftes Wesen.
     ref.listen(trackingControllerProvider, (before, now) {
       final here = now is WalkRecording ? now.position : null;
@@ -41,5 +47,15 @@ class WandooApp extends ConsumerWidget {
       darkTheme: WandooTheme.dark(),
       routerConfig: appRouter,
     );
+  }
+
+  /// Plant die Erinnerungen, dringlicher, sobald der Bauch leer ist.
+  static void _remind(WidgetRef ref) {
+    final creature = ref.read(creatureProvider).value;
+    if (creature == null) return;
+    final hungryAt = ref.read(currentBellyProvider)?.emptyAt;
+    ref
+        .read(syncCreatureReminderProvider)(creature, hungryAt: hungryAt)
+        .ignore();
   }
 }

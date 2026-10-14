@@ -72,7 +72,10 @@ class _PettableState extends ConsumerState<Pettable>
               alignment: Alignment.center,
               children: [
                 CreatureMotion(
-                  motion: active && !widget.asleep ? Motion.happy : null,
+                  // Schläft es (nachts oder vor Hunger), döst es auch so.
+                  motion: widget.asleep
+                      ? Motion.sleep
+                      : (active ? Motion.happy : null),
                   child: Transform.scale(
                     scaleY: 1 + (widget.asleep ? 0 : 0.05 * _bounce(t)),
                     scaleX: 1 - (widget.asleep ? 0 : 0.03 * _bounce(t)),

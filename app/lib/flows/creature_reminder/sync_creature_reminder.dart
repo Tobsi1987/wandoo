@@ -17,17 +17,19 @@ class SyncCreatureReminder {
   final DateTime Function() _clock;
   String? _handled;
 
-  Future<void> call(Creature creature) async {
+  /// [hungryAt]: wann der Hungerbalken leer ist, für dringliche
+  /// Erinnerungen.
+  Future<void> call(Creature creature, {DateTime? hungryAt}) async {
     final fedAt = creature.lastFedAt;
     final name = creature.hatched
         ? SpeciesCatalog.byId(creature.speciesId).name
         : null;
-    final key = '$fedAt|$name';
+    final key = '$fedAt|$name|$hungryAt';
     if (fedAt == null || key == _handled) return;
     _handled = key;
     final now = _clock();
     final reminders = [
-      for (final r in plan(fedAt, name: name))
+      for (final r in plan(fedAt, name: name, hungryAt: hungryAt))
         if (r.at.isAfter(now)) r,
     ];
     try {
