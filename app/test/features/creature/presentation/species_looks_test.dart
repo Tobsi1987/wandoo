@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/creature/presentation/model/model_anchors.dart';
+import 'package:wandoo/features/creature/presentation/model/model_eyes.dart';
 import 'package:wandoo/features/creature/presentation/species_looks.dart';
 
 void main() {
@@ -31,5 +32,23 @@ void main() {
       expect(at.neckY, lessThan(at.hatY), reason: key);
       expect(at.hatY, inInclusiveRange(0.5, 1.0), reason: key);
     }
+  });
+
+  test('Stufenmodelle liegen bereit und kennen Hut und Augen', () {
+    for (final stages in stageModels.values) {
+      for (final id in stages.values) {
+        expect(File(modelAssetOf(id)).existsSync(), isTrue, reason: id);
+        expect(modelAnchors, contains(id), reason: id);
+        expect(modelEyes, contains(id), reason: id);
+      }
+    }
+  });
+
+  test('ohne eigenes Stufenmodell zeigt eine Art das der Stufe davor', () {
+    expect(stageModelOf('funkel', 1), (id: 'funkel', missing: 0));
+    expect(stageModelOf('funkel', 2), (id: 'funkel2', missing: 0));
+    expect(stageModelOf('funkel', 3), (id: 'funkel3', missing: 0));
+    expect(stageModelOf('test', 3), (id: 'test', missing: 2));
+    expect(stageModelOf('moosel', 3), (id: 'moosel', missing: 2));
   });
 }

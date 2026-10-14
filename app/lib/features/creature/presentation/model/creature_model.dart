@@ -92,11 +92,15 @@ class _CreatureModelState extends State<CreatureModel> {
     if (ModelLoader.isDone(asset)) {
       _add(ModelLoader.ready(asset));
     } else {
-      unawaited(ModelLoader.load(asset).then(_loadedLater));
+      unawaited(ModelLoader.load(asset).then((m) => _loadedLater(asset, m)));
     }
   }
 
-  void _loadedLater(Node? m) => mounted ? setState(() => _add(m)) : null;
+  /// Kam inzwischen ein anderes Modell an die Reihe (z. B. eine neue
+  /// Entwicklungsstufe), bleibt das alte weg.
+  void _loadedLater(String asset, Node? m) {
+    if (mounted && asset == widget.asset) setState(() => _add(m));
+  }
 
   void _add(Node? model) {
     _failed = model == null;

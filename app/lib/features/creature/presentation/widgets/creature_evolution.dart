@@ -25,8 +25,8 @@ class CreatureEvolution extends InheritedWidget {
     return same ? scope.stage.clamp(1, 3) : 1;
   }
 
-  /// Wie viel größer das Wesen auf einer Stufe ist, solange es für die Stufe
-  /// noch kein eigenes Modell gibt.
+  /// Wie viel größer das Wesen ist, wenn seinem Modell [stage] − 1 Stufen
+  /// fehlen (siehe `stageModelOf`).
   static double scaleFor(int stage) => switch (stage) {
     3 => 1.16,
     2 => 1.08,

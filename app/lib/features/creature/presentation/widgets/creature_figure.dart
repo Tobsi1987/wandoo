@@ -125,21 +125,24 @@ class _CreatureFigureState extends State<CreatureFigure>
   Widget build(BuildContext context) {
     final sleepy = !widget.awake && widget.creature.isSluggish(DateTime.now());
     final drawn = _drawn(sleepy);
-    final asset = _modelAsset();
-    if (asset == null) return drawn;
+    if (widget.silhouette || !CreatureFigure.hasModel(widget.creature)) {
+      return drawn;
+    }
     final c = widget.creature;
     final night = widget.world?.night ?? false;
-    final species = SpeciesCatalog.byId(c.speciesId).id;
-    final stage = CreatureEvolution.of(context, c);
+    final (:id, :missing) = stageModelOf(
+      SpeciesCatalog.byId(c.speciesId).id,
+      CreatureEvolution.of(context, c),
+    );
     final model = CreatureModel(
-      asset: asset,
+      asset: modelAssetOf(id),
       look: ModelLook(
-        species: species,
-        anchors: ModelAnchors.of(species),
+        species: id,
+        anchors: ModelAnchors.of(id),
         outfit: Outfit(hat: c.hat, neck: c.neck, gear: _gear()),
         mark: WorldMarksShown.of(context) ? WorldMark.of(c) : null,
         mud: CreatureMud.of(context, c),
-        eyes: modelEyes[species],
+        eyes: modelEyes[id],
         eyesClosed: night && !widget.awake,
       ),
       walking: widget.awake,
@@ -149,12 +152,12 @@ class _CreatureFigureState extends State<CreatureFigure>
       night: night,
       scale:
           (c.stage == GrowthStage.adult ? 1.0 : 0.8) *
-          CreatureEvolution.scaleFor(stage),
+          CreatureEvolution.scaleFor(missing + 1),
       animate: CreatureFigure.animate && !widget.still,
     );
     return EvolutionSparkles.around(
       model,
-      stage: stage,
+      stage: missing + 1,
       size: widget.size,
       animate: CreatureFigure.animate && !widget.still,
     );
@@ -166,9 +169,6 @@ class _CreatureFigureState extends State<CreatureFigure>
     Weather.snow => WeatherGear.beanie,
     _ => null,
   };
-
-  String? _modelAsset() =>
-      widget.silhouette ? null : CreatureFigure._modelAssetOf(widget.creature);
 
   Widget _drawn(bool sleepy) {
     final shader = _shader;
