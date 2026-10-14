@@ -1,6 +1,6 @@
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
-import 'package:wandoo/features/creature/presentation/widgets/model_parts.dart';
+import 'package:wandoo/features/creature/presentation/model/model_parts.dart';
 
 // Halsschmuck, Teil 1. [at] ist die Mitte des Halses, [r] sein Radius.
 // Kleine Teile haben feste Größen, weil alle Modelle gleich groß sind.

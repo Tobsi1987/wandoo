@@ -1,8 +1,8 @@
 import 'package:flutter_scene/scene.dart';
 import 'package:wandoo/features/creature/domain/outfit.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_accessories.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_anchors.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_eyes.dart';
+import 'package:wandoo/features/creature/presentation/model/model_anchors.dart';
+import 'package:wandoo/features/creature/presentation/model/model_eyes.dart';
+import 'package:wandoo/features/creature/presentation/outfit/model_accessories.dart';
 
 /// Hut, Halsschmuck, Wetter-Sachen und Schlaf-Lider an einem 3D-Modell.
 class ModelDress {

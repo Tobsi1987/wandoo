@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wandoo/features/creature/creature.dart';
+import 'package:wandoo/features/creature/presentation/model/model_anchors.dart';
 import 'package:wandoo/features/creature/presentation/species_looks.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_anchors.dart';
 
 void main() {
   test('jede Art im Katalog hat ein Aussehen', () {

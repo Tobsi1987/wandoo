@@ -3,8 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
-import 'package:wandoo/features/creature/presentation/widgets/model_overlays.dart';
-import 'package:wandoo/features/creature/presentation/widgets/sleep_zs.dart';
+import 'package:wandoo/features/creature/presentation/model/model_overlays.dart';
+import 'package:wandoo/features/creature/presentation/model/sleep_zs.dart';
 
 /// Die Bühne für ein 3D-Wesen: Schatten, Kamera und nachts Glühwürmchen.
 class ModelStage extends StatelessWidget {

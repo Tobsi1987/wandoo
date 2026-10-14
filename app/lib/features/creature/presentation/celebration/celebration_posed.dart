@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 
 import 'package:flutter/widgets.dart';
-import 'package:wandoo/features/creature/presentation/widgets/celebration_pose.dart';
-import 'package:wandoo/features/creature/presentation/widgets/creature_spin.dart';
+import 'package:wandoo/features/creature/presentation/celebration/celebration_pose.dart';
+import 'package:wandoo/features/creature/presentation/model/creature_spin.dart';
 
 /// Stellt [child] so hin, wie [pose] es verlangt: springen, stauchen,
 /// drehen. Mit [model] dreht sich das 3D-Modell selbst, sonst klappt die

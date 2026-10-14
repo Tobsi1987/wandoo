@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
-import 'package:wandoo/features/creature/presentation/widgets/celebration_burst.dart';
-import 'package:wandoo/features/creature/presentation/widgets/celebration_pose.dart';
-import 'package:wandoo/features/creature/presentation/widgets/celebration_posed.dart';
-import 'package:wandoo/features/creature/presentation/widgets/celebration_stage.dart';
+import 'package:wandoo/features/creature/presentation/celebration/celebration_burst.dart';
+import 'package:wandoo/features/creature/presentation/celebration/celebration_pose.dart';
+import 'package:wandoo/features/creature/presentation/celebration/celebration_posed.dart';
+import 'package:wandoo/features/creature/presentation/celebration/celebration_stage.dart';
+import 'package:wandoo/features/creature/presentation/celebration/greeting_bubble.dart';
+import 'package:wandoo/features/creature/presentation/model/model_motions.dart';
 import 'package:wandoo/features/creature/presentation/widgets/creature_figure.dart';
-import 'package:wandoo/features/creature/presentation/widgets/greeting_bubble.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_motions.dart';
 
 /// Spielt kleine Momente ab, wenn sich das Wesen ändert: Nach dem Fressen
 /// hüpft es vor Freude. Beim Schlüpfen platzt das Ei, das Wesen springt

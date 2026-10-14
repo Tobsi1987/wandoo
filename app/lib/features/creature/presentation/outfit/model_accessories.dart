@@ -1,13 +1,13 @@
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 import 'package:wandoo/features/creature/domain/outfit.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_anchors.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_hats.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_hats_fun.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_hats_more.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_necks.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_necks_more.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_weather_gear.dart';
+import 'package:wandoo/features/creature/presentation/model/model_anchors.dart';
+import 'package:wandoo/features/creature/presentation/outfit/model_hats.dart';
+import 'package:wandoo/features/creature/presentation/outfit/model_hats_fun.dart';
+import 'package:wandoo/features/creature/presentation/outfit/model_hats_more.dart';
+import 'package:wandoo/features/creature/presentation/outfit/model_necks.dart';
+import 'package:wandoo/features/creature/presentation/outfit/model_necks_more.dart';
+import 'package:wandoo/features/creature/presentation/outfit/model_weather_gear.dart';
 
 /// Hut und Halsschmuck als kleine 3D-Teile, die auf dem Modell sitzen.
 ///
