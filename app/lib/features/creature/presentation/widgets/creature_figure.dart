@@ -19,6 +19,8 @@ import 'package:wandoo/features/creature/presentation/painting/creature_painter.
 import 'package:wandoo/features/creature/presentation/painting/creature_shader_painter.dart';
 import 'package:wandoo/features/creature/presentation/painting/creature_shader_uniforms.dart';
 import 'package:wandoo/features/creature/presentation/species_looks.dart';
+import 'package:wandoo/features/creature/presentation/widgets/creature_evolution.dart';
+import 'package:wandoo/features/creature/presentation/widgets/evolution_sparkles.dart';
 import 'package:wandoo/features/world/world.dart';
 
 /// Die Figur des Wesens: das 3D-Modell der Art, sonst animiertes 3D aus
@@ -128,7 +130,8 @@ class _CreatureFigureState extends State<CreatureFigure>
     final c = widget.creature;
     final night = widget.world?.night ?? false;
     final species = SpeciesCatalog.byId(c.speciesId).id;
-    return CreatureModel(
+    final stage = CreatureEvolution.of(context, c);
+    final model = CreatureModel(
       asset: asset,
       look: ModelLook(
         species: species,
@@ -144,7 +147,15 @@ class _CreatureFigureState extends State<CreatureFigure>
       fallback: drawn,
       sleepy: sleepy || (night && !widget.awake),
       night: night,
-      grownUp: c.stage == GrowthStage.adult,
+      scale:
+          (c.stage == GrowthStage.adult ? 1.0 : 0.8) *
+          CreatureEvolution.scaleFor(stage),
+      animate: CreatureFigure.animate && !widget.still,
+    );
+    return EvolutionSparkles.around(
+      model,
+      stage: stage,
+      size: widget.size,
       animate: CreatureFigure.animate && !widget.still,
     );
   }

@@ -23,7 +23,7 @@ class CreatureModel extends StatefulWidget {
     required this.size,
     required this.fallback,
     this.sleepy = false,
-    this.grownUp = true,
+    this.scale = 1,
     this.animate = true,
     this.night = false,
     this.look = const ModelLook(),
@@ -38,8 +38,8 @@ class CreatureModel extends StatefulWidget {
   final Widget fallback;
   final bool sleepy;
 
-  /// Jungtiere sind etwas kleiner.
-  final bool grownUp;
+  /// Größe: Jungtiere sind etwas kleiner, entwickelte Wesen etwas größer.
+  final double scale;
   final bool animate;
 
   /// Nachts schwirren Glühwürmchen um das Wesen.
@@ -124,7 +124,7 @@ class _CreatureModelState extends State<CreatureModel> {
   void _pose(double t) => poseBody(
     _pivot,
     t,
-    grownUp: widget.grownUp,
+    scale: widget.scale,
     sleepy: widget.sleepy,
     turn: _spin + _drag.value,
   );

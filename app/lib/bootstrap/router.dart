@@ -37,9 +37,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: AlbumScreen.path,
-      builder: (context, state) => AlbumScreen(
-        actions: [achievementBookAction(), friendsAction(), albumMenu()],
-      ),
+      builder: (context, state) => AlbumScreen(actions: albumActions()),
     ),
     GoRoute(
       path: AdventureScreen.path,
