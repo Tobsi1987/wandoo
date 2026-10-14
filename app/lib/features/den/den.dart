@@ -5,4 +5,3 @@ library;
 
 export 'application/den_providers.dart';
 export 'presentation/den_screen.dart';
-export 'presentation/widgets/den_button.dart';

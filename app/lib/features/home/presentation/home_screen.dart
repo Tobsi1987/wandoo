@@ -36,12 +36,13 @@ class HomeScreen extends ConsumerWidget {
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          leading: homeLeading(),
-          leadingWidth: 64,
+          automaticallyImplyLeading: false,
+          titleSpacing: 12,
+          toolbarHeight: 64,
+          title: const HomeTopBar(),
           backgroundColor: Colors.transparent,
           surfaceTintColor: Colors.transparent,
           scrolledUnderElevation: 0,
-          actions: homeActions(context),
         ),
         body: Stack(
           fit: StackFit.expand,
