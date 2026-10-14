@@ -58,28 +58,6 @@ class _Stat extends StatelessWidget {
   }
 }
 
-/// Ein Schild für etwas Mitgebrachtes, z. B. "🌺 2 Mohnblumen".
-class NewsPill extends StatelessWidget {
-  const NewsPill({required this.text, super.key});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: colors.secondaryContainer,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        child: Text(text, style: TextStyle(color: colors.onSecondaryContainer)),
-      ),
-    );
-  }
-}
-
 /// "🌲 5 Wald · 🏙️ 4 Stadt · 🌉 1 Brücke"
 String placesLine(WalkSummary summary) => [
   for (final type in _order)
