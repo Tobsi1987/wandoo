@@ -16,5 +16,10 @@ mehr darüber liegt).
 - `model/`: 3D-Modell laden, Posen, Bewegungen, Augen.
 - `outfit/`: Hüte, Schals und Wetterkleidung am Modell.
 - `celebration/`: Schlüpfen, Freudenhüpfer, Hallo-Blase.
+- `marks/`: Spuren der Welt (Moos, Schuppen und Seerose, Blumenkranz,
+  Lichter) nach der Umgebung mit den meisten neuen Wegen (`WorldMark`).
+  Die Stellen auf jedem Modell misst `tool/measure_marks.mjs` ab
+  (`assets/creatures/marks.json`); ausschalten lässt es sich in der
+  Schatzkiste (`WorldMarksSwitch`).
 - `painting/` und `shaders/`: die 2D-Figur, wenn kein Modell da ist.
 - `widgets/`: kleine Bausteine, die andere Module nutzen.

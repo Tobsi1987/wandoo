@@ -77,7 +77,23 @@ Creature demoCreature() {
     seenSpecies: {for (final s in SpeciesCatalog.all) s.id},
     hat: _named(CreatureHat.values, query['hut']),
     neck: _named(CreatureNeck.values, query['hals']),
+    traitPoints: _marks(query['spur']),
   );
+}
+
+/// `?spur=wald3` gibt dem Wesen die Spur einer Umgebung (wald, wasser,
+/// feld, stadt) in Stufe 1 bis 3.
+Map<Trait, int> _marks(String? spur) {
+  final match = RegExp(r'^([a-z]+)([1-3])$').firstMatch(spur ?? '');
+  final trait = switch (match?.group(1)) {
+    'wald' => Trait.moss,
+    'wasser' => Trait.fins,
+    'feld' => Trait.wheatEars,
+    'stadt' => Trait.lanterns,
+    _ => null,
+  };
+  if (trait == null) return const {};
+  return {trait: WorldMark.steps[int.parse(match!.group(2)!) - 1]};
 }
 
 T? _named<T extends Enum>(List<T> values, String? name) =>

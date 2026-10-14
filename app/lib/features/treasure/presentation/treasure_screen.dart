@@ -26,6 +26,7 @@ class TreasureScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(16),
               children: [
                 Center(child: CreatureFigure(creature: creature, size: 160)),
+                const WorldMarksSwitch(),
                 const SizedBox(height: 16),
                 Wrap(
                   alignment: WrapAlignment.center,
