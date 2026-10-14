@@ -1,27 +1,9 @@
-import 'dart:async';
-
+import 'package:wandoo/core/memory/memory_value.dart';
 import 'package:wandoo/features/treasure/domain/treasure_chest.dart';
 import 'package:wandoo/features/treasure/domain/treasure_repository.dart';
 
 /// Schatzkiste nur im Speicher, für Tests und die Demo.
-class InMemoryTreasureRepository implements TreasureRepository {
-  InMemoryTreasureRepository([this._chest = const TreasureChest()]);
-
-  TreasureChest _chest;
-  final _changes = StreamController<TreasureChest>.broadcast();
-
-  @override
-  Future<TreasureChest> load() async => _chest;
-
-  @override
-  Future<void> save(TreasureChest chest) async {
-    _chest = chest;
-    _changes.add(chest);
-  }
-
-  @override
-  Stream<TreasureChest> watch() async* {
-    yield _chest;
-    yield* _changes.stream;
-  }
+class InMemoryTreasureRepository extends MemoryValue<TreasureChest>
+    implements TreasureRepository {
+  InMemoryTreasureRepository([super.value = const TreasureChest()]);
 }

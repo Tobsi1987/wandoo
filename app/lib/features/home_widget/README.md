@@ -10,5 +10,5 @@ per Paket `home_widget` an das native Widget.
 
 - Android: `android/app/src/main/kotlin/app/wandoo/wandoo/CreatureWidgetProvider.kt`,
   Layout `res/layout/creature_widget.xml`.
-- iOS: noch offen. Braucht eine WidgetKit-Extension `CreatureWidget` mit
-  App Group, die in Xcode angelegt wird; die Dart-Seite ruft sie schon auf.
+- iOS: WidgetKit-Extension `ios/CreatureWidget` mit der App Group
+  `group.app.wandoo.wandoo`.

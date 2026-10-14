@@ -50,9 +50,6 @@ class Achievement {
     }
     return tier;
   }
-
-  /// Die nächste Schwelle, oder null, wenn Gold erreicht ist.
-  int? nextStep(Tier tier) => tier == Tier.gold ? null : steps[tier.index];
 }
 
 /// Eine Seite im Buch mit ihren Stempeln.

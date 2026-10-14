@@ -17,8 +17,6 @@ class WeeklyAdventure {
 
   bool get allDone => quests.every((q) => q.done);
 
-  int get doneCount => quests.where((q) => q.done).length;
-
   /// Montag der Woche, in der [time] liegt.
   static DateTime weekOf(DateTime time) =>
       DateTime(time.year, time.month, time.day - (time.weekday - 1));

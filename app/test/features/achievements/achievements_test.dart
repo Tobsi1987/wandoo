@@ -33,8 +33,6 @@ void main() {
     expect(km.tierFor(walked(5000)), Tier.bronze);
     expect(km.tierFor(walked(30000)), Tier.silver);
     expect(km.tierFor(walked(100000)), Tier.gold);
-    expect(km.nextStep(Tier.silver), 100);
-    expect(km.nextStep(Tier.gold), isNull);
   });
 
   test('neue Stempel werden als Zeile gemeldet', () {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wandoo/features/creature/creature.dart';
-import 'package:wandoo/features/creature/presentation/widgets/creature_celebration.dart';
+import 'package:wandoo/features/creature/presentation/celebration/creature_celebration.dart';
 
 void main() {
   const egg = Creature(food: 19);

@@ -1,6 +1,6 @@
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
-import 'package:wandoo/features/creature/presentation/widgets/model_parts.dart';
+import 'package:wandoo/features/creature/presentation/model/model_parts.dart';
 
 // Hüte, Teil 2: die seltenen mit Bauplan. Maße wie in `model_hats.dart`.
 

@@ -1,6 +1,6 @@
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
-import 'package:wandoo/features/creature/presentation/widgets/model_parts.dart';
+import 'package:wandoo/features/creature/presentation/model/model_parts.dart';
 
 // Hüte, einfache und mittlere. [at] ist der Platz oben auf dem Kopf,
 // [r] der Kopfradius; alles wächst mit dem Kopf mit.

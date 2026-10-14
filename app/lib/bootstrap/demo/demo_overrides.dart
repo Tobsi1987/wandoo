@@ -1,16 +1,13 @@
 import 'package:flutter_riverpod/misc.dart' show Override;
-import 'package:geo_engine/geo_engine.dart';
 import 'package:wandoo/bootstrap/demo/demo_den.dart';
-import 'package:wandoo/bootstrap/demo/demo_params.dart';
 import 'package:wandoo/bootstrap/demo/demo_platform.dart';
+import 'package:wandoo/bootstrap/demo/demo_start.dart';
 import 'package:wandoo/bootstrap/demo/demo_stats.dart';
-import 'package:wandoo/bootstrap/demo/demo_town.dart';
 import 'package:wandoo/bootstrap/demo/in_memory_recorded_walk_repository.dart';
 import 'package:wandoo/bootstrap/demo/in_memory_walk_summary_repository.dart';
 import 'package:wandoo/bootstrap/demo/simulated_location_source.dart';
 import 'package:wandoo/core/location/location_providers.dart';
 import 'package:wandoo/core/map_data/map_data_providers.dart';
-import 'package:wandoo/core/map_data/map_data_source.dart';
 import 'package:wandoo/features/achievements/achievements.dart';
 import 'package:wandoo/features/achievements/data/in_memory_stats_repository.dart';
 import 'package:wandoo/features/adventures/adventures.dart';
@@ -63,10 +60,10 @@ List<Override> demoOverrides() {
       InMemoryStarCatchRepository(),
     ),
     bellyRepositoryProvider.overrideWithValue(
-      InMemoryBellyRepository([?_belly()]),
+      InMemoryBellyRepository([?demoBelly()]),
     ),
     progressRepositoryProvider.overrideWithValue(
-      InMemoryProgressRepository([?_progress()]),
+      InMemoryProgressRepository([?demoProgress()]),
     ),
     statsRepositoryProvider.overrideWithValue(
       InMemoryStatsRepository(demoStats()),
@@ -79,13 +76,13 @@ List<Override> demoOverrides() {
 
 List<Override> _stores() => [
   creatureRepositoryProvider.overrideWithValue(
-    InMemoryCreatureRepository(_startCreature()),
+    InMemoryCreatureRepository(demoCreature()),
   ),
   denRepositoryProvider.overrideWithValue(InMemoryDenRepository()),
   knownSegmentsRepositoryProvider.overrideWithValue(
     InMemoryKnownSegmentsRepository(),
   ),
-  mapDataSourceProvider.overrideWithValue(_DemoMapData()),
+  mapDataSourceProvider.overrideWithValue(DemoMapData()),
   showBaseMapProvider.overrideWithValue(false),
   imageSharerProvider.overrideWithValue(const SharePlusImageSharer()),
   reminderSchedulerProvider.overrideWithValue(LoggingReminderScheduler()),
@@ -105,89 +102,15 @@ List<Override> _stores() => [
   friendshipRepositoryProvider.overrideWithValue(
     InMemoryFriendshipRepository(),
   ),
-  if (_hatches() case final id?)
+  if (demoHatches() case final id?)
     feedCreatureProvider.overrideWithValue(
       FeedCreature(hatchFrom: [SpeciesCatalog.byId(id)]),
     ),
-  if (_weather() case final weather?)
-    weatherSourceProvider.overrideWithValue(_FixedWeather(weather)),
-  if (_hour() case final hour?)
+  if (demoWeather() case final weather?)
+    weatherSourceProvider.overrideWithValue(FixedWeather(weather)),
+  if (demoHour() case final hour?)
     worldClockProvider.overrideWithValue(() {
       final now = DateTime.now();
       return DateTime(now.year, now.month, now.day, hour, now.minute);
     }),
 ];
-
-/// `?wetter=regen` (oder `schnee`, `gewitter`, `sonne`) stellt das Wetter.
-Weather? _weather() => switch (demoParams['wetter']) {
-  'regen' => Weather.rain,
-  'schnee' => Weather.snow,
-  'gewitter' => Weather.storm,
-  'sonne' => Weather.clear,
-  _ => null,
-};
-
-class _FixedWeather implements WeatherSource {
-  const _FixedWeather(this.weather);
-  final Weather weather;
-  @override
-  Future<Weather?> current(GeoPoint place) async => weather;
-}
-
-/// `?hunger=leer` startet mit leerem Bauch, `?hunger=weg` so, dass das
-/// Wesen gleich auszieht (mit `?wesen=…`).
-Belly? _belly() {
-  final hungry = switch (demoParams['hunger']) {
-    'leer' => const Duration(hours: 2),
-    'weg' => Belly.leavesAfter + const Duration(minutes: 1),
-    _ => null,
-  };
-  if (hungry == null) return null;
-  return Belly(
-    lineKey: _startCreature().lineKey,
-    meters: 0,
-    at: DateTime.now().subtract(hungry),
-  );
-}
-
-/// `?level=9` startet kurz vor dem nächsten Level (mit `?wesen=…`).
-Progress? _progress() {
-  final level = int.tryParse(demoParams['level'] ?? '');
-  if (level == null) return null;
-  return Progress(
-    lineKey: _startCreature().lineKey,
-    xp: LevelCurve.xpFor(level + 1) - 15,
-  );
-}
-
-/// `?uhr=8` zeigt die Welt um 8 Uhr, egal wie spät es ist.
-int? _hour() => int.tryParse(demoParams['uhr'] ?? '');
-
-class _DemoMapData implements MapDataSource {
-  @override
-  Future<List<RoadSegment>> segmentsNear(List<GeoPoint> points) async =>
-      DemoTown.segments;
-}
-
-/// Was in der Demo aus dem Ei schlüpft: `?ei=funkel`, sonst ein Zufallswesen
-/// wie in der App.
-String? _hatches() => demoParams['ei'];
-
-/// `?wesen=funkel` startet die Demo mit diesem Wesen geschlüpft und allen
-/// Arten im Album, um die 3D-Modelle anzusehen. Ohne Angabe: ein Ei, das
-/// schon nach dem ersten Gang schlüpft.
-Creature _startCreature() {
-  final query = demoParams;
-  final id = query['wesen'];
-  if (id == null) return const Creature(food: 16);
-  return Creature(
-    food: GrowthStage.adult.foodNeeded,
-    speciesId: SpeciesCatalog.byId(id).id,
-    seenSpecies: {for (final s in SpeciesCatalog.all) s.id},
-    hat: _named(CreatureHat.values, query['hut']),
-    neck: _named(CreatureNeck.values, query['hals']),
-  );
-}
-
-T? _named<T extends Enum>(List<T> values, String? name) =>
-    values.where((v) => v.name == name).firstOrNull;

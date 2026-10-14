@@ -1,7 +1,7 @@
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
 import 'package:wandoo/features/creature/domain/outfit.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_parts.dart';
+import 'package:wandoo/features/creature/presentation/model/model_parts.dart';
 
 /// Schirm oder Mütze; [hatAt] ist der Platz für den Hut, [r] der Kopf.
 void weatherGear(Node root, WeatherGear? gear, vm.Vector3 hatAt, double r) {

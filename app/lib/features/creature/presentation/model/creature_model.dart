@@ -3,15 +3,15 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:wandoo/features/creature/domain/outfit.dart';
-import 'package:wandoo/features/creature/presentation/widgets/creature_spin.dart';
-import 'package:wandoo/features/creature/presentation/widgets/drag_turn.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_anchors.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_dress.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_eyes.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_loader.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_motions.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_pose.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_stage.dart';
+import 'package:wandoo/features/creature/presentation/model/creature_spin.dart';
+import 'package:wandoo/features/creature/presentation/model/drag_turn.dart';
+import 'package:wandoo/features/creature/presentation/model/model_anchors.dart';
+import 'package:wandoo/features/creature/presentation/model/model_dress.dart';
+import 'package:wandoo/features/creature/presentation/model/model_eyes.dart';
+import 'package:wandoo/features/creature/presentation/model/model_loader.dart';
+import 'package:wandoo/features/creature/presentation/model/model_motions.dart';
+import 'package:wandoo/features/creature/presentation/model/model_pose.dart';
+import 'package:wandoo/features/creature/presentation/model/model_stage.dart';
 
 /// Ein 3D-Modell (.glb) des Wesens, das als Ganzes atmet, schwankt und
 /// schläft. Das Aussehen bleibt genau so, wie es aus Meshy kommt.

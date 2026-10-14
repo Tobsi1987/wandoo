@@ -7,14 +7,14 @@ import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/domain/growth_stage.dart';
 import 'package:wandoo/features/creature/domain/outfit.dart';
 import 'package:wandoo/features/creature/domain/species_catalog.dart';
+import 'package:wandoo/features/creature/presentation/model/creature_model.dart';
+import 'package:wandoo/features/creature/presentation/model/model_anchors.dart';
+import 'package:wandoo/features/creature/presentation/model/model_eyes.dart';
+import 'package:wandoo/features/creature/presentation/model/model_loader.dart';
 import 'package:wandoo/features/creature/presentation/painting/creature_painter.dart';
 import 'package:wandoo/features/creature/presentation/painting/creature_shader_painter.dart';
 import 'package:wandoo/features/creature/presentation/painting/creature_shader_uniforms.dart';
 import 'package:wandoo/features/creature/presentation/species_looks.dart';
-import 'package:wandoo/features/creature/presentation/widgets/creature_model.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_anchors.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_eyes.dart';
-import 'package:wandoo/features/creature/presentation/widgets/model_loader.dart';
 import 'package:wandoo/features/world/world.dart';
 
 /// Die Figur des Wesens: das 3D-Modell der Art, sonst animiertes 3D aus
