@@ -8,5 +8,5 @@ Schlaf nicht leerer). Getauscht wird mit einem Tipp, jederzeit.
 **Bekommt:** das Wesen und den Schlafplatz (`DenRepository`) aus
 `creature`, den Hungerbalken aus `hunger`, das Level aus `levels`.
 
-**Liefert:** `DenButton` für die Wesenskarte, `DenScreen`,
+**Liefert:** `DenScreen` (oben in der Leiste: Zuhause),
 `denUnlockedProvider` und `SwapCreatures`.

@@ -9,5 +9,4 @@ export 'domain/diary.dart';
 export 'domain/diary_repository.dart';
 export 'domain/remember_walk.dart';
 export 'presentation/diary_screen.dart';
-export 'presentation/widgets/diary_button.dart';
 export 'presentation/widgets/diary_map.dart';

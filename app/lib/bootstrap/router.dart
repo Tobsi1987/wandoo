@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:wandoo/bootstrap/page_extras.dart';
 import 'package:wandoo/features/achievements/achievements.dart';
 import 'package:wandoo/features/adventures/adventures.dart';
 import 'package:wandoo/features/creature/creature.dart';
@@ -32,7 +33,8 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: AlbumScreen.path,
-      builder: (context, state) => const AlbumScreen(),
+      builder: (context, state) =>
+          AlbumScreen(actions: [achievementBookAction()]),
     ),
     GoRoute(
       path: AdventureScreen.path,
@@ -44,7 +46,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: DiaryScreen.path,
-      builder: (context, state) => const DiaryScreen(),
+      builder: (context, state) => const DiaryScreen(footer: DiaryFooter()),
     ),
     GoRoute(
       path: DenScreen.path,

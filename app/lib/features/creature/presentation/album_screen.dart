@@ -6,9 +6,12 @@ import 'package:wandoo/features/creature/presentation/widgets/album_tile.dart';
 
 /// Sammelalbum: alle Arten, entdeckte in Farbe, die anderen als Umriss.
 class AlbumScreen extends ConsumerWidget {
-  const AlbumScreen({super.key});
+  const AlbumScreen({this.actions = const [], super.key});
 
   static const path = '/album';
+
+  /// Knöpfe oben rechts, vom Router eingehängt (etwa das Erfolge-Buch).
+  final List<Widget> actions;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -16,7 +19,7 @@ class AlbumScreen extends ConsumerWidget {
     const all = SpeciesCatalog.all;
     final found = all.where((s) => seen.contains(s.id)).length;
     return Scaffold(
-      appBar: AppBar(title: const Text('Sammelalbum')),
+      appBar: AppBar(title: const Text('Sammelalbum'), actions: actions),
       body: Column(
         children: [
           Padding(

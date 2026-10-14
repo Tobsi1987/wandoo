@@ -11,9 +11,12 @@ import 'package:wandoo/features/discovery_map/discovery_map.dart';
 /// Das Wandertagebuch: alle Wege des Wesens auf einer Karte, dazu die
 /// schönsten Momente.
 class DiaryScreen extends ConsumerWidget {
-  const DiaryScreen({super.key});
+  const DiaryScreen({this.footer, super.key});
 
   static const path = '/tagebuch';
+
+  /// Leiste ganz unten, vom Router eingehängt (Teilen, Wegschicken).
+  final Widget? footer;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,6 +26,7 @@ class DiaryScreen extends ConsumerWidget {
         : 'deines Eis';
     return Scaffold(
       appBar: AppBar(title: Text('Tagebuch $name')),
+      bottomNavigationBar: footer,
       body: ref
           .watch(diaryProvider)
           .when(
