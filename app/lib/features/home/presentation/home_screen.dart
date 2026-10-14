@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/home/presentation/home_actions.dart';
+import 'package:wandoo/features/hunger/hunger.dart';
 import 'package:wandoo/features/petting/petting.dart';
 import 'package:wandoo/features/scent/scent.dart';
 import 'package:wandoo/features/sounds/sounds.dart';
@@ -31,6 +32,7 @@ class HomeScreen extends ConsumerWidget {
     final walking = ref.watch(trackingControllerProvider) is WalkRecording;
     final summary = ref.watch(latestUnseenSummaryProvider).value;
     final showSummary = summary != null && !walking;
+    final starving = ref.watch(starvingProvider);
     _listenForCheers(ref);
     // Der Himmel ist tagsüber hell, nachts dunkel; die Schrift folgt ihm.
     return Theme(
@@ -63,17 +65,17 @@ class HomeScreen extends ConsumerWidget {
                       Expanded(
                         child: Center(
                           child: SingleChildScrollView(
-                            child: _creature(world, walking, showSummary, box),
+                            child: _creature(
+                              world,
+                              walking: walking,
+                              summary: showSummary,
+                              sleepy: starving,
+                              box: box,
+                            ),
                           ),
                         ),
                       ),
-                      if (showSummary) ...[
-                        const StarCatchButton(),
-                        const WalkSummaryCard(),
-                      ] else ...[
-                        const SniffBubble(),
-                        const WalkPanel(),
-                      ],
+                      ..._bottom(summary: showSummary),
                     ],
                   ),
                 ),
@@ -84,6 +86,11 @@ class HomeScreen extends ConsumerWidget {
       ),
     );
   }
+
+  /// Unten: nach einem Gang die Zusammenfassung, sonst der Knopf zum Gehen.
+  static List<Widget> _bottom({required bool summary}) => summary
+      ? const [StarCatchButton(), WalkSummaryCard()]
+      : const [FarewellLetter(), SniffBubble(), WalkPanel()];
 
   /// Das Wesen jubelt beim Schlüpfen und freut sich übers Futter.
   static void _listenForCheers(WidgetRef ref) {
@@ -105,17 +112,18 @@ class HomeScreen extends ConsumerWidget {
 
   /// Das Wesen zum Streicheln, mit Herzen und Tagebuch.
   static Widget _creature(
-    WorldState world,
-    bool walking,
-    bool summary,
-    BoxConstraints box,
-  ) => CreatureCard(
+    WorldState world, {
+    required bool walking,
+    required bool summary,
+    required bool sleepy,
+    required BoxConstraints box,
+  }) => CreatureCard(
     walking: walking,
     details: !summary,
     figureSize: _figureSize(box, summary),
     figureWrap: (figure) =>
-        Pettable(asleep: world.night && !walking, child: figure),
-    below: const [HeartsBar()],
+        Pettable(asleep: (world.night || sleepy) && !walking, child: figure),
+    below: const [HeartsBar(), HungerBar()],
     actions: const [DiaryButton(), SoundToggle()],
   );
 

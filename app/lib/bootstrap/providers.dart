@@ -20,6 +20,8 @@ import 'package:wandoo/features/discovery/data/drift_known_segments_repository.d
 import 'package:wandoo/features/discovery/discovery.dart';
 import 'package:wandoo/features/home_widget/data/home_widget_publisher.dart';
 import 'package:wandoo/features/home_widget/home_widget.dart';
+import 'package:wandoo/features/hunger/data/drift_belly_repository.dart';
+import 'package:wandoo/features/hunger/hunger.dart';
 import 'package:wandoo/features/petting/data/drift_friendship_repository.dart';
 import 'package:wandoo/features/petting/petting.dart';
 import 'package:wandoo/features/reminders/data/local_notification_scheduler.dart';
@@ -81,6 +83,7 @@ Future<List<Override>> appOverrides() async {
       DriftSoundSettingsRepository(db),
     ),
     starCatchRepositoryProvider.overrideWithValue(DriftStarCatchRepository(db)),
+    bellyRepositoryProvider.overrideWithValue(DriftBellyRepository(db)),
     weatherSourceProvider.overrideWithValue(
       CachedWeatherSource(OpenMeteoWeatherSource()),
     ),

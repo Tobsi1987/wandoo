@@ -14,16 +14,50 @@ class PlanReminder {
 
   /// Erinnerungen nach dem Gang am [lastWalkAt]; [name] ist der Name des
   /// Wesens, null für ein Ei. Ohne Gang keine Erinnerung.
-  List<Reminder> call(DateTime? lastWalkAt, {String? name}) {
+  ///
+  /// [hungryAt] ist, wann der Hungerbalken leer ist: Ab diesem Tag werden
+  /// die Erinnerungen dringlicher, zwei Tage lang, bis das Wesen auszieht.
+  List<Reminder> call(
+    DateTime? lastWalkAt, {
+    String? name,
+    DateTime? hungryAt,
+  }) {
     if (lastWalkAt == null) return const [];
     final day = lastWalkAt.toLocal();
+    final urgent = name == null || hungryAt == null
+        ? const <Reminder>[]
+        : _urgent(hungryAt.toLocal(), name);
+    final firstUrgent = urgent.firstOrNull?.at;
     return [
-      for (var i = 1; i <= days; i++)
-        _text(
-          DateTime(day.year, day.month, day.day + i, hour),
-          name,
-          (i - 1) % 3,
-        ),
+        for (var i = 1; i <= days; i++)
+          _text(
+            DateTime(day.year, day.month, day.day + i, hour),
+            name,
+            (i - 1) % 3,
+          ),
+      ].where((r) => firstUrgent == null || r.at.isBefore(firstUrgent)).toList()
+      ..addAll(urgent);
+  }
+
+  /// Am Tag, an dem der Bauch leer ist, und am Tag danach.
+  List<Reminder> _urgent(DateTime empty, String name) {
+    final start = empty.hour < hour ? empty.day : empty.day + 1;
+    DateTime at(int plus) =>
+        DateTime(empty.year, empty.month, start + plus, hour);
+    return [
+      Reminder(
+        at: at(0),
+        title: '$name hat Hunger',
+        body:
+            'Der Bauch von $name ist leer. Ein Spaziergang macht wieder satt.',
+      ),
+      Reminder(
+        at: at(1),
+        title: '$name ist ganz traurig',
+        body:
+            '$name hat schon lange nichts gegessen und muss sich sonst '
+            'selbst Futter suchen. Geht heute zusammen raus!',
+      ),
     ];
   }
 

@@ -5,6 +5,7 @@ import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/discovery/discovery.dart';
 import 'package:wandoo/features/environment/environment.dart';
+import 'package:wandoo/features/hunger/hunger.dart';
 import 'package:wandoo/features/petting/petting.dart';
 import 'package:wandoo/features/scent/scent.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
@@ -15,6 +16,7 @@ import 'package:wandoo/flows/process_walk/extras/adventure_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/diary_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/district_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/friendship_extra.dart';
+import 'package:wandoo/flows/process_walk/extras/hunger_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/scent_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/treasure_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/weather_extra.dart';
@@ -50,6 +52,10 @@ final processWalkProvider = Provider<ProcessWalk>(
         scents: ref.watch(scentRepositoryProvider),
         chests: ref.watch(treasureRepositoryProvider),
         sniff: ref.watch(sniffOutProvider),
+      ),
+      HungerExtra(
+        ref.watch(bellyRepositoryProvider),
+        clock: ref.watch(hungerClockProvider),
       ),
       WeatherExtra(
         chests: ref.watch(treasureRepositoryProvider),
