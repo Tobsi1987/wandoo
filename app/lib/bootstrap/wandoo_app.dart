@@ -6,6 +6,7 @@ import 'package:wandoo/features/home_widget/home_widget.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
 import 'package:wandoo/flows/creature_reminder/creature_reminder_provider.dart';
 import 'package:wandoo/flows/process_walk/process_walk_provider.dart';
+import 'package:wandoo/flows/scent/sniff_out_provider.dart';
 import 'package:wandoo/ui_kit/wandoo_theme.dart';
 
 class WandooApp extends ConsumerWidget {
@@ -25,6 +26,14 @@ class WandooApp extends ConsumerWidget {
       if (value == null) return;
       ref.read(syncCreatureReminderProvider)(value).ignore();
       ref.read(syncHomeWidgetProvider)(value).ignore();
+    });
+    // Beim ersten Standort eines Gangs schnüffelt ein geschlüpftes Wesen.
+    ref.listen(trackingControllerProvider, (before, now) {
+      final here = now is WalkRecording ? now.position : null;
+      final had = before is WalkRecording ? before.position : null;
+      final hatched = ref.read(creatureProvider).value?.hatched ?? false;
+      if (here == null || had != null || !hatched) return;
+      ref.read(sniffOutProvider)(here, DateTime.now()).ignore();
     });
     return MaterialApp.router(
       title: 'Wandoo',

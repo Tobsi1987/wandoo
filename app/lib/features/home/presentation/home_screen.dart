@@ -6,6 +6,7 @@ import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/home/presentation/home_actions.dart';
 import 'package:wandoo/features/petting/petting.dart';
+import 'package:wandoo/features/scent/scent.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
 import 'package:wandoo/features/world/world.dart';
@@ -65,8 +66,10 @@ class HomeScreen extends ConsumerWidget {
                       ),
                       if (showSummary)
                         const WalkSummaryCard()
-                      else
+                      else ...[
+                        const SniffBubble(),
                         const WalkPanel(),
+                      ],
                     ],
                   ),
                 ),
