@@ -12,10 +12,14 @@ import 'package:wandoo/features/adventures/adventures.dart';
 import 'package:wandoo/features/adventures/data/in_memory_adventure_repository.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/creature/data/in_memory_creature_repository.dart';
+import 'package:wandoo/features/diary/data/in_memory_diary_repository.dart';
+import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/discovery/data/in_memory_known_segments_repository.dart';
 import 'package:wandoo/features/discovery/discovery.dart';
 import 'package:wandoo/features/discovery_map/discovery_map.dart';
 import 'package:wandoo/features/home_widget/home_widget.dart';
+import 'package:wandoo/features/petting/data/in_memory_friendship_repository.dart';
+import 'package:wandoo/features/petting/petting.dart';
 import 'package:wandoo/features/reminders/reminders.dart';
 import 'package:wandoo/features/share/data/share_plus_image_sharer.dart';
 import 'package:wandoo/features/share/share.dart';
@@ -48,6 +52,10 @@ List<Override> demoOverrides() => [
   ),
   treasureRepositoryProvider.overrideWithValue(InMemoryTreasureRepository()),
   adventureRepositoryProvider.overrideWithValue(InMemoryAdventureRepository()),
+  diaryRepositoryProvider.overrideWithValue(InMemoryDiaryRepository()),
+  friendshipRepositoryProvider.overrideWithValue(
+    InMemoryFriendshipRepository(),
+  ),
   if (_hatches() case final id?)
     feedCreatureProvider.overrideWithValue(
       FeedCreature(hatchFrom: [SpeciesCatalog.byId(id)]),

@@ -47,6 +47,14 @@ class Creature {
   /// Wie weit man mit diesem Wesen schon gegangen ist, in Metern.
   final int walkedMeters;
 
+  /// Kennung dieses Wesens vom Ei bis zum Wegschicken, zum Beispiel für
+  /// sein Tagebuch. Sekundengenau, weil die Datenbank nicht mehr speichert.
+  String get lineKey {
+    final released = lastReleasedAt;
+    if (released == null) return 'erstes';
+    return '${released.millisecondsSinceEpoch ~/ 1000}';
+  }
+
   bool get hatched => stage != GrowthStage.egg;
 
   /// Alle Arten fürs Album, auch die aktuelle aus Spielständen von vor

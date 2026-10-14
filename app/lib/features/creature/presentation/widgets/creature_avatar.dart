@@ -17,6 +17,7 @@ class CreatureAvatar extends StatelessWidget {
     this.inScene = false,
     this.walking = false,
     this.footer = const [],
+    this.figureWrap,
     super.key,
   });
 
@@ -37,6 +38,9 @@ class CreatureAvatar extends StatelessWidget {
   /// Steht mit auf dem hellen Schild unter der Figur.
   final List<Widget> footer;
 
+  /// Legt etwas um die Figur, zum Beispiel Streicheln.
+  final Widget Function(Widget figure)? figureWrap;
+
   String get _title => creature.hatched
       ? SpeciesCatalog.byId(creature.speciesId).name
       : stageLabel(creature.stage);
@@ -53,8 +57,9 @@ class CreatureAvatar extends StatelessWidget {
         awake: walking,
       ),
     );
+    final wrapped = figureWrap?.call(figure) ?? figure;
     final w = world;
-    return w == null || inScene ? figure : SkyBox(world: w, child: figure);
+    return w == null || inScene ? wrapped : SkyBox(world: w, child: wrapped);
   }
 
   String get _subtitle {

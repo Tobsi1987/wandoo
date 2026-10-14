@@ -3,7 +3,8 @@ import 'dart:developer' as developer;
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/reminders/reminders.dart';
 
-/// Hält die Erinnerung passend zum Wesen: jede Fütterung verschiebt sie.
+/// Hält die Erinnerungen passend zum Wesen: Jeder Gang verschiebt sie,
+/// und nach dem Schlüpfen nennen sie das Wesen beim Namen.
 class SyncCreatureReminder {
   SyncCreatureReminder({
     required this.plan,
@@ -14,18 +15,26 @@ class SyncCreatureReminder {
   final PlanReminder plan;
   final ReminderScheduler scheduler;
   final DateTime Function() _clock;
-  DateTime? _handledFedAt;
+  String? _handled;
 
   Future<void> call(Creature creature) async {
     final fedAt = creature.lastFedAt;
-    if (fedAt == null || fedAt == _handledFedAt) return;
-    _handledFedAt = fedAt;
-    final reminder = plan(fedAt);
+    final name = creature.hatched
+        ? SpeciesCatalog.byId(creature.speciesId).name
+        : null;
+    final key = '$fedAt|$name';
+    if (fedAt == null || key == _handled) return;
+    _handled = key;
+    final now = _clock();
+    final reminders = [
+      for (final r in plan(fedAt, name: name))
+        if (r.at.isAfter(now)) r,
+    ];
     try {
-      if (reminder == null || reminder.at.isBefore(_clock())) {
+      if (reminders.isEmpty) {
         await scheduler.cancel();
       } else {
-        await scheduler.schedule(reminder);
+        await scheduler.scheduleAll(reminders);
       }
     } on Object catch (error, stack) {
       developer.log(

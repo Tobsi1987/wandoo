@@ -37,6 +37,20 @@ void main() {
     },
   );
 
+  testWidgets('ein Hüpfer mitten im Schlüpfen lässt das Ei nicht stehen', (
+    tester,
+  ) async {
+    CreatureFigure.animate = true;
+    await tester.pumpWidget(host(egg));
+    await tester.pumpWidget(host(hatched));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpWidget(host(hatched.copyWith(food: 30)));
+    await tester.pumpAndSettle();
+    expect(find.text('Wesen'), findsOneWidget);
+    expect(find.text('Ei'), findsNothing);
+  });
+
   testWidgets('ohne Animation steht das Wesen sofort da', (tester) async {
     await tester.pumpWidget(host(egg));
     await tester.pumpWidget(host(hatched));

@@ -2513,6 +2513,1170 @@ class AdventureStatesCompanion extends UpdateCompanion<AdventureState> {
   }
 }
 
+class $FriendshipStatesTable extends FriendshipStates
+    with TableInfo<$FriendshipStatesTable, FriendshipState> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FriendshipStatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _creatureKeyMeta = const VerificationMeta(
+    'creatureKey',
+  );
+  @override
+  late final GeneratedColumn<String> creatureKey = GeneratedColumn<String>(
+    'creature_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pointsMeta = const VerificationMeta('points');
+  @override
+  late final GeneratedColumn<int> points = GeneratedColumn<int>(
+    'points',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _petsTodayMeta = const VerificationMeta(
+    'petsToday',
+  );
+  @override
+  late final GeneratedColumn<int> petsToday = GeneratedColumn<int>(
+    'pets_today',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _petDayMeta = const VerificationMeta('petDay');
+  @override
+  late final GeneratedColumn<DateTime> petDay = GeneratedColumn<DateTime>(
+    'pet_day',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    creatureKey,
+    points,
+    petsToday,
+    petDay,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'friendship_states';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FriendshipState> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('creature_key')) {
+      context.handle(
+        _creatureKeyMeta,
+        creatureKey.isAcceptableOrUnknown(
+          data['creature_key']!,
+          _creatureKeyMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_creatureKeyMeta);
+    }
+    if (data.containsKey('points')) {
+      context.handle(
+        _pointsMeta,
+        points.isAcceptableOrUnknown(data['points']!, _pointsMeta),
+      );
+    }
+    if (data.containsKey('pets_today')) {
+      context.handle(
+        _petsTodayMeta,
+        petsToday.isAcceptableOrUnknown(data['pets_today']!, _petsTodayMeta),
+      );
+    }
+    if (data.containsKey('pet_day')) {
+      context.handle(
+        _petDayMeta,
+        petDay.isAcceptableOrUnknown(data['pet_day']!, _petDayMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FriendshipState map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FriendshipState(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      creatureKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}creature_key'],
+      )!,
+      points: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}points'],
+      )!,
+      petsToday: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}pets_today'],
+      )!,
+      petDay: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}pet_day'],
+      ),
+    );
+  }
+
+  @override
+  $FriendshipStatesTable createAlias(String alias) {
+    return $FriendshipStatesTable(attachedDatabase, alias);
+  }
+}
+
+class FriendshipState extends DataClass implements Insertable<FriendshipState> {
+  final int id;
+
+  /// Zu welchem Wesen die Punkte gehören (`Creature.lineKey`).
+  final String creatureKey;
+  final int points;
+  final int petsToday;
+  final DateTime? petDay;
+  const FriendshipState({
+    required this.id,
+    required this.creatureKey,
+    required this.points,
+    required this.petsToday,
+    this.petDay,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['creature_key'] = Variable<String>(creatureKey);
+    map['points'] = Variable<int>(points);
+    map['pets_today'] = Variable<int>(petsToday);
+    if (!nullToAbsent || petDay != null) {
+      map['pet_day'] = Variable<DateTime>(petDay);
+    }
+    return map;
+  }
+
+  FriendshipStatesCompanion toCompanion(bool nullToAbsent) {
+    return FriendshipStatesCompanion(
+      id: Value(id),
+      creatureKey: Value(creatureKey),
+      points: Value(points),
+      petsToday: Value(petsToday),
+      petDay: petDay == null && nullToAbsent
+          ? const Value.absent()
+          : Value(petDay),
+    );
+  }
+
+  factory FriendshipState.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FriendshipState(
+      id: serializer.fromJson<int>(json['id']),
+      creatureKey: serializer.fromJson<String>(json['creatureKey']),
+      points: serializer.fromJson<int>(json['points']),
+      petsToday: serializer.fromJson<int>(json['petsToday']),
+      petDay: serializer.fromJson<DateTime?>(json['petDay']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'creatureKey': serializer.toJson<String>(creatureKey),
+      'points': serializer.toJson<int>(points),
+      'petsToday': serializer.toJson<int>(petsToday),
+      'petDay': serializer.toJson<DateTime?>(petDay),
+    };
+  }
+
+  FriendshipState copyWith({
+    int? id,
+    String? creatureKey,
+    int? points,
+    int? petsToday,
+    Value<DateTime?> petDay = const Value.absent(),
+  }) => FriendshipState(
+    id: id ?? this.id,
+    creatureKey: creatureKey ?? this.creatureKey,
+    points: points ?? this.points,
+    petsToday: petsToday ?? this.petsToday,
+    petDay: petDay.present ? petDay.value : this.petDay,
+  );
+  FriendshipState copyWithCompanion(FriendshipStatesCompanion data) {
+    return FriendshipState(
+      id: data.id.present ? data.id.value : this.id,
+      creatureKey: data.creatureKey.present
+          ? data.creatureKey.value
+          : this.creatureKey,
+      points: data.points.present ? data.points.value : this.points,
+      petsToday: data.petsToday.present ? data.petsToday.value : this.petsToday,
+      petDay: data.petDay.present ? data.petDay.value : this.petDay,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FriendshipState(')
+          ..write('id: $id, ')
+          ..write('creatureKey: $creatureKey, ')
+          ..write('points: $points, ')
+          ..write('petsToday: $petsToday, ')
+          ..write('petDay: $petDay')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, creatureKey, points, petsToday, petDay);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FriendshipState &&
+          other.id == this.id &&
+          other.creatureKey == this.creatureKey &&
+          other.points == this.points &&
+          other.petsToday == this.petsToday &&
+          other.petDay == this.petDay);
+}
+
+class FriendshipStatesCompanion extends UpdateCompanion<FriendshipState> {
+  final Value<int> id;
+  final Value<String> creatureKey;
+  final Value<int> points;
+  final Value<int> petsToday;
+  final Value<DateTime?> petDay;
+  const FriendshipStatesCompanion({
+    this.id = const Value.absent(),
+    this.creatureKey = const Value.absent(),
+    this.points = const Value.absent(),
+    this.petsToday = const Value.absent(),
+    this.petDay = const Value.absent(),
+  });
+  FriendshipStatesCompanion.insert({
+    this.id = const Value.absent(),
+    required String creatureKey,
+    this.points = const Value.absent(),
+    this.petsToday = const Value.absent(),
+    this.petDay = const Value.absent(),
+  }) : creatureKey = Value(creatureKey);
+  static Insertable<FriendshipState> custom({
+    Expression<int>? id,
+    Expression<String>? creatureKey,
+    Expression<int>? points,
+    Expression<int>? petsToday,
+    Expression<DateTime>? petDay,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (creatureKey != null) 'creature_key': creatureKey,
+      if (points != null) 'points': points,
+      if (petsToday != null) 'pets_today': petsToday,
+      if (petDay != null) 'pet_day': petDay,
+    });
+  }
+
+  FriendshipStatesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? creatureKey,
+    Value<int>? points,
+    Value<int>? petsToday,
+    Value<DateTime?>? petDay,
+  }) {
+    return FriendshipStatesCompanion(
+      id: id ?? this.id,
+      creatureKey: creatureKey ?? this.creatureKey,
+      points: points ?? this.points,
+      petsToday: petsToday ?? this.petsToday,
+      petDay: petDay ?? this.petDay,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (creatureKey.present) {
+      map['creature_key'] = Variable<String>(creatureKey.value);
+    }
+    if (points.present) {
+      map['points'] = Variable<int>(points.value);
+    }
+    if (petsToday.present) {
+      map['pets_today'] = Variable<int>(petsToday.value);
+    }
+    if (petDay.present) {
+      map['pet_day'] = Variable<DateTime>(petDay.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FriendshipStatesCompanion(')
+          ..write('id: $id, ')
+          ..write('creatureKey: $creatureKey, ')
+          ..write('points: $points, ')
+          ..write('petsToday: $petsToday, ')
+          ..write('petDay: $petDay')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DiaryWalksTable extends DiaryWalks
+    with TableInfo<$DiaryWalksTable, DiaryWalkRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DiaryWalksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _walkIdMeta = const VerificationMeta('walkId');
+  @override
+  late final GeneratedColumn<String> walkId = GeneratedColumn<String>(
+    'walk_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _creatureKeyMeta = const VerificationMeta(
+    'creatureKey',
+  );
+  @override
+  late final GeneratedColumn<String> creatureKey = GeneratedColumn<String>(
+    'creature_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _finishedAtMeta = const VerificationMeta(
+    'finishedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> finishedAt = GeneratedColumn<DateTime>(
+    'finished_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _metersMeta = const VerificationMeta('meters');
+  @override
+  late final GeneratedColumn<int> meters = GeneratedColumn<int>(
+    'meters',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _pathMeta = const VerificationMeta('path');
+  @override
+  late final GeneratedColumn<String> path = GeneratedColumn<String>(
+    'path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    walkId,
+    creatureKey,
+    finishedAt,
+    meters,
+    path,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'diary_walks';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DiaryWalkRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('walk_id')) {
+      context.handle(
+        _walkIdMeta,
+        walkId.isAcceptableOrUnknown(data['walk_id']!, _walkIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_walkIdMeta);
+    }
+    if (data.containsKey('creature_key')) {
+      context.handle(
+        _creatureKeyMeta,
+        creatureKey.isAcceptableOrUnknown(
+          data['creature_key']!,
+          _creatureKeyMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_creatureKeyMeta);
+    }
+    if (data.containsKey('finished_at')) {
+      context.handle(
+        _finishedAtMeta,
+        finishedAt.isAcceptableOrUnknown(data['finished_at']!, _finishedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_finishedAtMeta);
+    }
+    if (data.containsKey('meters')) {
+      context.handle(
+        _metersMeta,
+        meters.isAcceptableOrUnknown(data['meters']!, _metersMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_metersMeta);
+    }
+    if (data.containsKey('path')) {
+      context.handle(
+        _pathMeta,
+        path.isAcceptableOrUnknown(data['path']!, _pathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pathMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {walkId};
+  @override
+  DiaryWalkRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DiaryWalkRow(
+      walkId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}walk_id'],
+      )!,
+      creatureKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}creature_key'],
+      )!,
+      finishedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}finished_at'],
+      )!,
+      meters: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}meters'],
+      )!,
+      path: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}path'],
+      )!,
+    );
+  }
+
+  @override
+  $DiaryWalksTable createAlias(String alias) {
+    return $DiaryWalksTable(attachedDatabase, alias);
+  }
+}
+
+class DiaryWalkRow extends DataClass implements Insertable<DiaryWalkRow> {
+  final String walkId;
+  final String creatureKey;
+  final DateTime finishedAt;
+  final int meters;
+
+  /// Ausgedünnte Spur als JSON, z. B. `[[52.1,7.6],[52.2,7.6]]`.
+  final String path;
+  const DiaryWalkRow({
+    required this.walkId,
+    required this.creatureKey,
+    required this.finishedAt,
+    required this.meters,
+    required this.path,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['walk_id'] = Variable<String>(walkId);
+    map['creature_key'] = Variable<String>(creatureKey);
+    map['finished_at'] = Variable<DateTime>(finishedAt);
+    map['meters'] = Variable<int>(meters);
+    map['path'] = Variable<String>(path);
+    return map;
+  }
+
+  DiaryWalksCompanion toCompanion(bool nullToAbsent) {
+    return DiaryWalksCompanion(
+      walkId: Value(walkId),
+      creatureKey: Value(creatureKey),
+      finishedAt: Value(finishedAt),
+      meters: Value(meters),
+      path: Value(path),
+    );
+  }
+
+  factory DiaryWalkRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DiaryWalkRow(
+      walkId: serializer.fromJson<String>(json['walkId']),
+      creatureKey: serializer.fromJson<String>(json['creatureKey']),
+      finishedAt: serializer.fromJson<DateTime>(json['finishedAt']),
+      meters: serializer.fromJson<int>(json['meters']),
+      path: serializer.fromJson<String>(json['path']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'walkId': serializer.toJson<String>(walkId),
+      'creatureKey': serializer.toJson<String>(creatureKey),
+      'finishedAt': serializer.toJson<DateTime>(finishedAt),
+      'meters': serializer.toJson<int>(meters),
+      'path': serializer.toJson<String>(path),
+    };
+  }
+
+  DiaryWalkRow copyWith({
+    String? walkId,
+    String? creatureKey,
+    DateTime? finishedAt,
+    int? meters,
+    String? path,
+  }) => DiaryWalkRow(
+    walkId: walkId ?? this.walkId,
+    creatureKey: creatureKey ?? this.creatureKey,
+    finishedAt: finishedAt ?? this.finishedAt,
+    meters: meters ?? this.meters,
+    path: path ?? this.path,
+  );
+  DiaryWalkRow copyWithCompanion(DiaryWalksCompanion data) {
+    return DiaryWalkRow(
+      walkId: data.walkId.present ? data.walkId.value : this.walkId,
+      creatureKey: data.creatureKey.present
+          ? data.creatureKey.value
+          : this.creatureKey,
+      finishedAt: data.finishedAt.present
+          ? data.finishedAt.value
+          : this.finishedAt,
+      meters: data.meters.present ? data.meters.value : this.meters,
+      path: data.path.present ? data.path.value : this.path,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DiaryWalkRow(')
+          ..write('walkId: $walkId, ')
+          ..write('creatureKey: $creatureKey, ')
+          ..write('finishedAt: $finishedAt, ')
+          ..write('meters: $meters, ')
+          ..write('path: $path')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(walkId, creatureKey, finishedAt, meters, path);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DiaryWalkRow &&
+          other.walkId == this.walkId &&
+          other.creatureKey == this.creatureKey &&
+          other.finishedAt == this.finishedAt &&
+          other.meters == this.meters &&
+          other.path == this.path);
+}
+
+class DiaryWalksCompanion extends UpdateCompanion<DiaryWalkRow> {
+  final Value<String> walkId;
+  final Value<String> creatureKey;
+  final Value<DateTime> finishedAt;
+  final Value<int> meters;
+  final Value<String> path;
+  final Value<int> rowid;
+  const DiaryWalksCompanion({
+    this.walkId = const Value.absent(),
+    this.creatureKey = const Value.absent(),
+    this.finishedAt = const Value.absent(),
+    this.meters = const Value.absent(),
+    this.path = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DiaryWalksCompanion.insert({
+    required String walkId,
+    required String creatureKey,
+    required DateTime finishedAt,
+    required int meters,
+    required String path,
+    this.rowid = const Value.absent(),
+  }) : walkId = Value(walkId),
+       creatureKey = Value(creatureKey),
+       finishedAt = Value(finishedAt),
+       meters = Value(meters),
+       path = Value(path);
+  static Insertable<DiaryWalkRow> custom({
+    Expression<String>? walkId,
+    Expression<String>? creatureKey,
+    Expression<DateTime>? finishedAt,
+    Expression<int>? meters,
+    Expression<String>? path,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (walkId != null) 'walk_id': walkId,
+      if (creatureKey != null) 'creature_key': creatureKey,
+      if (finishedAt != null) 'finished_at': finishedAt,
+      if (meters != null) 'meters': meters,
+      if (path != null) 'path': path,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DiaryWalksCompanion copyWith({
+    Value<String>? walkId,
+    Value<String>? creatureKey,
+    Value<DateTime>? finishedAt,
+    Value<int>? meters,
+    Value<String>? path,
+    Value<int>? rowid,
+  }) {
+    return DiaryWalksCompanion(
+      walkId: walkId ?? this.walkId,
+      creatureKey: creatureKey ?? this.creatureKey,
+      finishedAt: finishedAt ?? this.finishedAt,
+      meters: meters ?? this.meters,
+      path: path ?? this.path,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (walkId.present) {
+      map['walk_id'] = Variable<String>(walkId.value);
+    }
+    if (creatureKey.present) {
+      map['creature_key'] = Variable<String>(creatureKey.value);
+    }
+    if (finishedAt.present) {
+      map['finished_at'] = Variable<DateTime>(finishedAt.value);
+    }
+    if (meters.present) {
+      map['meters'] = Variable<int>(meters.value);
+    }
+    if (path.present) {
+      map['path'] = Variable<String>(path.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DiaryWalksCompanion(')
+          ..write('walkId: $walkId, ')
+          ..write('creatureKey: $creatureKey, ')
+          ..write('finishedAt: $finishedAt, ')
+          ..write('meters: $meters, ')
+          ..write('path: $path, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $DiaryMemoriesTable extends DiaryMemories
+    with TableInfo<$DiaryMemoriesTable, DiaryMemoryRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DiaryMemoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _creatureKeyMeta = const VerificationMeta(
+    'creatureKey',
+  );
+  @override
+  late final GeneratedColumn<String> creatureKey = GeneratedColumn<String>(
+    'creature_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _atMeta = const VerificationMeta('at');
+  @override
+  late final GeneratedColumn<DateTime> at = GeneratedColumn<DateTime>(
+    'at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _emojiMeta = const VerificationMeta('emoji');
+  @override
+  late final GeneratedColumn<String> emoji = GeneratedColumn<String>(
+    'emoji',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _latitudeMeta = const VerificationMeta(
+    'latitude',
+  );
+  @override
+  late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
+    'latitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _longitudeMeta = const VerificationMeta(
+    'longitude',
+  );
+  @override
+  late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
+    'longitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    creatureKey,
+    at,
+    emoji,
+    title,
+    latitude,
+    longitude,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'diary_memories';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DiaryMemoryRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('creature_key')) {
+      context.handle(
+        _creatureKeyMeta,
+        creatureKey.isAcceptableOrUnknown(
+          data['creature_key']!,
+          _creatureKeyMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_creatureKeyMeta);
+    }
+    if (data.containsKey('at')) {
+      context.handle(_atMeta, at.isAcceptableOrUnknown(data['at']!, _atMeta));
+    } else if (isInserting) {
+      context.missing(_atMeta);
+    }
+    if (data.containsKey('emoji')) {
+      context.handle(
+        _emojiMeta,
+        emoji.isAcceptableOrUnknown(data['emoji']!, _emojiMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_emojiMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('latitude')) {
+      context.handle(
+        _latitudeMeta,
+        latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta),
+      );
+    }
+    if (data.containsKey('longitude')) {
+      context.handle(
+        _longitudeMeta,
+        longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DiaryMemoryRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DiaryMemoryRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      creatureKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}creature_key'],
+      )!,
+      at: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}at'],
+      )!,
+      emoji: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}emoji'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      latitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}latitude'],
+      ),
+      longitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}longitude'],
+      ),
+    );
+  }
+
+  @override
+  $DiaryMemoriesTable createAlias(String alias) {
+    return $DiaryMemoriesTable(attachedDatabase, alias);
+  }
+}
+
+class DiaryMemoryRow extends DataClass implements Insertable<DiaryMemoryRow> {
+  final int id;
+  final String creatureKey;
+  final DateTime at;
+  final String emoji;
+  final String title;
+  final double? latitude;
+  final double? longitude;
+  const DiaryMemoryRow({
+    required this.id,
+    required this.creatureKey,
+    required this.at,
+    required this.emoji,
+    required this.title,
+    this.latitude,
+    this.longitude,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['creature_key'] = Variable<String>(creatureKey);
+    map['at'] = Variable<DateTime>(at);
+    map['emoji'] = Variable<String>(emoji);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || latitude != null) {
+      map['latitude'] = Variable<double>(latitude);
+    }
+    if (!nullToAbsent || longitude != null) {
+      map['longitude'] = Variable<double>(longitude);
+    }
+    return map;
+  }
+
+  DiaryMemoriesCompanion toCompanion(bool nullToAbsent) {
+    return DiaryMemoriesCompanion(
+      id: Value(id),
+      creatureKey: Value(creatureKey),
+      at: Value(at),
+      emoji: Value(emoji),
+      title: Value(title),
+      latitude: latitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(latitude),
+      longitude: longitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(longitude),
+    );
+  }
+
+  factory DiaryMemoryRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DiaryMemoryRow(
+      id: serializer.fromJson<int>(json['id']),
+      creatureKey: serializer.fromJson<String>(json['creatureKey']),
+      at: serializer.fromJson<DateTime>(json['at']),
+      emoji: serializer.fromJson<String>(json['emoji']),
+      title: serializer.fromJson<String>(json['title']),
+      latitude: serializer.fromJson<double?>(json['latitude']),
+      longitude: serializer.fromJson<double?>(json['longitude']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'creatureKey': serializer.toJson<String>(creatureKey),
+      'at': serializer.toJson<DateTime>(at),
+      'emoji': serializer.toJson<String>(emoji),
+      'title': serializer.toJson<String>(title),
+      'latitude': serializer.toJson<double?>(latitude),
+      'longitude': serializer.toJson<double?>(longitude),
+    };
+  }
+
+  DiaryMemoryRow copyWith({
+    int? id,
+    String? creatureKey,
+    DateTime? at,
+    String? emoji,
+    String? title,
+    Value<double?> latitude = const Value.absent(),
+    Value<double?> longitude = const Value.absent(),
+  }) => DiaryMemoryRow(
+    id: id ?? this.id,
+    creatureKey: creatureKey ?? this.creatureKey,
+    at: at ?? this.at,
+    emoji: emoji ?? this.emoji,
+    title: title ?? this.title,
+    latitude: latitude.present ? latitude.value : this.latitude,
+    longitude: longitude.present ? longitude.value : this.longitude,
+  );
+  DiaryMemoryRow copyWithCompanion(DiaryMemoriesCompanion data) {
+    return DiaryMemoryRow(
+      id: data.id.present ? data.id.value : this.id,
+      creatureKey: data.creatureKey.present
+          ? data.creatureKey.value
+          : this.creatureKey,
+      at: data.at.present ? data.at.value : this.at,
+      emoji: data.emoji.present ? data.emoji.value : this.emoji,
+      title: data.title.present ? data.title.value : this.title,
+      latitude: data.latitude.present ? data.latitude.value : this.latitude,
+      longitude: data.longitude.present ? data.longitude.value : this.longitude,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DiaryMemoryRow(')
+          ..write('id: $id, ')
+          ..write('creatureKey: $creatureKey, ')
+          ..write('at: $at, ')
+          ..write('emoji: $emoji, ')
+          ..write('title: $title, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, creatureKey, at, emoji, title, latitude, longitude);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DiaryMemoryRow &&
+          other.id == this.id &&
+          other.creatureKey == this.creatureKey &&
+          other.at == this.at &&
+          other.emoji == this.emoji &&
+          other.title == this.title &&
+          other.latitude == this.latitude &&
+          other.longitude == this.longitude);
+}
+
+class DiaryMemoriesCompanion extends UpdateCompanion<DiaryMemoryRow> {
+  final Value<int> id;
+  final Value<String> creatureKey;
+  final Value<DateTime> at;
+  final Value<String> emoji;
+  final Value<String> title;
+  final Value<double?> latitude;
+  final Value<double?> longitude;
+  const DiaryMemoriesCompanion({
+    this.id = const Value.absent(),
+    this.creatureKey = const Value.absent(),
+    this.at = const Value.absent(),
+    this.emoji = const Value.absent(),
+    this.title = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+  });
+  DiaryMemoriesCompanion.insert({
+    this.id = const Value.absent(),
+    required String creatureKey,
+    required DateTime at,
+    required String emoji,
+    required String title,
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+  }) : creatureKey = Value(creatureKey),
+       at = Value(at),
+       emoji = Value(emoji),
+       title = Value(title);
+  static Insertable<DiaryMemoryRow> custom({
+    Expression<int>? id,
+    Expression<String>? creatureKey,
+    Expression<DateTime>? at,
+    Expression<String>? emoji,
+    Expression<String>? title,
+    Expression<double>? latitude,
+    Expression<double>? longitude,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (creatureKey != null) 'creature_key': creatureKey,
+      if (at != null) 'at': at,
+      if (emoji != null) 'emoji': emoji,
+      if (title != null) 'title': title,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+    });
+  }
+
+  DiaryMemoriesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? creatureKey,
+    Value<DateTime>? at,
+    Value<String>? emoji,
+    Value<String>? title,
+    Value<double?>? latitude,
+    Value<double?>? longitude,
+  }) {
+    return DiaryMemoriesCompanion(
+      id: id ?? this.id,
+      creatureKey: creatureKey ?? this.creatureKey,
+      at: at ?? this.at,
+      emoji: emoji ?? this.emoji,
+      title: title ?? this.title,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (creatureKey.present) {
+      map['creature_key'] = Variable<String>(creatureKey.value);
+    }
+    if (at.present) {
+      map['at'] = Variable<DateTime>(at.value);
+    }
+    if (emoji.present) {
+      map['emoji'] = Variable<String>(emoji.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (latitude.present) {
+      map['latitude'] = Variable<double>(latitude.value);
+    }
+    if (longitude.present) {
+      map['longitude'] = Variable<double>(longitude.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DiaryMemoriesCompanion(')
+          ..write('id: $id, ')
+          ..write('creatureKey: $creatureKey, ')
+          ..write('at: $at, ')
+          ..write('emoji: $emoji, ')
+          ..write('title: $title, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2524,6 +3688,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $AdventureStatesTable adventureStates = $AdventureStatesTable(
     this,
   );
+  late final $FriendshipStatesTable friendshipStates = $FriendshipStatesTable(
+    this,
+  );
+  late final $DiaryWalksTable diaryWalks = $DiaryWalksTable(this);
+  late final $DiaryMemoriesTable diaryMemories = $DiaryMemoriesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2535,6 +3704,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     walkSummaries,
     treasureStates,
     adventureStates,
+    friendshipStates,
+    diaryWalks,
+    diaryMemories,
   ];
 }
 
@@ -3926,6 +5098,673 @@ typedef $$AdventureStatesTableProcessedTableManager =
       AdventureState,
       PrefetchHooks Function()
     >;
+typedef $$FriendshipStatesTableCreateCompanionBuilder =
+    FriendshipStatesCompanion Function({
+      Value<int> id,
+      required String creatureKey,
+      Value<int> points,
+      Value<int> petsToday,
+      Value<DateTime?> petDay,
+    });
+typedef $$FriendshipStatesTableUpdateCompanionBuilder =
+    FriendshipStatesCompanion Function({
+      Value<int> id,
+      Value<String> creatureKey,
+      Value<int> points,
+      Value<int> petsToday,
+      Value<DateTime?> petDay,
+    });
+
+class $$FriendshipStatesTableFilterComposer
+    extends Composer<_$AppDatabase, $FriendshipStatesTable> {
+  $$FriendshipStatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get creatureKey => $composableBuilder(
+    column: $table.creatureKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get points => $composableBuilder(
+    column: $table.points,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get petsToday => $composableBuilder(
+    column: $table.petsToday,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get petDay => $composableBuilder(
+    column: $table.petDay,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$FriendshipStatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $FriendshipStatesTable> {
+  $$FriendshipStatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get creatureKey => $composableBuilder(
+    column: $table.creatureKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get points => $composableBuilder(
+    column: $table.points,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get petsToday => $composableBuilder(
+    column: $table.petsToday,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get petDay => $composableBuilder(
+    column: $table.petDay,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FriendshipStatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FriendshipStatesTable> {
+  $$FriendshipStatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get creatureKey => $composableBuilder(
+    column: $table.creatureKey,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get points =>
+      $composableBuilder(column: $table.points, builder: (column) => column);
+
+  GeneratedColumn<int> get petsToday =>
+      $composableBuilder(column: $table.petsToday, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get petDay =>
+      $composableBuilder(column: $table.petDay, builder: (column) => column);
+}
+
+class $$FriendshipStatesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FriendshipStatesTable,
+          FriendshipState,
+          $$FriendshipStatesTableFilterComposer,
+          $$FriendshipStatesTableOrderingComposer,
+          $$FriendshipStatesTableAnnotationComposer,
+          $$FriendshipStatesTableCreateCompanionBuilder,
+          $$FriendshipStatesTableUpdateCompanionBuilder,
+          (
+            FriendshipState,
+            BaseReferences<
+              _$AppDatabase,
+              $FriendshipStatesTable,
+              FriendshipState
+            >,
+          ),
+          FriendshipState,
+          PrefetchHooks Function()
+        > {
+  $$FriendshipStatesTableTableManager(
+    _$AppDatabase db,
+    $FriendshipStatesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FriendshipStatesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FriendshipStatesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FriendshipStatesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> creatureKey = const Value.absent(),
+                Value<int> points = const Value.absent(),
+                Value<int> petsToday = const Value.absent(),
+                Value<DateTime?> petDay = const Value.absent(),
+              }) => FriendshipStatesCompanion(
+                id: id,
+                creatureKey: creatureKey,
+                points: points,
+                petsToday: petsToday,
+                petDay: petDay,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String creatureKey,
+                Value<int> points = const Value.absent(),
+                Value<int> petsToday = const Value.absent(),
+                Value<DateTime?> petDay = const Value.absent(),
+              }) => FriendshipStatesCompanion.insert(
+                id: id,
+                creatureKey: creatureKey,
+                points: points,
+                petsToday: petsToday,
+                petDay: petDay,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$FriendshipStatesTable, FriendshipState>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $FriendshipStatesTable,
+                    FriendshipState
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$FriendshipStatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FriendshipStatesTable,
+      FriendshipState,
+      $$FriendshipStatesTableFilterComposer,
+      $$FriendshipStatesTableOrderingComposer,
+      $$FriendshipStatesTableAnnotationComposer,
+      $$FriendshipStatesTableCreateCompanionBuilder,
+      $$FriendshipStatesTableUpdateCompanionBuilder,
+      (
+        FriendshipState,
+        BaseReferences<_$AppDatabase, $FriendshipStatesTable, FriendshipState>,
+      ),
+      FriendshipState,
+      PrefetchHooks Function()
+    >;
+typedef $$DiaryWalksTableCreateCompanionBuilder =
+    DiaryWalksCompanion Function({
+      required String walkId,
+      required String creatureKey,
+      required DateTime finishedAt,
+      required int meters,
+      required String path,
+      Value<int> rowid,
+    });
+typedef $$DiaryWalksTableUpdateCompanionBuilder =
+    DiaryWalksCompanion Function({
+      Value<String> walkId,
+      Value<String> creatureKey,
+      Value<DateTime> finishedAt,
+      Value<int> meters,
+      Value<String> path,
+      Value<int> rowid,
+    });
+
+class $$DiaryWalksTableFilterComposer
+    extends Composer<_$AppDatabase, $DiaryWalksTable> {
+  $$DiaryWalksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get walkId => $composableBuilder(
+    column: $table.walkId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get creatureKey => $composableBuilder(
+    column: $table.creatureKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get finishedAt => $composableBuilder(
+    column: $table.finishedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get meters => $composableBuilder(
+    column: $table.meters,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get path => $composableBuilder(
+    column: $table.path,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DiaryWalksTableOrderingComposer
+    extends Composer<_$AppDatabase, $DiaryWalksTable> {
+  $$DiaryWalksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get walkId => $composableBuilder(
+    column: $table.walkId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get creatureKey => $composableBuilder(
+    column: $table.creatureKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get finishedAt => $composableBuilder(
+    column: $table.finishedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get meters => $composableBuilder(
+    column: $table.meters,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get path => $composableBuilder(
+    column: $table.path,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DiaryWalksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DiaryWalksTable> {
+  $$DiaryWalksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get walkId =>
+      $composableBuilder(column: $table.walkId, builder: (column) => column);
+
+  GeneratedColumn<String> get creatureKey => $composableBuilder(
+    column: $table.creatureKey,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get finishedAt => $composableBuilder(
+    column: $table.finishedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get meters =>
+      $composableBuilder(column: $table.meters, builder: (column) => column);
+
+  GeneratedColumn<String> get path =>
+      $composableBuilder(column: $table.path, builder: (column) => column);
+}
+
+class $$DiaryWalksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DiaryWalksTable,
+          DiaryWalkRow,
+          $$DiaryWalksTableFilterComposer,
+          $$DiaryWalksTableOrderingComposer,
+          $$DiaryWalksTableAnnotationComposer,
+          $$DiaryWalksTableCreateCompanionBuilder,
+          $$DiaryWalksTableUpdateCompanionBuilder,
+          (
+            DiaryWalkRow,
+            BaseReferences<_$AppDatabase, $DiaryWalksTable, DiaryWalkRow>,
+          ),
+          DiaryWalkRow,
+          PrefetchHooks Function()
+        > {
+  $$DiaryWalksTableTableManager(_$AppDatabase db, $DiaryWalksTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DiaryWalksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DiaryWalksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DiaryWalksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> walkId = const Value.absent(),
+                Value<String> creatureKey = const Value.absent(),
+                Value<DateTime> finishedAt = const Value.absent(),
+                Value<int> meters = const Value.absent(),
+                Value<String> path = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DiaryWalksCompanion(
+                walkId: walkId,
+                creatureKey: creatureKey,
+                finishedAt: finishedAt,
+                meters: meters,
+                path: path,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String walkId,
+                required String creatureKey,
+                required DateTime finishedAt,
+                required int meters,
+                required String path,
+                Value<int> rowid = const Value.absent(),
+              }) => DiaryWalksCompanion.insert(
+                walkId: walkId,
+                creatureKey: creatureKey,
+                finishedAt: finishedAt,
+                meters: meters,
+                path: path,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$DiaryWalksTable, DiaryWalkRow>(table),
+                  BaseReferences<_$AppDatabase, $DiaryWalksTable, DiaryWalkRow>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DiaryWalksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DiaryWalksTable,
+      DiaryWalkRow,
+      $$DiaryWalksTableFilterComposer,
+      $$DiaryWalksTableOrderingComposer,
+      $$DiaryWalksTableAnnotationComposer,
+      $$DiaryWalksTableCreateCompanionBuilder,
+      $$DiaryWalksTableUpdateCompanionBuilder,
+      (
+        DiaryWalkRow,
+        BaseReferences<_$AppDatabase, $DiaryWalksTable, DiaryWalkRow>,
+      ),
+      DiaryWalkRow,
+      PrefetchHooks Function()
+    >;
+typedef $$DiaryMemoriesTableCreateCompanionBuilder =
+    DiaryMemoriesCompanion Function({
+      Value<int> id,
+      required String creatureKey,
+      required DateTime at,
+      required String emoji,
+      required String title,
+      Value<double?> latitude,
+      Value<double?> longitude,
+    });
+typedef $$DiaryMemoriesTableUpdateCompanionBuilder =
+    DiaryMemoriesCompanion Function({
+      Value<int> id,
+      Value<String> creatureKey,
+      Value<DateTime> at,
+      Value<String> emoji,
+      Value<String> title,
+      Value<double?> latitude,
+      Value<double?> longitude,
+    });
+
+class $$DiaryMemoriesTableFilterComposer
+    extends Composer<_$AppDatabase, $DiaryMemoriesTable> {
+  $$DiaryMemoriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get creatureKey => $composableBuilder(
+    column: $table.creatureKey,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get at => $composableBuilder(
+    column: $table.at,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get emoji => $composableBuilder(
+    column: $table.emoji,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DiaryMemoriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $DiaryMemoriesTable> {
+  $$DiaryMemoriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get creatureKey => $composableBuilder(
+    column: $table.creatureKey,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get at => $composableBuilder(
+    column: $table.at,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get emoji => $composableBuilder(
+    column: $table.emoji,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DiaryMemoriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DiaryMemoriesTable> {
+  $$DiaryMemoriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get creatureKey => $composableBuilder(
+    column: $table.creatureKey,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get at =>
+      $composableBuilder(column: $table.at, builder: (column) => column);
+
+  GeneratedColumn<String> get emoji =>
+      $composableBuilder(column: $table.emoji, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<double> get latitude =>
+      $composableBuilder(column: $table.latitude, builder: (column) => column);
+
+  GeneratedColumn<double> get longitude =>
+      $composableBuilder(column: $table.longitude, builder: (column) => column);
+}
+
+class $$DiaryMemoriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DiaryMemoriesTable,
+          DiaryMemoryRow,
+          $$DiaryMemoriesTableFilterComposer,
+          $$DiaryMemoriesTableOrderingComposer,
+          $$DiaryMemoriesTableAnnotationComposer,
+          $$DiaryMemoriesTableCreateCompanionBuilder,
+          $$DiaryMemoriesTableUpdateCompanionBuilder,
+          (
+            DiaryMemoryRow,
+            BaseReferences<_$AppDatabase, $DiaryMemoriesTable, DiaryMemoryRow>,
+          ),
+          DiaryMemoryRow,
+          PrefetchHooks Function()
+        > {
+  $$DiaryMemoriesTableTableManager(_$AppDatabase db, $DiaryMemoriesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DiaryMemoriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DiaryMemoriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DiaryMemoriesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> creatureKey = const Value.absent(),
+                Value<DateTime> at = const Value.absent(),
+                Value<String> emoji = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
+              }) => DiaryMemoriesCompanion(
+                id: id,
+                creatureKey: creatureKey,
+                at: at,
+                emoji: emoji,
+                title: title,
+                latitude: latitude,
+                longitude: longitude,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String creatureKey,
+                required DateTime at,
+                required String emoji,
+                required String title,
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
+              }) => DiaryMemoriesCompanion.insert(
+                id: id,
+                creatureKey: creatureKey,
+                at: at,
+                emoji: emoji,
+                title: title,
+                latitude: latitude,
+                longitude: longitude,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$DiaryMemoriesTable, DiaryMemoryRow>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $DiaryMemoriesTable,
+                    DiaryMemoryRow
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DiaryMemoriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DiaryMemoriesTable,
+      DiaryMemoryRow,
+      $$DiaryMemoriesTableFilterComposer,
+      $$DiaryMemoriesTableOrderingComposer,
+      $$DiaryMemoriesTableAnnotationComposer,
+      $$DiaryMemoriesTableCreateCompanionBuilder,
+      $$DiaryMemoriesTableUpdateCompanionBuilder,
+      (
+        DiaryMemoryRow,
+        BaseReferences<_$AppDatabase, $DiaryMemoriesTable, DiaryMemoryRow>,
+      ),
+      DiaryMemoryRow,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3942,4 +5781,10 @@ class $AppDatabaseManager {
       $$TreasureStatesTableTableManager(_db, _db.treasureStates);
   $$AdventureStatesTableTableManager get adventureStates =>
       $$AdventureStatesTableTableManager(_db, _db.adventureStates);
+  $$FriendshipStatesTableTableManager get friendshipStates =>
+      $$FriendshipStatesTableTableManager(_db, _db.friendshipStates);
+  $$DiaryWalksTableTableManager get diaryWalks =>
+      $$DiaryWalksTableTableManager(_db, _db.diaryWalks);
+  $$DiaryMemoriesTableTableManager get diaryMemories =>
+      $$DiaryMemoriesTableTableManager(_db, _db.diaryMemories);
 }

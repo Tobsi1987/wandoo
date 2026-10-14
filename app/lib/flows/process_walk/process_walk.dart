@@ -66,6 +66,8 @@ class ProcessWalk {
       newSegmentsByEnvironment: _count(newSegments),
       nearby: candidates,
       freshIds: {for (final s in discovery.fresh) s.id},
+      before: before,
+      after: after,
     );
     for (final extra in extras) {
       summary = summary.withExtraLines(await extra.onWalk(outcome));
