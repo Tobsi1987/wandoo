@@ -12,26 +12,42 @@ class CreatureEvolution extends InheritedWidget {
   });
 
   final Creature? creature;
-  final int stage;
+
+  /// null, solange die Stufe noch lädt.
+  final int? stage;
 
   /// Die Stufe von [creature], 1 wenn es nicht das aktuelle Wesen ist.
-  static int of(BuildContext context, Creature creature) {
+  static int of(BuildContext context, Creature creature) =>
+      known(context, creature) ?? 1;
+
+  /// Wie [of], aber null, solange die Stufe des eigenen Wesens noch lädt.
+  static int? known(BuildContext context, Creature creature) {
     final scope = context
         .dependOnInheritedWidgetOfExactType<CreatureEvolution>();
     final own = scope?.creature;
     if (scope == null || own == null || !creature.hatched) return 1;
     final same =
         own.lineKey == creature.lineKey && own.speciesId == creature.speciesId;
-    return same ? scope.stage.clamp(1, 3) : 1;
+    return same ? scope.stage?.clamp(1, 3) : 1;
   }
 
-  /// Wie viel größer das Wesen ist, wenn seinem Modell [stage] − 1 Stufen
-  /// fehlen (siehe `stageModelOf`).
-  static double scaleFor(int stage) => switch (stage) {
-    3 => 1.16,
-    2 => 1.08,
-    _ => 1.0,
-  };
+  /// Wie groß das Wesen auf [stage] dasteht, wenn seinem Modell [missing]
+  /// Stufen fehlen (siehe `stageModelOf`). Eigene Stufenmodelle stehen
+  /// deutlich größer da, damit sie mächtiger wirken; ein Modell ohne eigene
+  /// Stufe wächst nur ein wenig.
+  static double scaleFor({required int stage, required int missing}) {
+    final model = switch (stage - missing) {
+      3 => 1.3,
+      2 => 1.15,
+      _ => 1.0,
+    };
+    final grown = switch (missing) {
+      >= 2 => 1.16,
+      1 => 1.08,
+      _ => 1.0,
+    };
+    return model * grown;
+  }
 
   @override
   bool updateShouldNotify(CreatureEvolution oldWidget) =>

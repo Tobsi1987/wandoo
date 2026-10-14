@@ -5,6 +5,7 @@ import 'package:wandoo/core/format/distance_label.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/domain/species_catalog.dart';
 import 'package:wandoo/features/creature/presentation/celebration/creature_celebration.dart';
+import 'package:wandoo/features/creature/presentation/celebration/evolution_moment.dart';
 import 'package:wandoo/features/creature/presentation/creature_labels.dart';
 import 'package:wandoo/features/creature/presentation/widgets/creature_figure.dart';
 import 'package:wandoo/features/creature/presentation/widgets/trait_badge.dart';
@@ -57,8 +58,16 @@ class CreatureAvatar extends StatelessWidget {
       creature: creature,
       size: size,
       cheer: walking,
-      builder: (c) =>
-          CreatureFigure(creature: c, size: size, world: world, awake: walking),
+      builder: (c) => EvolutionMoment(
+        creature: c,
+        size: size,
+        child: CreatureFigure(
+          creature: c,
+          size: size,
+          world: world,
+          awake: walking,
+        ),
+      ),
     );
     final wrapped = figureWrap?.call(figure) ?? figure;
     final w = world;

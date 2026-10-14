@@ -2,11 +2,13 @@ import 'package:flutter/widgets.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
 
 /// Ein Moment der Feier: Freudenhüpfer nach dem Fressen, ein kurzer
-/// Sprung beim Mitlaufen, oder das Schlüpfen.
+/// Sprung beim Mitlaufen, das Schlüpfen oder die Entwicklung zur nächsten
+/// Stufe.
 enum CelebrationMoment {
   hop(1100),
   jump(650),
-  hatch(4400);
+  hatch(4400),
+  evolve(3600);
 
   const CelebrationMoment(this.millis);
   final int millis;

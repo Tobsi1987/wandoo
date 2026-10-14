@@ -22,3 +22,12 @@ final progressProvider = Provider<Progress?>((ref) {
   return ref.watch(_storedProgressProvider(key)).value ??
       Progress(lineKey: key);
 });
+
+/// Die Entwicklungsstufe des aktuellen Wesens; null, solange sie lädt.
+/// So entwickelt es sich beim Start nicht scheinbar von Stufe 1 aus.
+final evolutionStageProvider = Provider<int?>((ref) {
+  final creature = ref.watch(creatureProvider).value;
+  if (creature == null || !creature.hatched) return 1;
+  final stored = ref.watch(_storedProgressProvider(creature.lineKey));
+  return stored.hasValue ? stored.value!.stage : null;
+});

@@ -74,10 +74,11 @@ class CreatureFigure extends StatefulWidget {
     shaderAsset,
   ).then<FragmentProgram?>((p) => p, onError: (Object _) => null);
 
-  /// Lädt das 3D-Modell von [creature] vorab, falls es eins gibt.
-  static Future<void> preload(Creature creature) async {
-    final asset = _modelAssetOf(creature);
-    if (asset != null) await ModelLoader.load(asset);
+  /// Lädt das 3D-Modell von [creature] auf [stage] vorab, falls es eins gibt.
+  static Future<void> preload(Creature creature, {int stage = 1}) async {
+    if (_modelAssetOf(creature) == null) return;
+    final species = SpeciesCatalog.byId(creature.speciesId).id;
+    await ModelLoader.load(modelAssetOf(stageModelOf(species, stage).id));
   }
 
   /// Ob [creature] als 3D-Modell gezeigt wird.
@@ -130,10 +131,9 @@ class _CreatureFigureState extends State<CreatureFigure>
     }
     final c = widget.creature;
     final night = widget.world?.night ?? false;
-    final (:id, :missing) = stageModelOf(
-      SpeciesCatalog.byId(c.speciesId).id,
-      CreatureEvolution.of(context, c),
-    );
+    final stage = CreatureEvolution.of(context, c);
+    final species = SpeciesCatalog.byId(c.speciesId).id;
+    final (:id, :missing) = stageModelOf(species, stage);
     final model = CreatureModel(
       asset: modelAssetOf(id),
       look: ModelLook(
@@ -152,7 +152,7 @@ class _CreatureFigureState extends State<CreatureFigure>
       night: night,
       scale:
           (c.stage == GrowthStage.adult ? 1.0 : 0.8) *
-          CreatureEvolution.scaleFor(missing + 1),
+          CreatureEvolution.scaleFor(stage: stage, missing: missing),
       animate: CreatureFigure.animate && !widget.still,
     );
     return EvolutionSparkles.around(
