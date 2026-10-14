@@ -24,6 +24,8 @@ import 'package:wandoo/features/petting/data/drift_friendship_repository.dart';
 import 'package:wandoo/features/petting/petting.dart';
 import 'package:wandoo/features/reminders/data/local_notification_scheduler.dart';
 import 'package:wandoo/features/reminders/reminders.dart';
+import 'package:wandoo/features/scent/data/drift_scent_repository.dart';
+import 'package:wandoo/features/scent/scent.dart';
 import 'package:wandoo/features/share/data/share_plus_image_sharer.dart';
 import 'package:wandoo/features/share/share.dart';
 import 'package:wandoo/features/tracking/data/drift_recorded_walk_repository.dart';
@@ -68,6 +70,7 @@ Future<List<Override>> appOverrides() async {
     friendshipRepositoryProvider.overrideWithValue(
       DriftFriendshipRepository(db),
     ),
+    scentRepositoryProvider.overrideWithValue(DriftScentRepository(db)),
     weatherSourceProvider.overrideWithValue(
       CachedWeatherSource(OpenMeteoWeatherSource()),
     ),

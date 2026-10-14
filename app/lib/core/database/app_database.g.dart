@@ -3677,6 +3677,363 @@ class DiaryMemoriesCompanion extends UpdateCompanion<DiaryMemoryRow> {
   }
 }
 
+class $ScentStatesTable extends ScentStates
+    with TableInfo<$ScentStatesTable, ScentState> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ScentStatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _latitudeMeta = const VerificationMeta(
+    'latitude',
+  );
+  @override
+  late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
+    'latitude',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _longitudeMeta = const VerificationMeta(
+    'longitude',
+  );
+  @override
+  late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
+    'longitude',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _environmentMeta = const VerificationMeta(
+    'environment',
+  );
+  @override
+  late final GeneratedColumn<String> environment = GeneratedColumn<String>(
+    'environment',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    latitude,
+    longitude,
+    environment,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'scent_states';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ScentState> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('latitude')) {
+      context.handle(
+        _latitudeMeta,
+        latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_latitudeMeta);
+    }
+    if (data.containsKey('longitude')) {
+      context.handle(
+        _longitudeMeta,
+        longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_longitudeMeta);
+    }
+    if (data.containsKey('environment')) {
+      context.handle(
+        _environmentMeta,
+        environment.isAcceptableOrUnknown(
+          data['environment']!,
+          _environmentMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ScentState map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ScentState(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      latitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}latitude'],
+      )!,
+      longitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}longitude'],
+      )!,
+      environment: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}environment'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ScentStatesTable createAlias(String alias) {
+    return $ScentStatesTable(attachedDatabase, alias);
+  }
+}
+
+class ScentState extends DataClass implements Insertable<ScentState> {
+  final int id;
+  final double latitude;
+  final double longitude;
+
+  /// Name der Umgebung (`EnvironmentType.name`), falls bekannt.
+  final String? environment;
+  final DateTime createdAt;
+  const ScentState({
+    required this.id,
+    required this.latitude,
+    required this.longitude,
+    this.environment,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['latitude'] = Variable<double>(latitude);
+    map['longitude'] = Variable<double>(longitude);
+    if (!nullToAbsent || environment != null) {
+      map['environment'] = Variable<String>(environment);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  ScentStatesCompanion toCompanion(bool nullToAbsent) {
+    return ScentStatesCompanion(
+      id: Value(id),
+      latitude: Value(latitude),
+      longitude: Value(longitude),
+      environment: environment == null && nullToAbsent
+          ? const Value.absent()
+          : Value(environment),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory ScentState.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ScentState(
+      id: serializer.fromJson<int>(json['id']),
+      latitude: serializer.fromJson<double>(json['latitude']),
+      longitude: serializer.fromJson<double>(json['longitude']),
+      environment: serializer.fromJson<String?>(json['environment']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'latitude': serializer.toJson<double>(latitude),
+      'longitude': serializer.toJson<double>(longitude),
+      'environment': serializer.toJson<String?>(environment),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  ScentState copyWith({
+    int? id,
+    double? latitude,
+    double? longitude,
+    Value<String?> environment = const Value.absent(),
+    DateTime? createdAt,
+  }) => ScentState(
+    id: id ?? this.id,
+    latitude: latitude ?? this.latitude,
+    longitude: longitude ?? this.longitude,
+    environment: environment.present ? environment.value : this.environment,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  ScentState copyWithCompanion(ScentStatesCompanion data) {
+    return ScentState(
+      id: data.id.present ? data.id.value : this.id,
+      latitude: data.latitude.present ? data.latitude.value : this.latitude,
+      longitude: data.longitude.present ? data.longitude.value : this.longitude,
+      environment: data.environment.present
+          ? data.environment.value
+          : this.environment,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScentState(')
+          ..write('id: $id, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('environment: $environment, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, latitude, longitude, environment, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ScentState &&
+          other.id == this.id &&
+          other.latitude == this.latitude &&
+          other.longitude == this.longitude &&
+          other.environment == this.environment &&
+          other.createdAt == this.createdAt);
+}
+
+class ScentStatesCompanion extends UpdateCompanion<ScentState> {
+  final Value<int> id;
+  final Value<double> latitude;
+  final Value<double> longitude;
+  final Value<String?> environment;
+  final Value<DateTime> createdAt;
+  const ScentStatesCompanion({
+    this.id = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
+    this.environment = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  ScentStatesCompanion.insert({
+    this.id = const Value.absent(),
+    required double latitude,
+    required double longitude,
+    this.environment = const Value.absent(),
+    required DateTime createdAt,
+  }) : latitude = Value(latitude),
+       longitude = Value(longitude),
+       createdAt = Value(createdAt);
+  static Insertable<ScentState> custom({
+    Expression<int>? id,
+    Expression<double>? latitude,
+    Expression<double>? longitude,
+    Expression<String>? environment,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+      if (environment != null) 'environment': environment,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  ScentStatesCompanion copyWith({
+    Value<int>? id,
+    Value<double>? latitude,
+    Value<double>? longitude,
+    Value<String?>? environment,
+    Value<DateTime>? createdAt,
+  }) {
+    return ScentStatesCompanion(
+      id: id ?? this.id,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      environment: environment ?? this.environment,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (latitude.present) {
+      map['latitude'] = Variable<double>(latitude.value);
+    }
+    if (longitude.present) {
+      map['longitude'] = Variable<double>(longitude.value);
+    }
+    if (environment.present) {
+      map['environment'] = Variable<String>(environment.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ScentStatesCompanion(')
+          ..write('id: $id, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude, ')
+          ..write('environment: $environment, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -3693,6 +4050,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $DiaryWalksTable diaryWalks = $DiaryWalksTable(this);
   late final $DiaryMemoriesTable diaryMemories = $DiaryMemoriesTable(this);
+  late final $ScentStatesTable scentStates = $ScentStatesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3707,6 +4065,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     friendshipStates,
     diaryWalks,
     diaryMemories,
+    scentStates,
   ];
 }
 
@@ -5765,6 +6124,211 @@ typedef $$DiaryMemoriesTableProcessedTableManager =
       DiaryMemoryRow,
       PrefetchHooks Function()
     >;
+typedef $$ScentStatesTableCreateCompanionBuilder =
+    ScentStatesCompanion Function({
+      Value<int> id,
+      required double latitude,
+      required double longitude,
+      Value<String?> environment,
+      required DateTime createdAt,
+    });
+typedef $$ScentStatesTableUpdateCompanionBuilder =
+    ScentStatesCompanion Function({
+      Value<int> id,
+      Value<double> latitude,
+      Value<double> longitude,
+      Value<String?> environment,
+      Value<DateTime> createdAt,
+    });
+
+class $$ScentStatesTableFilterComposer
+    extends Composer<_$AppDatabase, $ScentStatesTable> {
+  $$ScentStatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get environment => $composableBuilder(
+    column: $table.environment,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ScentStatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ScentStatesTable> {
+  $$ScentStatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get environment => $composableBuilder(
+    column: $table.environment,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ScentStatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ScentStatesTable> {
+  $$ScentStatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<double> get latitude =>
+      $composableBuilder(column: $table.latitude, builder: (column) => column);
+
+  GeneratedColumn<double> get longitude =>
+      $composableBuilder(column: $table.longitude, builder: (column) => column);
+
+  GeneratedColumn<String> get environment => $composableBuilder(
+    column: $table.environment,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$ScentStatesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ScentStatesTable,
+          ScentState,
+          $$ScentStatesTableFilterComposer,
+          $$ScentStatesTableOrderingComposer,
+          $$ScentStatesTableAnnotationComposer,
+          $$ScentStatesTableCreateCompanionBuilder,
+          $$ScentStatesTableUpdateCompanionBuilder,
+          (
+            ScentState,
+            BaseReferences<_$AppDatabase, $ScentStatesTable, ScentState>,
+          ),
+          ScentState,
+          PrefetchHooks Function()
+        > {
+  $$ScentStatesTableTableManager(_$AppDatabase db, $ScentStatesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ScentStatesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ScentStatesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ScentStatesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<double> latitude = const Value.absent(),
+                Value<double> longitude = const Value.absent(),
+                Value<String?> environment = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => ScentStatesCompanion(
+                id: id,
+                latitude: latitude,
+                longitude: longitude,
+                environment: environment,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required double latitude,
+                required double longitude,
+                Value<String?> environment = const Value.absent(),
+                required DateTime createdAt,
+              }) => ScentStatesCompanion.insert(
+                id: id,
+                latitude: latitude,
+                longitude: longitude,
+                environment: environment,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ScentStatesTable, ScentState>(table),
+                  BaseReferences<_$AppDatabase, $ScentStatesTable, ScentState>(
+                    db,
+                    table,
+                    e,
+                  ),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ScentStatesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ScentStatesTable,
+      ScentState,
+      $$ScentStatesTableFilterComposer,
+      $$ScentStatesTableOrderingComposer,
+      $$ScentStatesTableAnnotationComposer,
+      $$ScentStatesTableCreateCompanionBuilder,
+      $$ScentStatesTableUpdateCompanionBuilder,
+      (
+        ScentState,
+        BaseReferences<_$AppDatabase, $ScentStatesTable, ScentState>,
+      ),
+      ScentState,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -5787,4 +6351,6 @@ class $AppDatabaseManager {
       $$DiaryWalksTableTableManager(_db, _db.diaryWalks);
   $$DiaryMemoriesTableTableManager get diaryMemories =>
       $$DiaryMemoriesTableTableManager(_db, _db.diaryMemories);
+  $$ScentStatesTableTableManager get scentStates =>
+      $$ScentStatesTableTableManager(_db, _db.scentStates);
 }

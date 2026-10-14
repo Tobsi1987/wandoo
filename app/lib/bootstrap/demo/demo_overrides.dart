@@ -21,6 +21,8 @@ import 'package:wandoo/features/home_widget/home_widget.dart';
 import 'package:wandoo/features/petting/data/in_memory_friendship_repository.dart';
 import 'package:wandoo/features/petting/petting.dart';
 import 'package:wandoo/features/reminders/reminders.dart';
+import 'package:wandoo/features/scent/data/in_memory_scent_repository.dart';
+import 'package:wandoo/features/scent/scent.dart';
 import 'package:wandoo/features/share/data/share_plus_image_sharer.dart';
 import 'package:wandoo/features/share/share.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
@@ -31,7 +33,18 @@ import 'package:wandoo/features/world/world.dart';
 
 /// Wie `appOverrides`, aber alles im Speicher und ohne Gerät: eine erfundene
 /// Stadt, simulierte Gänge, keine Datenbank, kein Netz.
-List<Override> demoOverrides() => [
+List<Override> demoOverrides() {
+  final scents = InMemoryScentRepository();
+  return [
+    ..._stores(),
+    scentRepositoryProvider.overrideWithValue(scents),
+    locationSourceProvider.overrideWithValue(
+      SimulatedLocationSource(goal: () => scents.current?.target),
+    ),
+  ];
+}
+
+List<Override> _stores() => [
   creatureRepositoryProvider.overrideWithValue(
     InMemoryCreatureRepository(_startCreature()),
   ),
@@ -39,7 +52,6 @@ List<Override> demoOverrides() => [
     InMemoryKnownSegmentsRepository(),
   ),
   mapDataSourceProvider.overrideWithValue(_DemoMapData()),
-  locationSourceProvider.overrideWithValue(SimulatedLocationSource()),
   showBaseMapProvider.overrideWithValue(false),
   imageSharerProvider.overrideWithValue(const SharePlusImageSharer()),
   reminderSchedulerProvider.overrideWithValue(LoggingReminderScheduler()),

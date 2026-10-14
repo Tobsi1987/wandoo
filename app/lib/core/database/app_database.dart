@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:wandoo/core/database/bond_tables.dart';
+import 'package:wandoo/core/database/play_tables.dart';
 import 'package:wandoo/core/database/tables.dart';
 
 part 'app_database.g.dart';
@@ -21,6 +22,7 @@ part 'app_database.g.dart';
     FriendshipStates,
     DiaryWalks,
     DiaryMemories,
+    ScentStates,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -30,7 +32,7 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase.open() => AppDatabase(driftDatabase(name: 'wandoo'));
 
   @override
-  int get schemaVersion => 10;
+  int get schemaVersion => 11;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -55,6 +57,7 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(diaryWalks);
         await m.createTable(diaryMemories);
       }
+      if (from < 11) await m.createTable(scentStates);
     },
   );
 

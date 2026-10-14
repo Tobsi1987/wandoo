@@ -1,3 +1,5 @@
+import 'package:geo_engine/geo_engine.dart';
+
 /// Zustand der Aufzeichnung, so wie die Oberfläche ihn zeigt.
 sealed class WalkSession {
   const WalkSession();
@@ -17,6 +19,8 @@ class WalkRecording extends WalkSession {
     required this.startedAt,
     required this.distanceMeters,
     this.tooFast = false,
+    this.position,
+    this.cameFrom,
   });
 
   final DateTime startedAt;
@@ -24,4 +28,8 @@ class WalkRecording extends WalkSession {
 
   /// Gerade schneller als zu Fuß; solche Strecken zählen nicht.
   final bool tooFast;
+
+  /// Wo man gerade ist, und ein Punkt kurz davor (für die Gehrichtung).
+  final GeoPoint? position;
+  final GeoPoint? cameFrom;
 }

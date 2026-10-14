@@ -86,6 +86,9 @@ class TrackingController extends Notifier<WalkSession> {
       state = WalkRecording(
         startedAt: startedAt,
         distanceMeters: recorder.distanceMeters,
+        tooFast: recorder.tooFast,
+        position: recorder.position,
+        cameFrom: recorder.cameFrom(),
       );
 
   void _saveProgressIfDue(WalkRecorder recorder) {
