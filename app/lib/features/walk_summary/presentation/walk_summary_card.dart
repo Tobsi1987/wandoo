@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wandoo/features/walk_summary/application/walk_summary_providers.dart';
+import 'package:wandoo/features/walk_summary/domain/summary_pages.dart';
 import 'package:wandoo/features/walk_summary/domain/walk_summary.dart';
-import 'package:wandoo/features/walk_summary/presentation/summary_parts.dart';
+import 'package:wandoo/features/walk_summary/presentation/summary_page_view.dart';
 
-/// Zeigt, was der letzte Gang gebracht hat: oben zwei große Zahlen,
-/// darunter die Umgebungen und als kleine Schilder alles Mitgebrachte.
-/// Verschwindet nach "Weiter".
+/// Zeigt nach einem Gang, was er gebracht hat, Seite für Seite: erst die
+/// Zahlen, dann was unterwegs passiert ist, dann Level. "Weiter" blättert,
+/// auf der letzten Seite schließt "Fertig".
 class WalkSummaryCard extends ConsumerWidget {
   const WalkSummaryCard({super.key});
 
@@ -14,33 +15,67 @@ class WalkSummaryCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final summary = ref.watch(latestUnseenSummaryProvider).value;
     if (summary == null) return const SizedBox.shrink();
-    final text = Theme.of(context).textTheme;
+    return _Pages(
+      key: ValueKey(summary.walkId),
+      summary: summary,
+      onDone: () =>
+          ref.read(walkSummaryRepositoryProvider).markSeen(summary.walkId),
+    );
+  }
+}
+
+class _Pages extends StatefulWidget {
+  const _Pages({required this.summary, required this.onDone, super.key});
+
+  final WalkSummary summary;
+  final VoidCallback onDone;
+
+  @override
+  State<_Pages> createState() => _PagesState();
+}
+
+class _PagesState extends State<_Pages> {
+  late final List<SummaryPage> _pages = summaryPages(widget.summary);
+  var _at = 0;
+
+  bool get _last => _at == _pages.length - 1;
+
+  @override
+  Widget build(BuildContext context) {
+    final maxHeight = MediaQuery.sizeOf(context).height * 0.5;
     return Semantics(
       label: 'Dein letzter Gang',
       container: true,
       child: Card(
         margin: EdgeInsets.zero,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+          padding: const EdgeInsets.fromLTRB(20, 18, 20, 14),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                summary.foundNothing ? 'Dein Wesen ist satt' : 'Toller Gang!',
-                style: text.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: maxHeight),
+                child: SingleChildScrollView(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 250),
+                    child: SummaryPageView(
+                      key: ValueKey(_at),
+                      page: _pages[_at],
+                      summary: widget.summary,
+                    ),
+                  ),
+                ),
               ),
-              const SizedBox(height: 8),
-              SummaryStats(summary: summary),
-              ..._places(summary, text),
-              ..._news(summary),
-              const SizedBox(height: 12),
+              const SizedBox(height: 14),
+              if (_pages.length > 1) _Dots(count: _pages.length, at: _at),
+              const SizedBox(height: 10),
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
-                  onPressed: () => ref
-                      .read(walkSummaryRepositoryProvider)
-                      .markSeen(summary.walkId),
-                  child: const Text('Weiter'),
+                  onPressed: _last
+                      ? widget.onDone
+                      : () => setState(() => _at++),
+                  child: Text(_last ? 'Fertig' : 'Weiter'),
                 ),
               ),
             ],
@@ -49,32 +84,35 @@ class WalkSummaryCard extends ConsumerWidget {
       ),
     );
   }
+}
 
-  List<Widget> _places(WalkSummary summary, TextTheme text) {
-    final line = summary.foundNothing
-        ? 'Wachsen tut es nur auf neuen Straßen.'
-        : placesLine(summary);
-    if (line.isEmpty) return const [];
-    return [
-      const SizedBox(height: 6),
-      Text(line, style: text.bodyMedium, textAlign: TextAlign.center),
-    ];
-  }
+/// Kleine Punkte: auf welcher Seite man ist.
+class _Dots extends StatelessWidget {
+  const _Dots({required this.count, required this.at});
 
-  List<Widget> _news(WalkSummary summary) {
-    final news = [
-      if (summary.creatureGrew) '🌱 Dein Wesen ist gewachsen!',
-      ...summary.extraLines,
-    ];
-    if (news.isEmpty) return const [];
-    return [
-      const SizedBox(height: 12),
-      Wrap(
-        spacing: 6,
-        runSpacing: 6,
-        alignment: WrapAlignment.center,
-        children: [for (final line in news) NewsPill(text: line)],
+  final int count;
+  final int at;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.primary;
+    return ExcludeSemantics(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          for (var i = 0; i < count; i++)
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              margin: const EdgeInsets.symmetric(horizontal: 3),
+              width: i == at ? 18 : 7,
+              height: 7,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: i == at ? 1 : 0.3),
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+        ],
       ),
-    ];
+    );
   }
 }
