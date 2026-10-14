@@ -1,12 +1,12 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/presentation/widgets/celebration_burst.dart';
 import 'package:wandoo/features/creature/presentation/widgets/celebration_pose.dart';
+import 'package:wandoo/features/creature/presentation/widgets/celebration_posed.dart';
+import 'package:wandoo/features/creature/presentation/widgets/celebration_stage.dart';
 import 'package:wandoo/features/creature/presentation/widgets/creature_figure.dart';
-import 'package:wandoo/features/creature/presentation/widgets/creature_spin.dart';
 import 'package:wandoo/features/creature/presentation/widgets/greeting_bubble.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_motions.dart';
 
@@ -15,7 +15,8 @@ import 'package:wandoo/features/creature/presentation/widgets/model_motions.dart
 /// mit einer Drehung heraus und winkt.
 ///
 /// Wartet damit, bis die Figur wirklich zu sehen ist (kein anderer
-/// Bildschirm darüber) und das 3D-Modell geladen ist.
+/// Bildschirm darüber, keine [CelebrationStage] hält an) und das
+/// 3D-Modell geladen ist.
 class CreatureCelebration extends StatefulWidget {
   const CreatureCelebration({
     required this.creature,
@@ -38,13 +39,11 @@ class CreatureCelebration extends StatefulWidget {
   State<CreatureCelebration> createState() => _CreatureCelebrationState();
 }
 
-enum _Moment { hop, jump, hatch }
-
 class _CreatureCelebrationState extends State<CreatureCelebration>
     with SingleTickerProviderStateMixin {
   late final _controller = AnimationController(vsync: this);
-  _Moment? _pending;
-  _Moment? _playing;
+  CelebrationMoment? _pending;
+  CelebrationMoment? _playing;
 
   /// Das Ei vor dem Schlüpfen, solange es noch zu sehen ist.
   Creature? _egg;
@@ -55,7 +54,7 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
   @override
   void initState() {
     super.initState();
-    if (widget.cheer) _pending = _Moment.jump;
+    if (widget.cheer) _pending = CelebrationMoment.jump;
   }
 
   @override
@@ -64,12 +63,12 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
     final before = old.creature;
     final now = widget.creature;
     if (!before.hatched && now.hatched) {
-      _pending = _Moment.hatch;
+      _pending = CelebrationMoment.hatch;
       _egg = before;
     } else if (now.food > before.food && _pending == null) {
-      _pending = _Moment.hop;
+      _pending = CelebrationMoment.hop;
     } else if (widget.cheer && !old.cheer && _pending == null) {
-      _pending = _Moment.jump;
+      _pending = CelebrationMoment.jump;
     }
     _maybeStart();
   }
@@ -82,45 +81,54 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
 
   void _maybeStart() {
     final moment = _pending;
-    if (moment == null || !TickerMode.valuesOf(context).enabled) return;
+    if (moment == null || _held(moment)) return;
     _pending = null;
     // Solange das Ei schlüpft, unterbricht kein Hüpfer: sonst bliebe es.
-    if (_egg != null && moment != _Moment.hatch) return;
+    if (_egg != null && moment != CelebrationMoment.hatch) return;
     final reduced = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
     if (!CreatureFigure.moving || reduced) {
       setState(() => _egg = null);
       return;
     }
-    final ready = moment == _Moment.hatch
+    final ready = moment == CelebrationMoment.hatch
         ? CreatureFigure.preload(widget.creature)
         : Future<void>.value();
     unawaited(
       ready.timeout(const Duration(seconds: 4), onTimeout: () {}).then((_) {
         if (!mounted) return;
+        // Während des Ladens kann die Bühne angehalten haben.
+        if (_held(moment)) {
+          _pending ??= moment;
+          return;
+        }
+        _announce(moment);
         setState(() => _playing = moment);
-        _controller.duration = Duration(
-          milliseconds: switch (moment) {
-            _Moment.hatch => 4400,
-            _Moment.hop => 1100,
-            _Moment.jump => 650,
-          },
-        );
+        _controller.duration = Duration(milliseconds: moment.millis);
         unawaited(_controller.forward(from: 0).whenComplete(_done));
       }),
     );
   }
 
+  /// Mitjubeln beim Laufen wartet nie, die großen Momente schon.
+  bool _held(CelebrationMoment moment) =>
+      !TickerMode.valuesOf(context).enabled ||
+      (moment.big && CelebrationStage.holding(context));
+
+  void _announce(CelebrationMoment moment) {
+    if (moment.big) CelebrationStage.played(context, moment, widget.creature);
+  }
+
   void _done() {
     if (!mounted) return;
     setState(() {
-      if (_playing == _Moment.hatch) _egg = null;
+      if (_playing == CelebrationMoment.hatch) _egg = null;
       _playing = null;
     });
     if (widget.cheer) {
       _again?.cancel();
       _again = Timer(const Duration(milliseconds: 450), () {
         if (!mounted || !widget.cheer || _pending != null) return;
-        _pending = _Moment.jump;
+        _pending = CelebrationMoment.jump;
         _maybeStart();
       });
     }
@@ -141,9 +149,9 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
       builder: (context, _) {
         final t = _controller.value;
         final pose = switch (_playing) {
-          _Moment.hatch => CelebrationPose.hatch(t),
-          _Moment.hop => CelebrationPose.hop(t),
-          _Moment.jump => CelebrationPose.jump(t),
+          CelebrationMoment.hatch => CelebrationPose.hatch(t),
+          CelebrationMoment.hop => CelebrationPose.hop(t),
+          CelebrationMoment.jump => CelebrationPose.jump(t),
           null => CelebrationPose(egg: _egg != null),
         };
         final shown = pose.egg ? _egg ?? widget.creature : widget.creature;
@@ -165,36 +173,22 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
     );
   }
 
-  /// Was ein geriggtes Modell tut; sonst gilt eine von außen (Streicheln).
-  Widget _moving(CelebrationPose pose, Creature shown) => CreatureMotion(
-    motion: _motion(pose) ?? CreatureMotion.of(context),
-    child: widget.builder(shown),
-  );
-
   Motion? _motion(CelebrationPose pose) => switch (_playing) {
     _ when widget.cheer => null,
-    _Moment.hatch => pose.greeting > 0 ? Motion.wave : Motion.happy,
-    _Moment.hop || _Moment.jump => Motion.happy,
+    CelebrationMoment.hatch => pose.greeting > 0 ? Motion.wave : Motion.happy,
+    CelebrationMoment.hop || CelebrationMoment.jump => Motion.happy,
     null => null,
   };
 
-  Widget _posed(CelebrationPose pose, Creature shown) {
-    final size = widget.size;
-    // Mit 3D-Modell dreht sich das Modell selbst, sonst nur ein Umklappen.
-    final flat = CreatureFigure.hasModel(shown) ? 1.0 : math.cos(pose.spin);
-    final stretch = pose.stretch;
-    return Transform.translate(
-      offset: Offset(0, -size * pose.lift),
-      child: Transform.rotate(
-        angle: pose.shake + pose.sway,
-        alignment: Alignment.bottomCenter,
-        child: Transform.scale(
-          scaleX: pose.scale * flat * (1 + 0.1 * pose.squash - 0.04 * stretch),
-          scaleY: pose.scale * (1 - 0.1 * pose.squash + 0.06 * stretch),
-          alignment: Alignment.bottomCenter,
-          child: CreatureSpin(turns: pose.spin, child: _moving(pose, shown)),
-        ),
-      ),
-    );
-  }
+  /// Ein geriggtes Modell bewegt sich passend; sonst gilt eine Bewegung
+  /// von außen (Streicheln).
+  Widget _posed(CelebrationPose pose, Creature shown) => posedFigure(
+    pose: pose,
+    size: widget.size,
+    model: CreatureFigure.hasModel(shown),
+    child: CreatureMotion(
+      motion: _motion(pose) ?? CreatureMotion.of(context),
+      child: widget.builder(shown),
+    ),
+  );
 }

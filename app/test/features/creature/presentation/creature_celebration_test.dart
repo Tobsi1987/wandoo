@@ -7,11 +7,19 @@ void main() {
   const egg = Creature(food: 19);
   const hatched = Creature(food: 25, speciesId: 'funkel');
 
-  Widget host(Creature c) => MaterialApp(
-    home: CreatureCelebration(
-      creature: c,
-      size: 100,
-      builder: (c) => Text(c.hatched ? 'Wesen' : 'Ei'),
+  Widget host(
+    Creature c, {
+    bool hold = false,
+    void Function(CelebrationMoment, Creature)? onPlay,
+  }) => MaterialApp(
+    home: CelebrationStage(
+      hold: hold,
+      onPlay: onPlay,
+      child: CreatureCelebration(
+        creature: c,
+        size: 100,
+        builder: (c) => Text(c.hatched ? 'Wesen' : 'Ei'),
+      ),
     ),
   );
 
@@ -68,5 +76,27 @@ void main() {
     final moved = tester.getTopLeft(find.text('Wesen'));
     await tester.pumpAndSettle();
     expect(tester.getTopLeft(find.text('Wesen')).dy, greaterThan(moved.dy));
+  });
+
+  testWidgets('angehalten bleibt das Ei, bis die Bühne frei ist', (
+    tester,
+  ) async {
+    CreatureFigure.animate = true;
+    final played = <CelebrationMoment>[];
+    await tester.pumpWidget(host(egg, hold: true));
+    await tester.pumpWidget(
+      host(hatched, hold: true, onPlay: (m, _) => played.add(m)),
+    );
+    await tester.pump(const Duration(seconds: 5));
+    expect(find.text('Ei'), findsOneWidget);
+    expect(played, isEmpty);
+
+    await tester.pumpWidget(host(hatched, onPlay: (m, _) => played.add(m)));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 1300));
+    expect(played, [CelebrationMoment.hatch]);
+    expect(find.text('Wesen'), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.text('Ei'), findsNothing);
   });
 }

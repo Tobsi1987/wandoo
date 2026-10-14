@@ -18,15 +18,11 @@ import 'package:wandoo/features/world/world.dart';
 import 'package:wandoo/ui_kit/wandoo_theme.dart';
 
 /// Startbildschirm: das Wesen mitten in seiner Welt, unten der Knopf für
-/// den nächsten Gang oder, direkt nach einem Gang, was er gebracht hat.
+/// den nächsten Gang; nach einem Gang in der Mitte, was er gebracht hat.
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   static const path = '/';
-
-  /// Wo die Wiese beginnt, als Anteil der Bildschirmhöhe: unter den
-  /// Füßen des Wesens, das nach einem Gang höher steht.
-  static double _ground(bool summary) => summary ? 0.4 : 0.52;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,8 +30,8 @@ class HomeScreen extends ConsumerWidget {
     final walking = ref.watch(trackingControllerProvider) is WalkRecording;
     final summary = ref.watch(latestUnseenSummaryProvider).value;
     final showSummary = summary != null && !walking;
+    final processing = (ref.watch(pendingWalkCountProvider).value ?? 0) > 0;
     final starving = ref.watch(starvingProvider);
-    _listenForCheers(ref);
     // Der Himmel ist tagsüber hell, nachts dunkel; die Schrift folgt ihm.
     return Theme(
       data: world.night ? WandooTheme.dark() : WandooTheme.light(),
@@ -51,86 +47,101 @@ class HomeScreen extends ConsumerWidget {
         body: Stack(
           fit: StackFit.expand,
           children: [
-            TweenAnimationBuilder<double>(
-              tween: Tween(end: _ground(showSummary)),
-              duration: const Duration(milliseconds: 400),
-              curve: Curves.easeInOut,
-              builder: (context, ground, _) =>
-                  WorldBackdrop(world: world, groundAt: ground),
+            WorldBackdrop(world: world, groundAt: 0.52),
+            // Schlüpfen und Freude warten, bis die Zusammenfassung zu ist.
+            CelebrationStage(
+              hold: processing || showSummary,
+              onPlay: (moment, c) => _cheer(ref, moment, c),
+              child: _main(world, walking: walking, sleepy: starving),
             ),
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-                child: LayoutBuilder(
-                  builder: (context, box) => Column(
-                    children: [
-                      Expanded(
-                        child: Center(
-                          child: SingleChildScrollView(
-                            child: _creature(
-                              world,
-                              walking: walking,
-                              summary: showSummary,
-                              sleepy: starving,
-                              box: box,
-                            ),
-                          ),
-                        ),
-                      ),
-                      ..._bottom(summary: showSummary),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            if (showSummary) ..._summary(),
           ],
         ),
       ),
     );
   }
 
-  /// Unten: nach einem Gang die Zusammenfassung, sonst der Knopf zum Gehen.
-  static List<Widget> _bottom({required bool summary}) => summary
-      ? const [StarCatchButton(), WalkSummaryCard()]
-      : const [LevelUpBanner(), FarewellLetter(), SniffBubble(), WalkPanel()];
+  /// Wesen in der Mitte, unten der Knopf für den nächsten Gang.
+  static Widget _main(
+    WorldState world, {
+    required bool walking,
+    required bool sleepy,
+  }) => SafeArea(
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      child: LayoutBuilder(
+        builder: (context, box) => Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: SingleChildScrollView(
+                  child: _creature(
+                    world,
+                    walking: walking,
+                    sleepy: sleepy,
+                    box: box,
+                  ),
+                ),
+              ),
+            ),
+            const LevelUpBanner(),
+            const FarewellLetter(),
+            const SniffBubble(),
+            const WalkPanel(),
+          ],
+        ),
+      ),
+    ),
+  );
 
-  /// Das Wesen jubelt beim Schlüpfen und freut sich übers Futter.
-  static void _listenForCheers(WidgetRef ref) {
-    ref.listen(creatureProvider, (before, now) {
-      final old = before?.value;
-      final c = now.value;
-      if (old == null || c == null || !c.hatched) return;
-      final cue = old.hatched
-          ? (c.food > old.food ? Cue.happy : null)
-          : Cue.cheer;
-      if (cue == null) return;
-      // Kurz warten, bis die Figur wirklich springt.
-      Future<void>.delayed(
-        Duration(milliseconds: cue == Cue.cheer ? 1600 : 600),
-        () => ref.read(playSoundProvider)(cue, speciesId: c.speciesId),
-      ).ignore();
-    });
+  /// Nach einem Gang: abgedunkelt, die Zusammenfassung in der Mitte.
+  static List<Widget> _summary() => const [
+    ModalBarrier(color: Colors.black38),
+    SafeArea(
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              WalkSummaryCard(),
+              SizedBox(height: 12),
+              StarCatchButton(),
+            ],
+          ),
+        ),
+      ),
+    ),
+  ];
+
+  /// Ton zum Moment: Jubel beim Schlüpfen, Freude übers Futter. Kurz
+  /// warten, bis die Figur wirklich springt.
+  static void _cheer(WidgetRef ref, CelebrationMoment moment, Creature c) {
+    final hatch = moment == CelebrationMoment.hatch;
+    Future<void>.delayed(
+      Duration(milliseconds: hatch ? 1600 : 600),
+      () => ref.read(playSoundProvider)(
+        hatch ? Cue.cheer : Cue.happy,
+        speciesId: c.speciesId,
+      ),
+    ).ignore();
   }
 
   /// Das Wesen zum Streicheln, mit Herzen und Tagebuch.
   static Widget _creature(
     WorldState world, {
     required bool walking,
-    required bool summary,
     required bool sleepy,
     required BoxConstraints box,
   }) => CreatureCard(
     walking: walking,
-    details: !summary,
-    figureSize: _figureSize(box, summary),
+    figureSize: _figureSize(box),
     figureWrap: (figure) =>
         Pettable(asleep: (world.night || sleepy) && !walking, child: figure),
     below: const [HeartsBar(), HungerBar(), LevelBar()],
     actions: const [DiaryButton(), SoundToggle(), DenButton()],
   );
 
-  static double _figureSize(BoxConstraints box, bool small) {
-    final size = math.min(box.maxWidth * 0.7, box.maxHeight * 0.38);
-    return small ? size * 0.75 : size;
-  }
+  static double _figureSize(BoxConstraints box) =>
+      math.min(box.maxWidth * 0.7, box.maxHeight * 0.38);
 }
