@@ -28,6 +28,8 @@ import 'package:wandoo/features/share/share.dart';
 import 'package:wandoo/features/sounds/data/audioplayers_sound_player.dart';
 import 'package:wandoo/features/sounds/data/in_memory_sound_settings_repository.dart';
 import 'package:wandoo/features/sounds/sounds.dart';
+import 'package:wandoo/features/star_catch/data/in_memory_star_catch_repository.dart';
+import 'package:wandoo/features/star_catch/star_catch.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
 import 'package:wandoo/features/treasure/data/in_memory_treasure_repository.dart';
 import 'package:wandoo/features/treasure/treasure.dart';
@@ -44,6 +46,9 @@ List<Override> demoOverrides() {
     soundPlayerProvider.overrideWithValue(AudioplayersSoundPlayer()),
     soundSettingsRepositoryProvider.overrideWithValue(
       InMemorySoundSettingsRepository(),
+    ),
+    starCatchRepositoryProvider.overrideWithValue(
+      InMemoryStarCatchRepository(),
     ),
     locationSourceProvider.overrideWithValue(
       SimulatedLocationSource(goal: () => scents.current?.target),
