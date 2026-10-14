@@ -84,6 +84,8 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
     final moment = _pending;
     if (moment == null || !TickerMode.valuesOf(context).enabled) return;
     _pending = null;
+    // Solange das Ei schlüpft, unterbricht kein Hüpfer: sonst bliebe es.
+    if (_egg != null && moment != _Moment.hatch) return;
     final reduced = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
     if (!CreatureFigure.moving || reduced) {
       setState(() => _egg = null);
@@ -111,7 +113,6 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
   void _done() {
     if (!mounted) return;
     setState(() {
-      // Ein auslaufender Sprung darf das wartende Ei nicht wegnehmen.
       if (_playing == _Moment.hatch) _egg = null;
       _playing = null;
     });
@@ -164,8 +165,7 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
     );
   }
 
-  /// Was ein geriggtes Modell dazu tut; beim Mitlaufen geht es einfach.
-  /// Ohne eigenen Moment gilt eine Bewegung von außen (Streicheln).
+  /// Was ein geriggtes Modell tut; sonst gilt eine von außen (Streicheln).
   Widget _moving(CelebrationPose pose, Creature shown) => CreatureMotion(
     motion: _motion(pose) ?? CreatureMotion.of(context),
     child: widget.builder(shown),
