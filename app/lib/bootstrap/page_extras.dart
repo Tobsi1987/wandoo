@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wandoo/features/achievements/achievements.dart';
 import 'package:wandoo/features/creature/creature.dart';
+import 'package:wandoo/features/privacy/privacy.dart';
 import 'package:wandoo/features/share/share.dart';
 
 // Knöpfe, die eine Seite in eine andere führen. Sie hängen hier, damit
@@ -16,6 +17,16 @@ Widget achievementBookAction() => Builder(
     onPressed: () => unawaited(context.push(AchievementBookScreen.path)),
     icon: const Icon(Icons.military_tech_rounded),
     label: const Text('Erfolge'),
+  ),
+);
+
+/// Oben rechts im Album: Datenschutz.
+Widget privacyAction() => Builder(
+  builder: (context) => IconButton(
+    key: const Key('privacy-open'),
+    onPressed: () => unawaited(context.push(PrivacyScreen.path)),
+    icon: const Icon(Icons.shield_outlined),
+    tooltip: 'Datenschutz',
   ),
 );
 

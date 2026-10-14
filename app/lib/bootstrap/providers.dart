@@ -26,6 +26,7 @@ import 'package:wandoo/features/diary/data/drift_diary_repository.dart';
 import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/discovery/data/drift_known_segments_repository.dart';
 import 'package:wandoo/features/discovery/discovery.dart';
+import 'package:wandoo/features/discovery_map/discovery_map.dart';
 import 'package:wandoo/features/home_widget/data/home_widget_publisher.dart';
 import 'package:wandoo/features/home_widget/home_widget.dart';
 import 'package:wandoo/features/hunger/data/drift_belly_repository.dart';
@@ -34,6 +35,9 @@ import 'package:wandoo/features/levels/data/drift_progress_repository.dart';
 import 'package:wandoo/features/levels/levels.dart';
 import 'package:wandoo/features/petting/data/drift_friendship_repository.dart';
 import 'package:wandoo/features/petting/petting.dart';
+import 'package:wandoo/features/privacy/data/device_data_wiper.dart';
+import 'package:wandoo/features/privacy/data/drift_privacy_repository.dart';
+import 'package:wandoo/features/privacy/privacy.dart';
 import 'package:wandoo/features/reminders/data/local_notification_scheduler.dart';
 import 'package:wandoo/features/reminders/reminders.dart';
 import 'package:wandoo/features/scent/data/drift_scent_repository.dart';
@@ -59,11 +63,7 @@ import 'package:wandoo/features/world/world.dart';
 /// Umsetzungen verbunden.
 Future<List<Override>> appOverrides() async {
   final db = AppDatabase.open();
-  final support = await getApplicationSupportDirectory();
-  final mapData = TiledMapDataSource(
-    cache: TileCache(Directory('${support.path}/tiles')),
-    fetch: OverpassClient().fetch,
-  );
+  final reminders = LocalNotificationScheduler();
   return [
     appDatabaseProvider.overrideWithValue(db),
     creatureRepositoryProvider.overrideWithValue(DriftCreatureRepository(db)),
@@ -75,10 +75,9 @@ Future<List<Override>> appOverrides() async {
     knownSegmentsRepositoryProvider.overrideWithValue(
       DriftKnownSegmentsRepository(db),
     ),
-    mapDataSourceProvider.overrideWithValue(mapData),
     locationSourceProvider.overrideWithValue(const GeolocatorLocationSource()),
     imageSharerProvider.overrideWithValue(const SharePlusImageSharer()),
-    reminderSchedulerProvider.overrideWithValue(LocalNotificationScheduler()),
+    reminderSchedulerProvider.overrideWithValue(reminders),
     widgetPublisherProvider.overrideWithValue(const HomeWidgetPublisher()),
     recordedWalkRepositoryProvider.overrideWithValue(
       DriftRecordedWalkRepository(db),
@@ -102,8 +101,36 @@ Future<List<Override>> appOverrides() async {
     progressRepositoryProvider.overrideWithValue(DriftProgressRepository(db)),
     statsRepositoryProvider.overrideWithValue(DriftStatsRepository(db)),
     roomRepositoryProvider.overrideWithValue(DriftRoomRepository(db)),
-    weatherSourceProvider.overrideWithValue(
-      CachedWeatherSource(OpenMeteoWeatherSource()),
+    ...await _network(db, reminders),
+  ];
+}
+
+/// Alles, was ins Netz geht, und der Datenschutz, der es steuert.
+Future<List<Override>> _network(
+  AppDatabase db,
+  ReminderScheduler reminders,
+) async {
+  final support = await getApplicationSupportDirectory();
+  final cache = await getApplicationCacheDirectory();
+  final tiles = Directory('${support.path}/tiles');
+  final weather = CachedWeatherSource(OpenMeteoWeatherSource());
+  return [
+    mapDataSourceProvider.overrideWithValue(
+      TiledMapDataSource(
+        cache: TileCache(tiles),
+        fetch: OverpassClient().fetch,
+      ),
+    ),
+    privacyRepositoryProvider.overrideWithValue(DriftPrivacyRepository(db)),
+    dataWiperProvider.overrideWithValue(
+      DeviceDataWiper(db, folders: [tiles, cache], alsoRun: [reminders.cancel]),
+    ),
+    // Wetter und Kartenbild nur, wenn im Datenschutz eingeschaltet.
+    weatherSourceProvider.overrideWith(
+      (ref) => ref.watch(weatherAllowedProvider) ? weather : null,
+    ),
+    showBaseMapProvider.overrideWith(
+      (ref) => ref.watch(baseMapAllowedProvider),
     ),
   ];
 }

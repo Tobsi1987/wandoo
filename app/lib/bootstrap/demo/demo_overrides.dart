@@ -32,6 +32,8 @@ import 'package:wandoo/features/levels/data/in_memory_progress_repository.dart';
 import 'package:wandoo/features/levels/levels.dart';
 import 'package:wandoo/features/petting/data/in_memory_friendship_repository.dart';
 import 'package:wandoo/features/petting/petting.dart';
+import 'package:wandoo/features/privacy/data/in_memory_privacy_repository.dart';
+import 'package:wandoo/features/privacy/privacy.dart';
 import 'package:wandoo/features/reminders/reminders.dart';
 import 'package:wandoo/features/scent/data/in_memory_scent_repository.dart';
 import 'package:wandoo/features/scent/scent.dart';
@@ -52,7 +54,10 @@ import 'package:wandoo/features/world/world.dart';
 /// Stadt, simulierte Gänge, keine Datenbank, kein Netz.
 List<Override> demoOverrides() {
   final scents = InMemoryScentRepository();
+  final privacy = InMemoryPrivacyRepository(demoPrivacy());
   return [
+    privacyRepositoryProvider.overrideWithValue(privacy),
+    dataWiperProvider.overrideWithValue(DemoWiper(privacy)),
     ..._stores(),
     scentRepositoryProvider.overrideWithValue(scents),
     soundPlayerProvider.overrideWithValue(AudioplayersSoundPlayer()),

@@ -5,6 +5,7 @@ import 'package:wandoo/core/map_data/map_data_source.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/hunger/hunger.dart';
 import 'package:wandoo/features/levels/levels.dart';
+import 'package:wandoo/features/privacy/privacy.dart';
 import 'package:wandoo/features/world/world.dart';
 
 // Wie die Demo startet, gesteuert über die Adresse (siehe `demoParams`).
@@ -104,3 +105,18 @@ Map<Trait, int> _marks(String? spur) {
 
 T? _named<T extends Enum>(List<T> values, String? name) =>
     values.where((v) => v.name == name).firstOrNull;
+
+/// `?datenschutz=neu` zeigt den Hinweis vom ersten Start, sonst ist er schon
+/// bestätigt.
+PrivacyChoices demoPrivacy() =>
+    PrivacyChoices(informed: demoParams['datenschutz'] != 'neu', weather: true);
+
+/// In der Demo heißt "alles löschen": zurück zum Hinweis vom ersten Start.
+class DemoWiper implements DataWiper {
+  DemoWiper(this.privacy);
+
+  final PrivacyRepository privacy;
+
+  @override
+  Future<void> wipeAll() => privacy.save(const PrivacyChoices());
+}

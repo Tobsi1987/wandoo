@@ -18,6 +18,7 @@ const _pages = [
   '/abenteuer',
   '/album',
   '/baden',
+  '/datenschutz',
   '/erfolge',
   '/hoehle',
   '/karte',
