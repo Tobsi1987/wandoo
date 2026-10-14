@@ -4,7 +4,7 @@ import 'package:wandoo/features/creature/presentation/widgets/model_accessories.
 import 'package:wandoo/features/creature/presentation/widgets/model_anchors.dart';
 import 'package:wandoo/features/creature/presentation/widgets/model_eyes.dart';
 
-/// Hut, Halsschmuck und Schlaf-Lider an einem 3D-Modell.
+/// Hut, Halsschmuck, Wetter-Sachen und Schlaf-Lider an einem 3D-Modell.
 class ModelDress {
   Node? _outfit;
   Node? _lids;
@@ -13,15 +13,12 @@ class ModelDress {
   void apply(
     Node pivot, {
     required ModelAnchors anchors,
-    required CreatureHat? hat,
-    required CreatureNeck? neck,
+    required Outfit outfit,
     required EyeSpot? eyes,
     required bool eyesClosed,
   }) {
     _outfit?.detach();
-    _outfit = hat == null && neck == null
-        ? null
-        : modelAccessories(anchors, hat, neck);
+    _outfit = outfit.isEmpty ? null : modelAccessories(anchors, outfit);
     if (_outfit case final outfit?) pivot.add(outfit);
     _lids?.detach();
     _lids = switch (eyes) {

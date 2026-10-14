@@ -28,8 +28,7 @@ class CreatureModel extends StatefulWidget {
     this.animate = true,
     this.night = false,
     this.anchors = ModelAnchors.fallback,
-    this.hat,
-    this.neck,
+    this.outfit = const Outfit(),
     this.eyes,
     this.eyesClosed = false,
     this.walking = false,
@@ -50,10 +49,9 @@ class CreatureModel extends StatefulWidget {
   /// Nachts schwirren Glühwürmchen um das Wesen.
   final bool night;
 
-  /// Wo [hat] und [neck] auf diesem Modell sitzen.
+  /// Wo Hut, Halsschmuck und Schirm auf diesem Modell sitzen.
   final ModelAnchors anchors;
-  final CreatureHat? hat;
-  final CreatureNeck? neck;
+  final Outfit outfit;
 
   /// Wo die Augen sitzen; nur damit kann es sie im Schlaf schließen.
   final EyeSpot? eyes;
@@ -122,8 +120,7 @@ class _CreatureModelState extends State<CreatureModel> {
     _dress.apply(
       _pivot,
       anchors: w.anchors,
-      hat: w.hat,
-      neck: w.neck,
+      outfit: w.outfit,
       eyes: w.eyes,
       eyesClosed: w.eyesClosed,
     );
@@ -155,9 +152,7 @@ class _CreatureModelState extends State<CreatureModel> {
       _loaded = false;
       _start();
     } else if (_loaded) {
-      if (old.hat != widget.hat ||
-          old.neck != widget.neck ||
-          old.eyesClosed != widget.eyesClosed) {
+      if (old.outfit != widget.outfit || old.eyesClosed != widget.eyesClosed) {
         _wear();
       }
       // Mit der aktuellen Zeit, sonst springt die Figur bei jedem Neuaufbau
