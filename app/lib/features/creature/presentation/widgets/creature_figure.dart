@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/domain/growth_stage.dart';
+import 'package:wandoo/features/creature/domain/outfit.dart';
 import 'package:wandoo/features/creature/domain/species_catalog.dart';
 import 'package:wandoo/features/creature/presentation/painting/creature_painter.dart';
 import 'package:wandoo/features/creature/presentation/painting/creature_shader_painter.dart';
@@ -128,8 +129,7 @@ class _CreatureFigureState extends State<CreatureFigure>
       eyes: modelEyes[SpeciesCatalog.byId(c.speciesId).id],
       eyesClosed: night && !widget.awake,
       walking: widget.awake,
-      hat: c.hat,
-      neck: c.neck,
+      outfit: Outfit(hat: c.hat, neck: c.neck, gear: _gear()),
       size: widget.size,
       fallback: drawn,
       sleepy: sleepy || (night && !widget.awake),
@@ -138,6 +138,13 @@ class _CreatureFigureState extends State<CreatureFigure>
       animate: CreatureFigure.animate && !widget.still,
     );
   }
+
+  /// Bei Regen ein Schirm, bei Schnee eine Mütze.
+  WeatherGear? _gear() => switch (widget.world?.weather) {
+    Weather.rain || Weather.storm => WeatherGear.umbrella,
+    Weather.snow => WeatherGear.beanie,
+    _ => null,
+  };
 
   String? _modelAsset() =>
       widget.silhouette ? null : CreatureFigure._modelAssetOf(widget.creature);

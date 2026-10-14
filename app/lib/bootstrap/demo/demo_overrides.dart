@@ -79,12 +79,30 @@ List<Override> _stores() => [
     feedCreatureProvider.overrideWithValue(
       FeedCreature(hatchFrom: [SpeciesCatalog.byId(id)]),
     ),
+  if (_weather() case final weather?)
+    weatherSourceProvider.overrideWithValue(_FixedWeather(weather)),
   if (_hour() case final hour?)
     worldClockProvider.overrideWithValue(() {
       final now = DateTime.now();
       return DateTime(now.year, now.month, now.day, hour, now.minute);
     }),
 ];
+
+/// `?wetter=regen` (oder `schnee`, `gewitter`, `sonne`) stellt das Wetter.
+Weather? _weather() => switch (Uri.base.queryParameters['wetter']) {
+  'regen' => Weather.rain,
+  'schnee' => Weather.snow,
+  'gewitter' => Weather.storm,
+  'sonne' => Weather.clear,
+  _ => null,
+};
+
+class _FixedWeather implements WeatherSource {
+  const _FixedWeather(this.weather);
+  final Weather weather;
+  @override
+  Future<Weather?> current(GeoPoint place) async => weather;
+}
 
 /// `?uhr=8` zeigt die Welt um 8 Uhr, egal wie spät es ist.
 int? _hour() => int.tryParse(Uri.base.queryParameters['uhr'] ?? '');
