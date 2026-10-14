@@ -30,13 +30,15 @@ class AchievementBookScreen extends ConsumerWidget {
                 style: text.titleLarge?.copyWith(fontWeight: FontWeight.w700),
               ),
             ),
-            GridView.count(
-              crossAxisCount: 3,
+            GridView(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                mainAxisSpacing: 8,
+                crossAxisSpacing: 8,
+                mainAxisExtent: 160,
+              ),
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
-              childAspectRatio: 0.72,
               children: [
                 for (final a in page.achievements)
                   StampTile(achievement: a, inputs: inputs),
@@ -67,15 +69,20 @@ class _Tally extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             for (final t in [Tier.bronze, Tier.silver, Tier.gold])
-              Column(
-                children: [
-                  StampMedal(tier: t, size: 26),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${count(t)} von ${tiers.length}',
-                    style: text.bodyMedium,
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  children: [
+                    StampMedal(tier: t, size: 26),
+                    const SizedBox(height: 4),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        '${count(t)} von ${tiers.length}',
+                        style: text.bodyMedium,
+                      ),
+                    ),
+                  ],
+                ),
               ),
           ],
         ),

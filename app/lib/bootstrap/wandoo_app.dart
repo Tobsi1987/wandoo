@@ -17,6 +17,9 @@ import 'package:wandoo/ui_kit/wandoo_theme.dart';
 class WandooApp extends ConsumerWidget {
   const WandooApp({super.key});
 
+  /// Größer wird die Schrift nicht, egal was am Handy eingestellt ist.
+  static const maxTextScale = 1.15;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Jeder neu abgelegte Gang (und offene Gänge beim Start) wird verarbeitet.
@@ -64,6 +67,12 @@ class WandooApp extends ConsumerWidget {
       theme: WandooTheme.light(),
       darkTheme: WandooTheme.dark(),
       routerConfig: appRouter,
+      // Große Systemschrift nur bis zu einem Maß, sonst passen Wörter
+      // nicht mehr in Knöpfe und Kacheln.
+      builder: (context, child) => MediaQuery.withClampedTextScaling(
+        maxScaleFactor: maxTextScale,
+        child: child!,
+      ),
     );
   }
 

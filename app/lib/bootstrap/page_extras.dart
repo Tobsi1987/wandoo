@@ -30,8 +30,9 @@ class DiaryFooter extends ConsumerWidget {
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: Wrap(
+          alignment: WrapAlignment.spaceEvenly,
+          spacing: 8,
           children: [
             TextButton.icon(
               onPressed: () => unawaited(context.push(ShareScreen.path)),
