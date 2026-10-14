@@ -22,6 +22,8 @@ class ModelDress {
           final mark?,
         ))
           ?modelMarks(surface, look.anchors, mark, headFree: look.headFree),
+        if (MarkSurface.of(look.species) case final surface? when look.mud > 0)
+          ?modelMud(surface, look.mud),
         if (!look.outfit.isEmpty) modelAccessories(look.anchors, look.outfit),
         if (look.eyes case final eyes? when look.eyesClosed) modelEyelids(eyes),
       ])

@@ -14,6 +14,8 @@ import 'package:wandoo/features/achievements/achievements.dart';
 import 'package:wandoo/features/achievements/data/drift_stats_repository.dart';
 import 'package:wandoo/features/adventures/adventures.dart';
 import 'package:wandoo/features/adventures/data/drift_adventure_repository.dart';
+import 'package:wandoo/features/bath/bath.dart';
+import 'package:wandoo/features/bath/data/drift_mud_repository.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/creature/data/drift_creature_repository.dart';
 import 'package:wandoo/features/creature/data/drift_den_repository.dart';
@@ -66,6 +68,7 @@ Future<List<Override>> appOverrides() async {
     appDatabaseProvider.overrideWithValue(db),
     creatureRepositoryProvider.overrideWithValue(DriftCreatureRepository(db)),
     denRepositoryProvider.overrideWithValue(DriftDenRepository(db)),
+    mudRepositoryProvider.overrideWithValue(DriftMudRepository(db)),
     marksSettingRepositoryProvider.overrideWithValue(
       DriftMarksSettingRepository(db),
     ),

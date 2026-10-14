@@ -12,6 +12,8 @@ import 'package:wandoo/features/achievements/achievements.dart';
 import 'package:wandoo/features/achievements/data/in_memory_stats_repository.dart';
 import 'package:wandoo/features/adventures/adventures.dart';
 import 'package:wandoo/features/adventures/data/in_memory_adventure_repository.dart';
+import 'package:wandoo/features/bath/bath.dart';
+import 'package:wandoo/features/bath/data/in_memory_mud_repository.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/creature/data/in_memory_creature_repository.dart';
 import 'package:wandoo/features/creature/data/in_memory_den_repository.dart';
@@ -83,6 +85,7 @@ List<Override> _stores() => [
   marksSettingRepositoryProvider.overrideWithValue(
     InMemoryMarksSettingRepository(),
   ),
+  mudRepositoryProvider.overrideWithValue(InMemoryMudRepository(demoMud())),
   knownSegmentsRepositoryProvider.overrideWithValue(
     InMemoryKnownSegmentsRepository(),
   ),

@@ -17,6 +17,7 @@ const _pages = [
   '/',
   '/abenteuer',
   '/album',
+  '/baden',
   '/erfolge',
   '/hoehle',
   '/karte',
@@ -28,7 +29,13 @@ const _pages = [
 
 void main() {
   setUp(() {
-    demoParams = {'wesen': 'blaetterdrache', 'uhr': '12', 'wetter': 'regen'};
+    demoParams = {
+      'wesen': 'blaetterdrache',
+      'uhr': '12',
+      'wetter': 'regen',
+      'matsch': '3',
+      'spur': 'wald2',
+    };
   });
 
   testWidgets('kein Wort bricht mitten drin um', (tester) async {

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wandoo/core/map_data/map_data_providers.dart';
 import 'package:wandoo/features/achievements/achievements.dart';
 import 'package:wandoo/features/adventures/adventures.dart';
+import 'package:wandoo/features/bath/bath.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/discovery/discovery.dart';
@@ -22,6 +23,7 @@ import 'package:wandoo/flows/process_walk/extras/district_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/friendship_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/hunger_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/level_extra.dart';
+import 'package:wandoo/flows/process_walk/extras/mud_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/scent_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/treasure_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/weather_extra.dart';
@@ -68,6 +70,10 @@ final processWalkProvider = Provider<ProcessWalk>(
       ),
       WeatherExtra(
         chests: ref.watch(treasureRepositoryProvider),
+        weather: () => ref.read(worldStateProvider).weather,
+      ),
+      MudExtra(
+        ref.watch(mudRepositoryProvider),
         weather: () => ref.read(worldStateProvider).weather,
       ),
       AchievementExtra(

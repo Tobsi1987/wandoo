@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:wandoo/features/bath/bath.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/den/application/room_providers.dart';
 import 'package:wandoo/features/den/domain/den_room.dart';
@@ -43,6 +44,7 @@ class DenScreen extends ConsumerWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
+          const BathCard(),
           HibernationCard(active: active),
         ],
       ),
