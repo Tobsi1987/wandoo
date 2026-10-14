@@ -5,7 +5,9 @@ import 'package:wandoo/features/treasure/domain/treasure_repository.dart';
 
 /// Schatzkiste nur im Speicher, für Tests und die Demo.
 class InMemoryTreasureRepository implements TreasureRepository {
-  TreasureChest _chest = const TreasureChest();
+  InMemoryTreasureRepository([this._chest = const TreasureChest()]);
+
+  TreasureChest _chest;
   final _changes = StreamController<TreasureChest>.broadcast();
 
   @override

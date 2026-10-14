@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:geo_engine/geo_engine.dart';
+import 'package:wandoo/bootstrap/demo/demo_den.dart';
 import 'package:wandoo/bootstrap/demo/demo_platform.dart';
 import 'package:wandoo/bootstrap/demo/demo_stats.dart';
 import 'package:wandoo/bootstrap/demo/demo_town.dart';
@@ -16,6 +17,8 @@ import 'package:wandoo/features/adventures/data/in_memory_adventure_repository.d
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/creature/data/in_memory_creature_repository.dart';
 import 'package:wandoo/features/creature/data/in_memory_den_repository.dart';
+import 'package:wandoo/features/den/data/in_memory_room_repository.dart';
+import 'package:wandoo/features/den/den.dart';
 import 'package:wandoo/features/diary/data/in_memory_diary_repository.dart';
 import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/discovery/data/in_memory_known_segments_repository.dart';
@@ -92,7 +95,10 @@ List<Override> _stores() => [
   walkSummaryRepositoryProvider.overrideWithValue(
     InMemoryWalkSummaryRepository(),
   ),
-  treasureRepositoryProvider.overrideWithValue(InMemoryTreasureRepository()),
+  treasureRepositoryProvider.overrideWithValue(
+    InMemoryTreasureRepository(demoChest()),
+  ),
+  roomRepositoryProvider.overrideWithValue(InMemoryRoomRepository(demoRoom())),
   adventureRepositoryProvider.overrideWithValue(InMemoryAdventureRepository()),
   diaryRepositoryProvider.overrideWithValue(InMemoryDiaryRepository()),
   friendshipRepositoryProvider.overrideWithValue(

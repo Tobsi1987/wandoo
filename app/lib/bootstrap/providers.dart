@@ -17,6 +17,8 @@ import 'package:wandoo/features/adventures/data/drift_adventure_repository.dart'
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/creature/data/drift_creature_repository.dart';
 import 'package:wandoo/features/creature/data/drift_den_repository.dart';
+import 'package:wandoo/features/den/data/drift_room_repository.dart';
+import 'package:wandoo/features/den/den.dart';
 import 'package:wandoo/features/diary/data/drift_diary_repository.dart';
 import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/discovery/data/drift_known_segments_repository.dart';
@@ -92,6 +94,7 @@ Future<List<Override>> appOverrides() async {
     bellyRepositoryProvider.overrideWithValue(DriftBellyRepository(db)),
     progressRepositoryProvider.overrideWithValue(DriftProgressRepository(db)),
     statsRepositoryProvider.overrideWithValue(DriftStatsRepository(db)),
+    roomRepositoryProvider.overrideWithValue(DriftRoomRepository(db)),
     weatherSourceProvider.overrideWithValue(
       CachedWeatherSource(OpenMeteoWeatherSource()),
     ),
