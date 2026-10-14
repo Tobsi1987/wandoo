@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/petting/application/petting_providers.dart';
 import 'package:wandoo/features/petting/presentation/widgets/floating_hearts.dart';
+import 'package:wandoo/features/sounds/sounds.dart';
 
 /// Macht die Figur antippbar: Das Wesen freut sich, hüpft und Herzchen
 /// steigen auf. Schläft es, gibt es nur ein paar kleine Herzen.
@@ -34,8 +35,13 @@ class _PettableState extends ConsumerState<Pettable>
     unawaited(HapticFeedback.lightImpact());
     setState(() => _newHeart = false);
     _controller.forward(from: 0);
+    final species = ref.read(creatureProvider).value?.speciesId;
+    final sound = ref.read(playSoundProvider);
+    unawaited(sound(widget.asleep ? Cue.yawn : Cue.happy, speciesId: species));
     final grew = await ref.read(petCreatureProvider)();
-    if (mounted && grew) setState(() => _newHeart = true);
+    if (!mounted || !grew) return;
+    setState(() => _newHeart = true);
+    unawaited(sound(Cue.purr, speciesId: species));
   }
 
   @override

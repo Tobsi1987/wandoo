@@ -25,6 +25,9 @@ import 'package:wandoo/features/scent/data/in_memory_scent_repository.dart';
 import 'package:wandoo/features/scent/scent.dart';
 import 'package:wandoo/features/share/data/share_plus_image_sharer.dart';
 import 'package:wandoo/features/share/share.dart';
+import 'package:wandoo/features/sounds/data/audioplayers_sound_player.dart';
+import 'package:wandoo/features/sounds/data/in_memory_sound_settings_repository.dart';
+import 'package:wandoo/features/sounds/sounds.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
 import 'package:wandoo/features/treasure/data/in_memory_treasure_repository.dart';
 import 'package:wandoo/features/treasure/treasure.dart';
@@ -38,6 +41,10 @@ List<Override> demoOverrides() {
   return [
     ..._stores(),
     scentRepositoryProvider.overrideWithValue(scents),
+    soundPlayerProvider.overrideWithValue(AudioplayersSoundPlayer()),
+    soundSettingsRepositoryProvider.overrideWithValue(
+      InMemorySoundSettingsRepository(),
+    ),
     locationSourceProvider.overrideWithValue(
       SimulatedLocationSource(goal: () => scents.current?.target),
     ),

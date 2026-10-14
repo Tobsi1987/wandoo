@@ -28,6 +28,9 @@ import 'package:wandoo/features/scent/data/drift_scent_repository.dart';
 import 'package:wandoo/features/scent/scent.dart';
 import 'package:wandoo/features/share/data/share_plus_image_sharer.dart';
 import 'package:wandoo/features/share/share.dart';
+import 'package:wandoo/features/sounds/data/audioplayers_sound_player.dart';
+import 'package:wandoo/features/sounds/data/drift_sound_settings_repository.dart';
+import 'package:wandoo/features/sounds/sounds.dart';
 import 'package:wandoo/features/tracking/data/drift_recorded_walk_repository.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
 import 'package:wandoo/features/treasure/data/drift_treasure_repository.dart';
@@ -71,6 +74,10 @@ Future<List<Override>> appOverrides() async {
       DriftFriendshipRepository(db),
     ),
     scentRepositoryProvider.overrideWithValue(DriftScentRepository(db)),
+    soundPlayerProvider.overrideWithValue(AudioplayersSoundPlayer()),
+    soundSettingsRepositoryProvider.overrideWithValue(
+      DriftSoundSettingsRepository(db),
+    ),
     weatherSourceProvider.overrideWithValue(
       CachedWeatherSource(OpenMeteoWeatherSource()),
     ),

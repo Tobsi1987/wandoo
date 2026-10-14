@@ -7,6 +7,7 @@ import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/home/presentation/home_actions.dart';
 import 'package:wandoo/features/petting/petting.dart';
 import 'package:wandoo/features/scent/scent.dart';
+import 'package:wandoo/features/sounds/sounds.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
 import 'package:wandoo/features/world/world.dart';
@@ -29,6 +30,7 @@ class HomeScreen extends ConsumerWidget {
     final walking = ref.watch(trackingControllerProvider) is WalkRecording;
     final summary = ref.watch(latestUnseenSummaryProvider).value;
     final showSummary = summary != null && !walking;
+    _listenForCheers(ref);
     // Der Himmel ist tagsüber hell, nachts dunkel; die Schrift folgt ihm.
     return Theme(
       data: world.night ? WandooTheme.dark() : WandooTheme.light(),
@@ -81,6 +83,24 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
+  /// Das Wesen jubelt beim Schlüpfen und freut sich übers Futter.
+  static void _listenForCheers(WidgetRef ref) {
+    ref.listen(creatureProvider, (before, now) {
+      final old = before?.value;
+      final c = now.value;
+      if (old == null || c == null || !c.hatched) return;
+      final cue = old.hatched
+          ? (c.food > old.food ? Cue.happy : null)
+          : Cue.cheer;
+      if (cue == null) return;
+      // Kurz warten, bis die Figur wirklich springt.
+      Future<void>.delayed(
+        Duration(milliseconds: cue == Cue.cheer ? 1600 : 600),
+        () => ref.read(playSoundProvider)(cue, speciesId: c.speciesId),
+      ).ignore();
+    });
+  }
+
   /// Das Wesen zum Streicheln, mit Herzen und Tagebuch.
   static Widget _creature(
     WorldState world,
@@ -94,7 +114,7 @@ class HomeScreen extends ConsumerWidget {
     figureWrap: (figure) =>
         Pettable(asleep: world.night && !walking, child: figure),
     below: const [HeartsBar()],
-    actions: const [DiaryButton()],
+    actions: const [DiaryButton(), SoundToggle()],
   );
 
   static double _figureSize(BoxConstraints box, bool small) {
