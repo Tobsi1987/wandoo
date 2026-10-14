@@ -11,8 +11,9 @@ import 'package:wandoo/features/scent/presentation/scent_labels.dart';
 import 'package:wandoo/features/sounds/sounds.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
 
-/// Die Spürnase: Vor dem Gang sagt sie, dass das Wesen etwas riecht,
-/// unterwegs zeigt ein Pfeil die Richtung und heiß oder kalt die Nähe.
+/// Die Spürnase, nur während eines Gangs: Zu Beginn sagt sie, dass das
+/// Wesen etwas riecht, dann zeigt ein Pfeil die Richtung und heiß oder
+/// kalt die Nähe.
 class SniffBubble extends ConsumerWidget {
   const SniffBubble({super.key});
 
@@ -21,13 +22,16 @@ class SniffBubble extends ConsumerWidget {
     _listenForSounds(ref);
     final creature = ref.watch(creatureProvider).value;
     final scent = ref.watch(scentProvider).value;
-    if (creature == null || !creature.hatched || scent == null) {
+    final session = ref.watch(trackingControllerProvider);
+    if (creature == null ||
+        !creature.hatched ||
+        scent == null ||
+        session is! WalkRecording) {
       return const SizedBox.shrink();
     }
     final name = SpeciesCatalog.byId(creature.speciesId).name;
-    final session = ref.watch(trackingControllerProvider);
-    final here = session is WalkRecording ? session.position : null;
-    final from = session is WalkRecording ? session.cameFrom : null;
+    final here = session.position;
+    final from = session.cameFrom;
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: DecoratedBox(
@@ -38,7 +42,7 @@ class SniffBubble extends ConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           child: here == null
-              ? Text('👃 $name riecht etwas! Geh los und folge der Nase.')
+              ? Text('👃 $name riecht etwas! Folge der Nase.')
               : _Hint(scent: scent, here: here, cameFrom: from, name: name),
         ),
       ),
