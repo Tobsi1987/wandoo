@@ -13,9 +13,13 @@ void main() {
   test('jedes Level bringt etwas, Deko und Sterne an besonderen Leveln', () {
     for (var level = 2; level <= LevelCurve.maxLevel; level++) {
       final r = rewardFor(level);
-      expect(r.finds.isNotEmpty || r.accessory != null, isTrue);
+      expect(
+        r.finds.isNotEmpty || r.accessory != null || r.plan != null,
+        isTrue,
+      );
     }
     expect(rewardFor(5).accessory, Accessory.acornCap);
+    expect(rewardFor(3).plan, Accessory.knitScarf);
     expect(rewardFor(10).finds, List.filled(3, Find.starShard));
   });
 
@@ -26,9 +30,11 @@ void main() {
     final lines = await gain(_moosel, LevelCurve.xpFor(10));
     expect(lines.first, startsWith('⬆️ Level 2! 🎁 '));
     expect(lines, contains('⬆️ Level 5! 🎁 🎀 Eichelhütchen'));
+    expect(lines, contains('⬆️ Level 3! 🎁 📜 Bauplan: Ringelschal'));
     expect(lines.last, '🌟 Moosel ist jetzt Stufe 2!');
     final chest = await chests.load();
     expect(chest.owned, {Accessory.acornCap});
+    expect(chest.plans, {Accessory.knitScarf, Accessory.bunnyEars});
     expect(chest.count(Find.starShard), 3 + 2);
     expect((await levels.load('erstes')).news, isEmpty);
   });

@@ -13,6 +13,7 @@ class DriftTreasureRepository implements TreasureRepository {
 
   final AppDatabase _db;
   static const _rowId = 1;
+  static const _plan = 'plan:';
 
   @override
   Future<TreasureChest> load() async =>
@@ -28,7 +29,13 @@ class DriftTreasureRepository implements TreasureRepository {
         TreasureStatesCompanion.insert(
           id: const Value(_rowId),
           finds: Value(jsonEncode(_findsJson(chest))),
-          owned: Value(jsonEncode([for (final a in chest.owned) a.name])),
+          // Baupläne stehen mit "plan:" davor in derselben Liste.
+          owned: Value(
+            jsonEncode([
+              for (final a in chest.owned) a.name,
+              for (final a in chest.plans) '$_plan${a.name}',
+            ]),
+          ),
         ),
       );
 
@@ -45,9 +52,11 @@ class DriftTreasureRepository implements TreasureRepository {
         for (final f in Find.values)
           if (finds[f.name] is int) f: finds[f.name] as int,
       },
-      owned: {
+      owned: {for (final name in owned) ?accessories[name]},
+      plans: {
         for (final name in owned)
-          if (accessories[name] != null) accessories[name]!,
+          if (name is String && name.startsWith(_plan))
+            ?accessories[name.substring(_plan.length)],
       },
     );
   }

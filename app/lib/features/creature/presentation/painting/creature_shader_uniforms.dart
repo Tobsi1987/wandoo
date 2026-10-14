@@ -37,8 +37,8 @@ void setCreatureUniforms(
     if (accent == null) 0 else _level(creature, accent),
     if (sleepy) 1 else 0,
     if (_nearlyHatched(creature)) 1 else 0,
-    (creature.hat?.index ?? -1) + 1.0,
-    (creature.neck?.index ?? -1) + 1.0,
+    _drawn(creature.hat?.index, 3),
+    _drawn(creature.neck?.index, 2),
     if (silhouette) 1 else 0,
     if ((world?.night ?? false) && !awake) 1 else 0,
     (world?.eggTheme.index ?? -1) + 1.0,
@@ -65,3 +65,8 @@ double _level(Creature c, Trait trait) =>
 
 bool _nearlyHatched(Creature c) =>
     c.stage == GrowthStage.egg && c.food * 2 >= GrowthStage.juvenile.foodNeeded;
+
+/// Nummer im Shader (+1, 0 heißt nichts). Der Shader kennt nur die ersten
+/// [known] Teile; neuere gibt es nur am 3D-Modell.
+double _drawn(int? index, int known) =>
+    index == null || index >= known ? 0 : index + 1.0;

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_scene/scene.dart';
 import 'package:vector_math/vector_math.dart' as vm;
@@ -40,19 +42,22 @@ class ModelStage extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           const CustomPaint(painter: ModelShadow()),
-          SceneView(
-            scene,
-            autoTick: animate,
-            maxFrameRate: 30,
-            camera: PerspectiveCamera(
-              position: vm.Vector3(0, 0.6, -1.75),
-              target: vm.Vector3(0, 0.46, 0),
+          // Oben etwas Luft, damit hohe Hüte nicht abgeschnitten werden:
+          // Die Szene ist höher als das Quadrat und ragt oben heraus.
+          OverflowBox(
+            alignment: Alignment.bottomCenter,
+            maxHeight: size * _headroom,
+            child: SceneView(
+              scene,
+              autoTick: animate,
+              maxFrameRate: 30,
+              camera: _camera,
+              onTick: (elapsed, delta) {
+                if (!animate) return;
+                time.value = elapsed.inMicroseconds / 1e6;
+                onTime(time.value, delta);
+              },
             ),
-            onTick: (elapsed, delta) {
-              if (!animate) return;
-              time.value = elapsed.inMicroseconds / 1e6;
-              onTime(time.value, delta);
-            },
           ),
           if (night)
             IgnorePointer(child: CustomPaint(painter: Fireflies(time))),
@@ -61,4 +66,18 @@ class ModelStage extends StatelessWidget {
       ),
     );
   }
+
+  static const _headroom = 1.3;
+
+  /// Wie die alte Kamera fürs Quadrat, nur mit größerem Blickwinkel und
+  /// etwas angehoben, damit das Wesen gleich groß an derselben Stelle steht.
+  static final PerspectiveCamera _camera = () {
+    final half = math.tan(22.5 * math.pi / 180);
+    final lift = (_headroom - 1) / 2 * 2 * 1.756 * half;
+    return PerspectiveCamera(
+      position: vm.Vector3(0, 0.6 + lift, -1.75),
+      target: vm.Vector3(0, 0.46 + lift, 0),
+      fovRadiansY: 2 * math.atan(_headroom * half),
+    );
+  }();
 }
