@@ -42,6 +42,15 @@ class PrivacyText extends StatelessWidget {
           'Erinnerungen plant das Handy selbst, ohne Server.',
     ),
     (
+      'Freunde und Kamera',
+      'Der Freundes-Code enthält nur eine zufällige Kennung, die Art deines '
+          'Wesens und ein paar Zahlen, aber keinen Namen und keinen Ort. Er '
+          'geht nur von Handy zu Handy, wenn ihr euch gegenseitig scannt. '
+          'Die Kamera läuft nur beim Scannen, Bilder werden nicht '
+          'gespeichert. Namen von Freunden gibst du selbst ein, sie bleiben '
+          'auf deinem Handy.',
+    ),
+    (
       'Sicherung des Handys',
       'Ist am Handy eine Datensicherung eingeschaltet, kann das Handy die '
           'Daten von Wandoo in diese Sicherung aufnehmen.',

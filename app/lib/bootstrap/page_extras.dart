@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wandoo/features/achievements/achievements.dart';
 import 'package:wandoo/features/creature/creature.dart';
+import 'package:wandoo/features/friends/friends.dart';
 import 'package:wandoo/features/privacy/privacy.dart';
 import 'package:wandoo/features/share/share.dart';
 import 'package:wandoo/features/shop/shop.dart';
@@ -21,23 +22,39 @@ Widget achievementBookAction() => Builder(
   ),
 );
 
-/// Oben rechts im Album: der Laden.
-Widget shopAction() => Builder(
+/// Oben rechts im Album: Freunde und Bestenliste.
+Widget friendsAction() => Builder(
   builder: (context) => IconButton(
-    key: const Key('shop-open'),
-    onPressed: () => unawaited(context.push(ShopScreen.path)),
-    icon: const Icon(Icons.storefront_rounded),
-    tooltip: 'Laden',
+    key: const Key('friends-open'),
+    onPressed: () => unawaited(context.push(FriendsScreen.path)),
+    icon: const Icon(Icons.emoji_events_rounded),
+    tooltip: 'Freunde',
   ),
 );
 
-/// Oben rechts im Album: Datenschutz.
-Widget privacyAction() => Builder(
-  builder: (context) => IconButton(
-    key: const Key('privacy-open'),
-    onPressed: () => unawaited(context.push(PrivacyScreen.path)),
-    icon: const Icon(Icons.shield_outlined),
-    tooltip: 'Datenschutz',
+/// Oben rechts im Album, im Menü: Laden und Datenschutz.
+Widget albumMenu() => Builder(
+  builder: (context) => PopupMenuButton<String>(
+    key: const Key('album-more'),
+    onSelected: (path) => unawaited(context.push(path)),
+    itemBuilder: (context) => const [
+      PopupMenuItem(
+        key: Key('shop-open'),
+        value: ShopScreen.path,
+        child: ListTile(
+          leading: Icon(Icons.storefront_rounded),
+          title: Text('Laden'),
+        ),
+      ),
+      PopupMenuItem(
+        key: Key('privacy-open'),
+        value: PrivacyScreen.path,
+        child: ListTile(
+          leading: Icon(Icons.shield_outlined),
+          title: Text('Datenschutz'),
+        ),
+      ),
+    ],
   ),
 );
 

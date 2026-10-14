@@ -20,6 +20,7 @@ const _pages = [
   '/baden',
   '/datenschutz',
   '/erfolge',
+  '/freunde',
   '/hoehle',
   '/laden',
   '/karte',
