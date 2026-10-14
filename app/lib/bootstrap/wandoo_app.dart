@@ -7,6 +7,7 @@ import 'package:wandoo/features/home_widget/home_widget.dart';
 import 'package:wandoo/features/hunger/hunger.dart';
 import 'package:wandoo/features/levels/levels.dart';
 import 'package:wandoo/features/petting/petting.dart';
+import 'package:wandoo/features/privacy/privacy.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
 import 'package:wandoo/flows/creature_reminder/creature_reminder_provider.dart';
 import 'package:wandoo/flows/hunger/check_hunger_provider.dart';
@@ -72,7 +73,7 @@ class WandooApp extends ConsumerWidget {
       // nicht mehr in Knöpfe und Kacheln.
       builder: (context, child) => MediaQuery.withClampedTextScaling(
         maxScaleFactor: maxTextScale,
-        child: _looks(ref, child!),
+        child: PrivacyGate(child: _looks(ref, child!)),
       ),
     );
   }
