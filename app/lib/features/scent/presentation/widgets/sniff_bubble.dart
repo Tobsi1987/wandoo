@@ -8,6 +8,7 @@ import 'package:wandoo/features/scent/application/scent_providers.dart';
 import 'package:wandoo/features/scent/domain/scent.dart';
 import 'package:wandoo/features/scent/domain/scent_hint.dart';
 import 'package:wandoo/features/scent/presentation/scent_labels.dart';
+import 'package:wandoo/features/sounds/sounds.dart';
 import 'package:wandoo/features/tracking/tracking.dart';
 
 /// Die Spürnase: Vor dem Gang sagt sie, dass das Wesen etwas riecht,
@@ -17,6 +18,7 @@ class SniffBubble extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    _listenForSounds(ref);
     final creature = ref.watch(creatureProvider).value;
     final scent = ref.watch(scentProvider).value;
     if (creature == null || !creature.hatched || scent == null) {
@@ -42,6 +44,32 @@ class SniffBubble extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Schnüffeln bei einer neuen Spur, Glöckchen am Fund.
+void _listenForSounds(WidgetRef ref) {
+  void play(Cue cue) {
+    final c = ref.read(creatureProvider).value;
+    if (c == null || !c.hatched) return;
+    ref.read(playSoundProvider)(cue, speciesId: c.speciesId).ignore();
+  }
+
+  ref
+    ..listen(scentProvider, (before, now) {
+      final fresh = now.value;
+      if (fresh != null && before?.value?.createdAt != fresh.createdAt) {
+        play(Cue.sniff);
+      }
+    })
+    ..listen(trackingControllerProvider, (before, now) {
+      final target = ref.read(scentProvider).value?.target;
+      bool near(WalkSession? s) =>
+          target != null &&
+          s is WalkRecording &&
+          s.position != null &&
+          s.position!.distanceTo(target) <= Scent.reachMeters;
+      if (near(now) && !near(before)) play(Cue.found);
+    });
 }
 
 class _Hint extends StatelessWidget {

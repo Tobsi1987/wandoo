@@ -5,6 +5,11 @@ import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/creature/data/in_memory_creature_repository.dart';
 import 'package:wandoo/features/petting/data/in_memory_friendship_repository.dart';
 import 'package:wandoo/features/petting/petting.dart';
+import 'package:wandoo/features/sounds/data/in_memory_sound_settings_repository.dart';
+import 'package:wandoo/features/sounds/data/silent_sound_player.dart';
+import 'package:wandoo/features/sounds/sounds.dart';
+
+final _sounds = SilentSoundPlayer();
 
 Future<InMemoryFriendshipRepository> _pump(
   WidgetTester tester,
@@ -18,6 +23,10 @@ Future<InMemoryFriendshipRepository> _pump(
       overrides: [
         creatureRepositoryProvider.overrideWithValue(creatures),
         friendshipRepositoryProvider.overrideWithValue(friendships),
+        soundPlayerProvider.overrideWithValue(_sounds),
+        soundSettingsRepositoryProvider.overrideWithValue(
+          InMemorySoundSettingsRepository(),
+        ),
       ],
       child: const MaterialApp(
         home: Scaffold(
@@ -49,6 +58,8 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(FloatingHearts), findsNothing);
     expect((await friendships.load(creature.lineKey)).points, 3);
+    // Aurora hat eine tiefe Stimme.
+    expect(_sounds.played.last, (Cue.happy, Voice.low));
   });
 
   testWidgets('ein Ei lässt sich noch nicht streicheln', (tester) async {

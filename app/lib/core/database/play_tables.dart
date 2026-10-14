@@ -14,3 +14,13 @@ class ScentStates extends Table {
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
+
+/// Einstellungen als Schlüssel und Wert, z. B. `sounds.muted` (seit
+/// Schema 12).
+class Preferences extends Table {
+  TextColumn get key => text()();
+  TextColumn get value => text()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {key};
+}

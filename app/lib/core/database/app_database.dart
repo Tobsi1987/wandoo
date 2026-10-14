@@ -23,6 +23,7 @@ part 'app_database.g.dart';
     DiaryWalks,
     DiaryMemories,
     ScentStates,
+    Preferences,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -32,7 +33,7 @@ class AppDatabase extends _$AppDatabase {
   factory AppDatabase.open() => AppDatabase(driftDatabase(name: 'wandoo'));
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -58,6 +59,7 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(diaryMemories);
       }
       if (from < 11) await m.createTable(scentStates);
+      if (from < 12) await m.createTable(preferences);
     },
   );
 
