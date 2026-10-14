@@ -12,6 +12,7 @@ import 'package:wandoo/features/adventures/adventures.dart';
 import 'package:wandoo/features/adventures/data/in_memory_adventure_repository.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/creature/data/in_memory_creature_repository.dart';
+import 'package:wandoo/features/creature/data/in_memory_den_repository.dart';
 import 'package:wandoo/features/diary/data/in_memory_diary_repository.dart';
 import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/discovery/data/in_memory_known_segments_repository.dart';
@@ -20,6 +21,8 @@ import 'package:wandoo/features/discovery_map/discovery_map.dart';
 import 'package:wandoo/features/home_widget/home_widget.dart';
 import 'package:wandoo/features/hunger/data/in_memory_belly_repository.dart';
 import 'package:wandoo/features/hunger/hunger.dart';
+import 'package:wandoo/features/levels/data/in_memory_progress_repository.dart';
+import 'package:wandoo/features/levels/levels.dart';
 import 'package:wandoo/features/petting/data/in_memory_friendship_repository.dart';
 import 'package:wandoo/features/petting/petting.dart';
 import 'package:wandoo/features/reminders/reminders.dart';
@@ -53,7 +56,10 @@ List<Override> demoOverrides() {
       InMemoryStarCatchRepository(),
     ),
     bellyRepositoryProvider.overrideWithValue(
-      InMemoryBellyRepository(_belly()),
+      InMemoryBellyRepository([?_belly()]),
+    ),
+    progressRepositoryProvider.overrideWithValue(
+      InMemoryProgressRepository([?_progress()]),
     ),
     locationSourceProvider.overrideWithValue(
       SimulatedLocationSource(goal: () => scents.current?.target),
@@ -65,6 +71,7 @@ List<Override> _stores() => [
   creatureRepositoryProvider.overrideWithValue(
     InMemoryCreatureRepository(_startCreature()),
   ),
+  denRepositoryProvider.overrideWithValue(InMemoryDenRepository()),
   knownSegmentsRepositoryProvider.overrideWithValue(
     InMemoryKnownSegmentsRepository(),
   ),
@@ -127,6 +134,16 @@ Belly? _belly() {
     lineKey: _startCreature().lineKey,
     meters: 0,
     at: DateTime.now().subtract(hungry),
+  );
+}
+
+/// `?level=9` startet kurz vor dem nächsten Level (mit `?wesen=…`).
+Progress? _progress() {
+  final level = int.tryParse(Uri.base.queryParameters['level'] ?? '');
+  if (level == null) return null;
+  return Progress(
+    lineKey: _startCreature().lineKey,
+    xp: LevelCurve.xpFor(level + 1) - 15,
   );
 }
 

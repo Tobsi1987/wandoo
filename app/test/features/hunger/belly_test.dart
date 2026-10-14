@@ -27,9 +27,9 @@ void main() {
 
   test('Datenbank merkt sich Balken und Brief', () async {
     final repo = DriftBellyRepository(testDatabase());
-    expect(await repo.load(), isNull);
+    expect(await repo.load('erstes'), isNull);
     await repo.save(Belly(lineKey: 'erstes', meters: 1234, at: _start));
-    final loaded = await repo.load();
+    final loaded = await repo.load('erstes');
     expect(loaded?.meters, 1234);
     expect(loaded?.at, _start);
     await repo.leaveLetter(Farewell(speciesId: 'moosel', at: _start));

@@ -11,18 +11,19 @@ class DriftBellyRepository implements BellyRepository {
   DriftBellyRepository(this._db);
 
   final AppDatabase _db;
-  static const _bellyKey = 'hunger.belly';
+  static String _bellyKey(String lineKey) => 'hunger.belly.$lineKey';
   static const _letterKey = 'hunger.farewell';
 
   @override
-  Future<Belly?> load() async =>
-      _belly(await _query(_bellyKey).getSingleOrNull());
+  Future<Belly?> load(String lineKey) async =>
+      _belly(await _query(_bellyKey(lineKey)).getSingleOrNull());
 
   @override
-  Stream<Belly?> watch() => _query(_bellyKey).watchSingleOrNull().map(_belly);
+  Stream<Belly?> watch(String lineKey) =>
+      _query(_bellyKey(lineKey)).watchSingleOrNull().map(_belly);
 
   @override
-  Future<void> save(Belly belly) => _put(_bellyKey, {
+  Future<void> save(Belly belly) => _put(_bellyKey(belly.lineKey), {
     'line': belly.lineKey,
     'meters': belly.meters,
     'at': belly.at.toIso8601String(),

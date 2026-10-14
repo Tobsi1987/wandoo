@@ -21,6 +21,10 @@ class TreasureChest {
     return TreasureChest(finds: next, owned: owned);
   }
 
+  /// Bekommt [a] geschenkt, zum Beispiel als Level-Belohnung.
+  TreasureChest gift(Accessory a) =>
+      TreasureChest(finds: finds, owned: {...owned, a});
+
   /// Bastelt [a] aus den Fundstücken. Wirft, wenn es nicht reicht.
   TreasureChest craft(Accessory a) {
     if (!canCraft(a)) throw StateError('Zu wenig ${a.material.name}.');

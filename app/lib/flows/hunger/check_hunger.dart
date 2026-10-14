@@ -22,8 +22,8 @@ class CheckHunger {
     final creature = await creatures.load();
     if (!creature.hatched) return null;
     final now = clock();
-    final belly = await bellies.load();
-    if (belly == null || belly.lineKey != creature.lineKey) {
+    final belly = await bellies.load(creature.lineKey);
+    if (belly == null) {
       await bellies.save(Belly.full(creature.lineKey, now));
       return null;
     }

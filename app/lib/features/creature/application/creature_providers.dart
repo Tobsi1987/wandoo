@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
 import 'package:wandoo/features/creature/domain/creature_repository.dart';
+import 'package:wandoo/features/creature/domain/den_repository.dart';
 import 'package:wandoo/features/creature/domain/feed_creature.dart';
 
 /// Wird in `bootstrap/providers.dart` mit einer Umsetzung belegt.
@@ -15,3 +16,13 @@ final creatureProvider = StreamProvider<Creature>(
 
 /// Füttert nach jedem Gang; die Demo legt hier fest, was schlüpft.
 final feedCreatureProvider = Provider<FeedCreature>((ref) => FeedCreature());
+
+/// Wird in `bootstrap/providers.dart` mit einer Umsetzung belegt.
+final denRepositoryProvider = Provider<DenRepository>(
+  (ref) => throw UnimplementedError('In bootstrap/providers.dart setzen.'),
+);
+
+/// Wer gerade in der Höhle schläft.
+final sleeperProvider = StreamProvider<Sleeper?>(
+  (ref) => ref.watch(denRepositoryProvider).watch(),
+);

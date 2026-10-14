@@ -4,7 +4,10 @@
 library;
 
 export 'application/petting_providers.dart'
-    show befriendCreatureProvider, friendshipRepositoryProvider;
+    show
+        befriendCreatureProvider,
+        friendshipProvider,
+        friendshipRepositoryProvider;
 export 'domain/befriend_creature.dart';
 export 'domain/friendship.dart';
 export 'domain/friendship_repository.dart';
