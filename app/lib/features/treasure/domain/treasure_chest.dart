@@ -21,9 +21,23 @@ class TreasureChest {
   bool knows(Accessory a) => !a.plan || plans.contains(a);
 
   bool canCraft(Accessory a) =>
-      !owned.contains(a) &&
-      knows(a) &&
-      a.recipe.entries.every((e) => count(e.key) >= e.value);
+      !owned.contains(a) && knows(a) && canAfford(a.recipe);
+
+  /// Ob genug Fundstücke für [recipe] da sind.
+  bool canAfford(Map<Find, int> recipe) =>
+      recipe.entries.every((e) => count(e.key) >= e.value);
+
+  /// Nimmt die Fundstücke für [recipe] heraus, etwa für ein Möbelstück.
+  /// Wirft, wenn es nicht reicht.
+  TreasureChest spend(Map<Find, int> recipe) {
+    if (!canAfford(recipe)) throw StateError('Zu wenig Fundstücke.');
+    return _with(
+      finds: {
+        ...finds,
+        for (final e in recipe.entries) e.key: count(e.key) - e.value,
+      },
+    );
+  }
 
   TreasureChest add(Iterable<Find> found) {
     final next = Map<Find, int>.of(finds);
@@ -42,13 +56,7 @@ class TreasureChest {
   /// Bastelt [a] aus den Fundstücken. Wirft, wenn es nicht reicht.
   TreasureChest craft(Accessory a) {
     if (!canCraft(a)) throw StateError('${a.name} geht noch nicht.');
-    return _with(
-      finds: {
-        ...finds,
-        for (final e in a.recipe.entries) e.key: count(e.key) - e.value,
-      },
-      owned: {...owned, a},
-    );
+    return spend(a.recipe)._with(owned: {...owned, a});
   }
 
   TreasureChest _with({
