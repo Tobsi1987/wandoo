@@ -8,6 +8,7 @@ import 'package:wandoo/features/creature/domain/growth_stage.dart';
 import 'package:wandoo/features/creature/domain/outfit.dart';
 import 'package:wandoo/features/creature/domain/species_catalog.dart';
 import 'package:wandoo/features/creature/domain/world_mark.dart';
+import 'package:wandoo/features/creature/presentation/marks/creature_mud.dart';
 import 'package:wandoo/features/creature/presentation/marks/world_marks_shown.dart';
 import 'package:wandoo/features/creature/presentation/model/creature_model.dart';
 import 'package:wandoo/features/creature/presentation/model/model_anchors.dart';
@@ -134,6 +135,7 @@ class _CreatureFigureState extends State<CreatureFigure>
         anchors: ModelAnchors.of(species),
         outfit: Outfit(hat: c.hat, neck: c.neck, gear: _gear()),
         mark: WorldMarksShown.of(context) ? WorldMark.of(c) : null,
+        mud: CreatureMud.of(context, c),
         eyes: modelEyes[species],
         eyesClosed: night && !widget.awake,
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wandoo/bootstrap/router.dart';
+import 'package:wandoo/features/bath/bath.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/home_widget/home_widget.dart';
 import 'package:wandoo/features/hunger/hunger.dart';
@@ -71,13 +72,20 @@ class WandooApp extends ConsumerWidget {
       // nicht mehr in Knöpfe und Kacheln.
       builder: (context, child) => MediaQuery.withClampedTextScaling(
         maxScaleFactor: maxTextScale,
-        child: WorldMarksShown(
-          shown: ref.watch(marksShownProvider).value ?? true,
-          child: child!,
-        ),
+        child: _looks(ref, child!),
       ),
     );
   }
+
+  /// Wie das Wesen überall aussieht: Spuren der Welt und Matsch.
+  static Widget _looks(WidgetRef ref, Widget child) => WorldMarksShown(
+    shown: ref.watch(marksShownProvider).value ?? true,
+    child: CreatureMud(
+      creature: ref.watch(creatureProvider).value,
+      level: ref.watch(currentMudProvider),
+      child: child,
+    ),
+  );
 
   /// Plant die Erinnerungen, dringlicher, sobald der Bauch leer ist.
   static void _remind(WidgetRef ref) {

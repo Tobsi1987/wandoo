@@ -13,6 +13,7 @@ class ModelLook {
     this.anchors = ModelAnchors.fallback,
     this.outfit = const Outfit(),
     this.mark,
+    this.mud = 0,
     this.eyes,
     this.eyesClosed = false,
   });
@@ -24,6 +25,9 @@ class ModelLook {
   final ModelAnchors anchors;
   final Outfit outfit;
   final WorldMark? mark;
+
+  /// Wie schmutzig, 0 bis 3.
+  final int mud;
 
   /// Wo die Augen sitzen; nur damit kann es sie im Schlaf schließen.
   final EyeSpot? eyes;
@@ -41,10 +45,11 @@ class ModelLook {
       other.anchors == anchors &&
       other.outfit == outfit &&
       other.mark == mark &&
+      other.mud == mud &&
       other.eyes == eyes &&
       other.eyesClosed == eyesClosed;
 
   @override
   int get hashCode =>
-      Object.hash(species, anchors, outfit, mark, eyes, eyesClosed);
+      Object.hash(species, anchors, outfit, mark, mud, eyes, eyesClosed);
 }

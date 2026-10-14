@@ -51,6 +51,12 @@ Progress? demoProgress() {
   );
 }
 
+/// `?matsch=3` macht das Wesen schmutzig (1 bis 3), zum Baden.
+Map<String, int> demoMud() {
+  final level = int.tryParse(demoParams['matsch'] ?? '');
+  return level == null ? const {} : {demoCreature().lineKey: level};
+}
+
 /// `?uhr=8` zeigt die Welt um 8 Uhr, egal wie spät es ist.
 int? demoHour() => int.tryParse(demoParams['uhr'] ?? '');
 

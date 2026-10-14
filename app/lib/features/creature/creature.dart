@@ -21,6 +21,7 @@ export 'presentation/album_screen.dart';
 export 'presentation/celebration/celebration_stage.dart';
 export 'presentation/creature_card.dart';
 export 'presentation/creature_labels.dart';
+export 'presentation/marks/creature_mud.dart';
 export 'presentation/marks/world_marks_shown.dart';
 export 'presentation/marks/world_marks_switch.dart';
 export 'presentation/model/model_motions.dart' show CreatureMotion, Motion;

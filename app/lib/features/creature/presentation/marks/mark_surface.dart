@@ -24,6 +24,7 @@ class MarkSurface {
     required this.back,
     required this.ring,
     required this.shoulders,
+    this.low = const [],
   });
 
   factory MarkSurface.fromJson(Map<String, dynamic> json) {
@@ -43,6 +44,7 @@ class MarkSurface {
       back: points('back'),
       ring: points('ring'),
       shoulders: points('shoulders'),
+      low: json.containsKey('low') ? points('low') : const [],
     );
   }
 
@@ -57,6 +59,9 @@ class MarkSurface {
 
   /// Rechte und linke Schulter.
   final List<SurfacePoint> shoulders;
+
+  /// Beine und Bauch, vorne und hinten.
+  final List<SurfacePoint> low;
 
   static const asset = 'assets/creatures/marks.json';
 

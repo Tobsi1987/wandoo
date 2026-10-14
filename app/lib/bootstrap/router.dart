@@ -2,6 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:wandoo/bootstrap/page_extras.dart';
 import 'package:wandoo/features/achievements/achievements.dart';
 import 'package:wandoo/features/adventures/adventures.dart';
+import 'package:wandoo/features/bath/bath.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/den/den.dart';
 import 'package:wandoo/features/diary/diary.dart';
@@ -51,6 +52,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: DenScreen.path,
       builder: (context, state) => const DenScreen(),
+    ),
+    GoRoute(
+      path: BathScreen.path,
+      builder: (context, state) => const BathScreen(),
     ),
     GoRoute(
       path: AchievementBookScreen.path,

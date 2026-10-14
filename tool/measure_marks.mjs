@@ -1,6 +1,6 @@
 // Misst, wo auf jedem Wesen die Spuren der Welt sitzen (Moos, Schuppen,
-// Blumenkranz, Lichter): Strahlen treffen das Modell in Ruhehaltung, jeder
-// Treffer wird ein Punkt mit Normale. Ergebnis:
+// Blumenkranz, Lichter, Matsch): Strahlen treffen das Modell in Ruhehaltung,
+// jeder Treffer wird ein Punkt mit Normale. Ergebnis:
 // app/assets/creatures/marks.json.
 //
 //   npm i @gltf-transform/core@4.1.1
@@ -116,8 +116,12 @@ function measure(tris, a) {
   const shoulders = [1, -1]
     .map((s) => hit(tris, [3 * s, a.neckY, a.neckZ], [-s, 0, 0]))
     .filter(Boolean);
+  // Untere Hälfte vorne und hinten, für Matsch an Beinen und Bauch.
+  const low = [1, -1].flatMap((s) => disc(0.2, 0.04)
+    .map(([u, v]) => hit(tris, [u, 0.24 + v, 3 * s], [0, 0, -s]))
+    .filter((h) => h && h[1] > 0.03 && h[5] * s > 0.2));
   const flat = (hs) => hs.flat().map((x) => Math.round(x * 100) / 100);
-  return {top: flat(top), back: flat(back), ring: flat(ring), shoulders: flat(shoulders)};
+  return {top: flat(top), back: flat(back), ring: flat(ring), shoulders: flat(shoulders), low: flat(low)};
 }
 
 const io = new NodeIO();
