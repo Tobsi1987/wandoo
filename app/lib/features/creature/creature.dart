@@ -26,5 +26,6 @@ export 'presentation/marks/world_marks_shown.dart';
 export 'presentation/marks/world_marks_switch.dart';
 export 'presentation/model/model_motions.dart' show CreatureMotion, Motion;
 export 'presentation/widgets/creature_avatar.dart';
+export 'presentation/widgets/creature_evolution.dart';
 export 'presentation/widgets/creature_figure.dart';
 export 'presentation/widgets/release_button.dart';

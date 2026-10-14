@@ -78,15 +78,22 @@ class WandooApp extends ConsumerWidget {
     );
   }
 
-  /// Wie das Wesen überall aussieht: Spuren der Welt und Matsch.
-  static Widget _looks(WidgetRef ref, Widget child) => WorldMarksShown(
-    shown: ref.watch(marksShownProvider).value ?? true,
-    child: CreatureMud(
-      creature: ref.watch(creatureProvider).value,
-      level: ref.watch(currentMudProvider),
-      child: child,
-    ),
-  );
+  /// Wie das Wesen überall aussieht: Spuren der Welt, Matsch und Stufe.
+  static Widget _looks(WidgetRef ref, Widget child) {
+    final creature = ref.watch(creatureProvider).value;
+    return WorldMarksShown(
+      shown: ref.watch(marksShownProvider).value ?? true,
+      child: CreatureMud(
+        creature: creature,
+        level: ref.watch(currentMudProvider),
+        child: CreatureEvolution(
+          creature: creature,
+          stage: ref.watch(progressProvider)?.stage ?? 1,
+          child: child,
+        ),
+      ),
+    );
+  }
 
   /// Plant die Erinnerungen, dringlicher, sobald der Bauch leer ist.
   static void _remind(WidgetRef ref) {
