@@ -16,6 +16,8 @@ class CreatureCard extends ConsumerWidget {
     this.figureWrap,
     this.below = const [],
     this.actions = const [],
+    this.release = true,
+    this.fill = false,
     super.key,
   });
 
@@ -34,6 +36,12 @@ class CreatureCard extends ConsumerWidget {
 
   /// Knöpfe neben "Wegschicken", nur mit [details] und nicht unterwegs.
   final List<Widget> actions;
+
+  /// Den Knopf "Wegschicken" unter dem Wesen zeigen.
+  final bool release;
+
+  /// Füllt die Höhe, die Figur passt sich an (siehe [CreatureAvatar]).
+  final bool fill;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -59,6 +67,7 @@ class CreatureCard extends ConsumerWidget {
       figureSize: figureSize,
       inScene: true,
       walking: walking,
+      fill: fill,
       figureWrap: figureWrap,
       footer: [
         ...below,
@@ -67,12 +76,12 @@ class CreatureCard extends ConsumerWidget {
             padding: const EdgeInsets.only(top: 8),
             child: Text(line, textAlign: TextAlign.center),
           ),
-        if (details && !walking)
+        if (details && !walking && (release || actions.isNotEmpty))
           Wrap(
             alignment: WrapAlignment.center,
             children: [
               ...actions,
-              ReleaseButton(creature: c),
+              if (release) ReleaseButton(creature: c),
             ],
           ),
       ],

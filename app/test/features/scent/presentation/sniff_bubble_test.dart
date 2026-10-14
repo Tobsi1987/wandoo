@@ -37,8 +37,16 @@ Widget host(WalkSession session, {Creature? creature}) => ProviderScope(
 );
 
 void main() {
-  testWidgets('vor dem Gang: das Wesen riecht etwas', (tester) async {
+  testWidgets('vor dem Gang: noch keine Spürnase', (tester) async {
     await tester.pumpWidget(host(const WalkIdle()));
+    await tester.pump();
+    expect(find.textContaining('riecht etwas'), findsNothing);
+  });
+
+  testWidgets('beim Losgehen: das Wesen riecht etwas', (tester) async {
+    await tester.pumpWidget(
+      host(WalkRecording(startedAt: DateTime(2026, 10, 14), distanceMeters: 0)),
+    );
     await tester.pump();
     expect(find.textContaining('Moosel riecht etwas'), findsOneWidget);
   });

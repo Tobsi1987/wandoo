@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wandoo/features/sounds/application/sound_providers.dart';
 
-/// Knopf, um die Laute an- oder auszuschalten.
+/// Knopf, um die Laute an- oder auszuschalten: nur ein Lautsprecher.
 class SoundToggle extends ConsumerWidget {
   const SoundToggle({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final muted = ref.watch(soundsMutedProvider).value ?? false;
-    return TextButton.icon(
+    return IconButton(
+      tooltip: muted ? 'Töne aus' : 'Töne an',
       onPressed: () => ref
           .read(soundSettingsRepositoryProvider)
           .setMuted(muted: !muted)
           .ignore(),
-      icon: Icon(muted ? Icons.volume_off : Icons.volume_up),
-      label: Text(muted ? 'Töne aus' : 'Töne an'),
+      icon: Icon(muted ? Icons.volume_off_rounded : Icons.volume_up_rounded),
     );
   }
 }

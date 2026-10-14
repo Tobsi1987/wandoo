@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:wandoo/core/format/distance_label.dart';
 import 'package:wandoo/features/creature/domain/creature.dart';
@@ -18,6 +20,7 @@ class CreatureAvatar extends StatelessWidget {
     this.walking = false,
     this.footer = const [],
     this.figureWrap,
+    this.fill = false,
     super.key,
   });
 
@@ -41,21 +44,21 @@ class CreatureAvatar extends StatelessWidget {
   /// Legt etwas um die Figur, zum Beispiel Streicheln.
   final Widget Function(Widget figure)? figureWrap;
 
+  /// Füllt die ganze Höhe: Die Figur nimmt, was das Schild übrig lässt,
+  /// höchstens [figureSize]. So passt alles ohne Scrollen auf eine Seite.
+  final bool fill;
+
   String get _title => creature.hatched
       ? SpeciesCatalog.byId(creature.speciesId).name
       : stageLabel(creature.stage);
 
-  Widget _figure() {
+  Widget _figure(double size) {
     final figure = CreatureCelebration(
       creature: creature,
-      size: figureSize,
+      size: size,
       cheer: walking,
-      builder: (c) => CreatureFigure(
-        creature: c,
-        size: figureSize,
-        world: world,
-        awake: walking,
-      ),
+      builder: (c) =>
+          CreatureFigure(creature: c, size: size, world: world, awake: walking),
     );
     final wrapped = figureWrap?.call(figure) ?? figure;
     final w = world;
@@ -72,15 +75,37 @@ class CreatureAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final plate = _plate(context, [..._info(context), ...footer]);
+    if (fill) {
+      return Column(
+        children: [
+          Expanded(
+            child: LayoutBuilder(
+              // Unten, damit das Wesen auf der Wiese steht.
+              builder: (context, box) => Align(
+                alignment: Alignment.bottomCenter,
+                child: _labelled(
+                  _figure(math.min(figureSize, box.maxHeight * 0.9)),
+                ),
+              ),
+            ),
+          ),
+          plate,
+        ],
+      );
+    }
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Semantics(label: 'Dein Wesen: $_title', child: _figure()),
+        _labelled(_figure(figureSize)),
         const SizedBox(height: 8),
-        _plate(context, [..._info(context), ...footer]),
+        plate,
       ],
     );
   }
+
+  Widget _labelled(Widget figure) =>
+      Semantics(label: 'Dein Wesen: $_title', child: figure);
 
   /// In der Welt steht der Text auf einem hellen Schild, damit er auf
   /// gemalten Hintergründen lesbar bleibt.
