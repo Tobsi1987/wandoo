@@ -1,3 +1,4 @@
+import 'package:wandoo/bootstrap/demo/demo_params.dart';
 import 'package:wandoo/features/den/den.dart';
 import 'package:wandoo/features/treasure/treasure.dart';
 
@@ -5,10 +6,10 @@ import 'package:wandoo/features/treasure/treasure.dart';
 // Schatzkiste hat Fundstücke zum Bauen. `&zuhause=1|2|3` stellt eine der
 // drei Möbelreihen hin (alle Möbel gehören einem dann).
 
-bool get _started => Uri.base.queryParameters.containsKey('wesen');
+bool get _started => demoParams.containsKey('wesen');
 
 DenRoom demoRoom() {
-  final pick = int.tryParse(Uri.base.queryParameters['zuhause'] ?? '');
+  final pick = int.tryParse(demoParams['zuhause'] ?? '');
   if (pick != null && pick >= 1 && pick <= 3) {
     var room = const DenRoom(owned: {...Furniture.values});
     for (final spot in Spot.values) {

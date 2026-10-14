@@ -8,12 +8,14 @@ import 'package:wandoo/features/den/domain/furniture.dart';
 import 'package:wandoo/features/den/presentation/furniture_labels.dart';
 import 'package:wandoo/features/den/presentation/widgets/furniture_piece.dart';
 import 'package:wandoo/features/treasure/treasure.dart';
+import 'package:wandoo/ui_kit/word_safe_text.dart';
 
 /// Auswahl für einen Platz: drei Möbel, bauen oder hinstellen.
 Future<void> showFurnitureSheet(BuildContext context, Spot spot) =>
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
+      isScrollControlled: true,
       builder: (_) => _FurnitureSheet(spot: spot),
     );
 
@@ -28,7 +30,7 @@ class _FurnitureSheet extends ConsumerWidget {
     final chest =
         ref.watch(treasureChestProvider).value ?? const TreasureChest();
     return SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -67,26 +69,58 @@ class _FurnitureSheet extends ConsumerWidget {
         '${findEmoji(e.key)} ${chest.count(e.key)}/${e.value}',
     ].join(' · ');
     return Card(
-      child: ListTile(
-        leading: FurniturePiece(furniture: f, size: 56),
-        title: Text(furnitureName(f)),
-        subtitle: Text(
-          owned ? (placed ? 'Steht im Zuhause' : 'Im Lager') : needs,
-        ),
-        trailing: placed
-            ? const Icon(Icons.check_circle_rounded, color: Colors.green)
-            : owned
-            ? OutlinedButton(
-                onPressed: () => unawaited(_save(ref, (r) => r.put(f))),
-                child: const Text('Hinstellen'),
-              )
-            : FilledButton(
-                onPressed: chest.canAfford(f.recipe)
-                    ? () => unawaited(ref.read(buildFurnitureProvider)(f))
-                    : null,
-                child: const Text('Bauen'),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+        child: Row(
+          children: [
+            FurniturePiece(furniture: f, size: 52),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  WordSafeText(
+                    furnitureName(f),
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Text(
+                    owned ? (placed ? 'Steht im Zuhause' : 'Im Lager') : needs,
+                  ),
+                ],
               ),
+            ),
+            const SizedBox(width: 8),
+            _action(ref, f, owned: owned, placed: placed, chest: chest),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _action(
+    WidgetRef ref,
+    Furniture f, {
+    required bool owned,
+    required bool placed,
+    required TreasureChest chest,
+  }) {
+    if (placed) {
+      return const Icon(Icons.check_circle_rounded, color: Colors.green);
+    }
+    const compact = VisualDensity.compact;
+    if (owned) {
+      return OutlinedButton(
+        style: OutlinedButton.styleFrom(visualDensity: compact),
+        onPressed: () => unawaited(_save(ref, (r) => r.put(f))),
+        child: const Text('Hinstellen'),
+      );
+    }
+    return FilledButton(
+      style: FilledButton.styleFrom(visualDensity: compact),
+      onPressed: chest.canAfford(f.recipe)
+          ? () => unawaited(ref.read(buildFurnitureProvider)(f))
+          : null,
+      child: const Text('Bauen'),
     );
   }
 

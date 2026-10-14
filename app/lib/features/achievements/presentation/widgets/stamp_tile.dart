@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wandoo/features/achievements/domain/achievement.dart';
 import 'package:wandoo/features/achievements/domain/new_stamps.dart';
 import 'package:wandoo/features/achievements/presentation/widgets/stamp_details.dart';
+import 'package:wandoo/ui_kit/word_safe_text.dart';
 
 /// Farbe eines Stempels je Stufe.
 Color tierColor(Tier tier) => switch (tier) {
@@ -35,7 +36,7 @@ class StampTile extends StatelessWidget {
             const SizedBox(height: 6),
             _Stamp(emoji: achievement.emoji, tier: tier),
             const SizedBox(height: 6),
-            Text(
+            WordSafeText(
               achievement.title,
               style: text.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,

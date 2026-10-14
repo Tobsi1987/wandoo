@@ -1,10 +1,11 @@
 import 'package:geo_engine/geo_engine.dart';
+import 'package:wandoo/bootstrap/demo/demo_params.dart';
 import 'package:wandoo/features/achievements/achievements.dart';
 
 /// Mit `?wesen=…` hat man in der Demo schon etwas erlebt, damit das
 /// Erfolge-Buch nicht leer ist. Ohne fängt alles bei null an.
 LifetimeStats demoStats() {
-  if (!Uri.base.queryParameters.containsKey('wesen')) {
+  if (!demoParams.containsKey('wesen')) {
     return const LifetimeStats();
   }
   return const LifetimeStats(

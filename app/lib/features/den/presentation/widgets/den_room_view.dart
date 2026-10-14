@@ -72,7 +72,8 @@ class DenRoomView extends StatelessWidget {
       width: size * w,
       height: size * w,
       child: GestureDetector(
-        behavior: HitTestBehavior.translucent,
+        key: Key('spot-${spot.name}'),
+        behavior: HitTestBehavior.opaque,
         onTap: () => onSpot(spot),
         child: f == null
             ? _EmptySpot(label: spotName(spot))

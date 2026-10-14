@@ -42,23 +42,28 @@ class FurniturePiece extends StatefulWidget {
   final Furniture furniture;
   final double size;
 
+  /// In Tests aus: Dort gibt es kein 3D.
+  static bool render = true;
+
   @override
   State<FurniturePiece> createState() => _FurniturePieceState();
 }
 
 class _FurniturePieceState extends State<FurniturePiece> {
-  late Scene _scene;
+  Scene? _scene;
 
   @override
   void initState() {
     super.initState();
-    _scene = _build(widget.furniture);
+    if (FurniturePiece.render) _scene = _build(widget.furniture);
   }
 
   @override
   void didUpdateWidget(FurniturePiece old) {
     super.didUpdateWidget(old);
-    if (old.furniture != widget.furniture) _scene = _build(widget.furniture);
+    if (old.furniture != widget.furniture && FurniturePiece.render) {
+      _scene = _build(widget.furniture);
+    }
   }
 
   static Scene _build(Furniture f) {
@@ -72,11 +77,14 @@ class _FurniturePieceState extends State<FurniturePiece> {
   @override
   Widget build(BuildContext context) => SizedBox.square(
     dimension: widget.size,
-    child: SceneView(
-      _scene,
-      autoTick: false,
-      camera: widget.furniture.spot == Spot.rug ? _flat : _front,
-    ),
+    child: switch (_scene) {
+      null => null,
+      final scene => SceneView(
+        scene,
+        autoTick: false,
+        camera: widget.furniture.spot == Spot.rug ? _flat : _front,
+      ),
+    },
   );
 
   /// Leicht von oben, sieht etwa 1,1 Einheiten hoch.

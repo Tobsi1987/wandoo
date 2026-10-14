@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:geo_engine/geo_engine.dart';
 import 'package:wandoo/bootstrap/demo/demo_den.dart';
+import 'package:wandoo/bootstrap/demo/demo_params.dart';
 import 'package:wandoo/bootstrap/demo/demo_platform.dart';
 import 'package:wandoo/bootstrap/demo/demo_stats.dart';
 import 'package:wandoo/bootstrap/demo/demo_town.dart';
@@ -118,7 +119,7 @@ List<Override> _stores() => [
 ];
 
 /// `?wetter=regen` (oder `schnee`, `gewitter`, `sonne`) stellt das Wetter.
-Weather? _weather() => switch (Uri.base.queryParameters['wetter']) {
+Weather? _weather() => switch (demoParams['wetter']) {
   'regen' => Weather.rain,
   'schnee' => Weather.snow,
   'gewitter' => Weather.storm,
@@ -136,7 +137,7 @@ class _FixedWeather implements WeatherSource {
 /// `?hunger=leer` startet mit leerem Bauch, `?hunger=weg` so, dass das
 /// Wesen gleich auszieht (mit `?wesen=…`).
 Belly? _belly() {
-  final hungry = switch (Uri.base.queryParameters['hunger']) {
+  final hungry = switch (demoParams['hunger']) {
     'leer' => const Duration(hours: 2),
     'weg' => Belly.leavesAfter + const Duration(minutes: 1),
     _ => null,
@@ -151,7 +152,7 @@ Belly? _belly() {
 
 /// `?level=9` startet kurz vor dem nächsten Level (mit `?wesen=…`).
 Progress? _progress() {
-  final level = int.tryParse(Uri.base.queryParameters['level'] ?? '');
+  final level = int.tryParse(demoParams['level'] ?? '');
   if (level == null) return null;
   return Progress(
     lineKey: _startCreature().lineKey,
@@ -160,7 +161,7 @@ Progress? _progress() {
 }
 
 /// `?uhr=8` zeigt die Welt um 8 Uhr, egal wie spät es ist.
-int? _hour() => int.tryParse(Uri.base.queryParameters['uhr'] ?? '');
+int? _hour() => int.tryParse(demoParams['uhr'] ?? '');
 
 class _DemoMapData implements MapDataSource {
   @override
@@ -170,13 +171,13 @@ class _DemoMapData implements MapDataSource {
 
 /// Was in der Demo aus dem Ei schlüpft: `?ei=funkel`, sonst ein Zufallswesen
 /// wie in der App.
-String? _hatches() => Uri.base.queryParameters['ei'];
+String? _hatches() => demoParams['ei'];
 
 /// `?wesen=funkel` startet die Demo mit diesem Wesen geschlüpft und allen
 /// Arten im Album, um die 3D-Modelle anzusehen. Ohne Angabe: ein Ei, das
 /// schon nach dem ersten Gang schlüpft.
 Creature _startCreature() {
-  final query = Uri.base.queryParameters;
+  final query = demoParams;
   final id = query['wesen'];
   if (id == null) return const Creature(food: 16);
   return Creature(
