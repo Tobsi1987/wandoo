@@ -3,8 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wandoo/features/creature/creature.dart';
-import 'package:wandoo/features/den/den.dart';
-import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/home/presentation/home_actions.dart';
 import 'package:wandoo/features/hunger/hunger.dart';
 import 'package:wandoo/features/levels/levels.dart';
@@ -38,7 +36,8 @@ class HomeScreen extends ConsumerWidget {
       child: Scaffold(
         extendBodyBehindAppBar: true,
         appBar: AppBar(
-          title: const Text('Wandoo'),
+          leading: homeLeading(),
+          leadingWidth: 64,
           backgroundColor: Colors.transparent,
           surfaceTintColor: Colors.transparent,
           scrolledUnderElevation: 0,
@@ -73,15 +72,11 @@ class HomeScreen extends ConsumerWidget {
         builder: (context, box) => Column(
           children: [
             Expanded(
-              child: Center(
-                child: SingleChildScrollView(
-                  child: _creature(
-                    world,
-                    walking: walking,
-                    sleepy: sleepy,
-                    box: box,
-                  ),
-                ),
+              child: _creature(
+                world,
+                walking: walking,
+                sleepy: sleepy,
+                box: box,
               ),
             ),
             const LevelUpBanner(),
@@ -139,7 +134,8 @@ class HomeScreen extends ConsumerWidget {
     figureWrap: (figure) =>
         Pettable(asleep: (world.night || sleepy) && !walking, child: figure),
     below: const [HeartsBar(), HungerBar(), LevelBar()],
-    actions: const [DiaryButton(), SoundToggle(), DenButton()],
+    release: false,
+    fill: true,
   );
 
   static double _figureSize(BoxConstraints box) =>
