@@ -8,9 +8,11 @@ import 'package:wandoo/features/den/den.dart';
 import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/discovery_map/discovery_map.dart';
 import 'package:wandoo/features/districts/districts.dart';
+import 'package:wandoo/features/friends/friends.dart';
 import 'package:wandoo/features/home/home.dart';
 import 'package:wandoo/features/privacy/privacy.dart';
 import 'package:wandoo/features/share/share.dart';
+import 'package:wandoo/features/shop/shop.dart';
 import 'package:wandoo/features/star_catch/star_catch.dart';
 import 'package:wandoo/features/treasure/treasure.dart';
 
@@ -35,8 +37,9 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: AlbumScreen.path,
-      builder: (context, state) =>
-          AlbumScreen(actions: [achievementBookAction(), privacyAction()]),
+      builder: (context, state) => AlbumScreen(
+        actions: [achievementBookAction(), friendsAction(), albumMenu()],
+      ),
     ),
     GoRoute(
       path: AdventureScreen.path,
@@ -65,6 +68,14 @@ final appRouter = GoRouter(
     GoRoute(
       path: PrivacyScreen.path,
       builder: (context, state) => const PrivacyScreen(),
+    ),
+    GoRoute(
+      path: FriendsScreen.path,
+      builder: (context, state) => const FriendsScreen(),
+    ),
+    GoRoute(
+      path: ShopScreen.path,
+      builder: (context, state) => const ShopScreen(),
     ),
     GoRoute(
       path: StarCatchScreen.path,

@@ -33,4 +33,7 @@ class DriftKnownSegmentsRepository implements KnownSegmentsRepository {
       ], mode: InsertMode.insertOrIgnore);
     });
   }
+
+  @override
+  Future<void> forgetAll() => _db.delete(_db.knownSegments).go();
 }

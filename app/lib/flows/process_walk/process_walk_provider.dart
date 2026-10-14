@@ -7,6 +7,7 @@ import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/discovery/discovery.dart';
 import 'package:wandoo/features/environment/environment.dart';
+import 'package:wandoo/features/friends/friends.dart';
 import 'package:wandoo/features/hunger/hunger.dart';
 import 'package:wandoo/features/levels/levels.dart';
 import 'package:wandoo/features/petting/petting.dart';
@@ -27,6 +28,7 @@ import 'package:wandoo/flows/process_walk/extras/mud_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/scent_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/treasure_extra.dart';
 import 'package:wandoo/flows/process_walk/extras/weather_extra.dart';
+import 'package:wandoo/flows/process_walk/extras/week_extra.dart';
 import 'package:wandoo/flows/process_walk/pending_walk_processor.dart';
 import 'package:wandoo/flows/process_walk/process_walk.dart';
 import 'package:wandoo/flows/scent/sniff_out_provider.dart';
@@ -76,6 +78,7 @@ final processWalkProvider = Provider<ProcessWalk>(
         ref.watch(mudRepositoryProvider),
         weather: () => ref.read(worldStateProvider).weather,
       ),
+      WeekExtra(ref.watch(friendsRepositoryProvider)),
       AchievementExtra(
         stats: ref.watch(statsRepositoryProvider),
         levels: ref.watch(progressRepositoryProvider),

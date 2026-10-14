@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:wandoo/bootstrap/demo/demo_den.dart';
+import 'package:wandoo/bootstrap/demo/demo_friends.dart';
 import 'package:wandoo/bootstrap/demo/demo_platform.dart';
 import 'package:wandoo/bootstrap/demo/demo_start.dart';
 import 'package:wandoo/bootstrap/demo/demo_stats.dart';
@@ -25,6 +26,8 @@ import 'package:wandoo/features/diary/diary.dart';
 import 'package:wandoo/features/discovery/data/in_memory_known_segments_repository.dart';
 import 'package:wandoo/features/discovery/discovery.dart';
 import 'package:wandoo/features/discovery_map/discovery_map.dart';
+import 'package:wandoo/features/friends/data/in_memory_friends_repository.dart';
+import 'package:wandoo/features/friends/friends.dart';
 import 'package:wandoo/features/home_widget/home_widget.dart';
 import 'package:wandoo/features/hunger/data/in_memory_belly_repository.dart';
 import 'package:wandoo/features/hunger/hunger.dart';
@@ -39,6 +42,8 @@ import 'package:wandoo/features/scent/data/in_memory_scent_repository.dart';
 import 'package:wandoo/features/scent/scent.dart';
 import 'package:wandoo/features/share/data/share_plus_image_sharer.dart';
 import 'package:wandoo/features/share/share.dart';
+import 'package:wandoo/features/shop/data/in_memory_shop_repository.dart';
+import 'package:wandoo/features/shop/shop.dart';
 import 'package:wandoo/features/sounds/data/audioplayers_sound_player.dart';
 import 'package:wandoo/features/sounds/data/in_memory_sound_settings_repository.dart';
 import 'package:wandoo/features/sounds/sounds.dart';
@@ -49,6 +54,8 @@ import 'package:wandoo/features/treasure/data/in_memory_treasure_repository.dart
 import 'package:wandoo/features/treasure/treasure.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
 import 'package:wandoo/features/world/world.dart';
+import 'package:wandoo/flows/friends/my_card_provider.dart';
+import 'package:wandoo/flows/shop/shop_offers_provider.dart';
 
 /// Wie `appOverrides`, aber alles im Speicher und ohne Gerät: eine erfundene
 /// Stadt, simulierte Gänge, keine Datenbank, kein Netz.
@@ -58,6 +65,12 @@ List<Override> demoOverrides() {
   return [
     privacyRepositoryProvider.overrideWithValue(privacy),
     dataWiperProvider.overrideWithValue(DemoWiper(privacy)),
+    shopRepositoryProvider.overrideWithValue(InMemoryShopRepository()),
+    shopOffersProvider.overrideWith((ref) => ref.watch(liveShopOffersProvider)),
+    friendsRepositoryProvider.overrideWithValue(
+      InMemoryFriendsRepository(friends: demoFriends()),
+    ),
+    myCardProvider.overrideWith((ref) => ref.watch(liveMyCardProvider)),
     ..._stores(),
     scentRepositoryProvider.overrideWithValue(scents),
     soundPlayerProvider.overrideWithValue(AudioplayersSoundPlayer()),

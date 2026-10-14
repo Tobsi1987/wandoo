@@ -8,6 +8,8 @@
 	<string>Wandoo zeichnet deinen Weg auf, damit dein Wesen neue Straßen fressen kann. Dein Weg verlässt nie dein Handy.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Wandoo zeichnet deinen Weg auch bei gesperrtem Bildschirm auf. Dein Weg verlässt nie dein Handy.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Wandoo braucht die Kamera nur, um den Freundes-Code eines Freundes zu scannen. Es werden keine Bilder gespeichert.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>

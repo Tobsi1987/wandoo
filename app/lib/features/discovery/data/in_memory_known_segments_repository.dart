@@ -21,4 +21,10 @@ class InMemoryKnownSegmentsRepository implements KnownSegmentsRepository {
     yield Set.of(_ids);
     yield* _changes.stream;
   }
+
+  @override
+  Future<void> forgetAll() async {
+    _ids.clear();
+    _changes.add(const {});
+  }
 }
