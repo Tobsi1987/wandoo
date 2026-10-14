@@ -54,7 +54,8 @@ class ShopOffers {
       emoji: '🗺️',
       title: 'Straßen neu entdecken',
       text:
-          'Alle $knownStreets bekannten Straßen werden wieder neu. So kann '
+          'Alle ${knownStreets > 0 ? '$knownStreets ' : ''}bekannten '
+          'Straßen werden wieder neu. So kann '
           'dein Wesen auf alten Wegen wieder wachsen. Einmal pro Woche '
           'gratis.',
       price: '1,99 €',
