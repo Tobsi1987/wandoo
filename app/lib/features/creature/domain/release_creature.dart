@@ -35,4 +35,17 @@ class ReleaseCreature {
     seenSpecies: creature.seenSpecies,
     luckyEgg: creature.luckyEgg,
   );
+
+  /// Die Wartezeit endet sofort, als wäre nie eines gegangen.
+  Creature endPause(Creature c) => Creature(
+    food: c.food,
+    traitPoints: c.traitPoints,
+    lastFedAt: c.lastFedAt,
+    speciesId: c.speciesId,
+    hat: c.hat,
+    neck: c.neck,
+    seenSpecies: c.seenSpecies,
+    luckyEgg: c.luckyEgg,
+    walkedMeters: c.walkedMeters,
+  );
 }

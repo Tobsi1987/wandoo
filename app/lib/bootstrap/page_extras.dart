@@ -7,6 +7,7 @@ import 'package:wandoo/features/achievements/achievements.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/privacy/privacy.dart';
 import 'package:wandoo/features/share/share.dart';
+import 'package:wandoo/features/shop/shop.dart';
 
 // Knöpfe, die eine Seite in eine andere führen. Sie hängen hier, damit
 // sich die Features nicht gegenseitig kennen müssen.
@@ -17,6 +18,16 @@ Widget achievementBookAction() => Builder(
     onPressed: () => unawaited(context.push(AchievementBookScreen.path)),
     icon: const Icon(Icons.military_tech_rounded),
     label: const Text('Erfolge'),
+  ),
+);
+
+/// Oben rechts im Album: der Laden.
+Widget shopAction() => Builder(
+  builder: (context) => IconButton(
+    key: const Key('shop-open'),
+    onPressed: () => unawaited(context.push(ShopScreen.path)),
+    icon: const Icon(Icons.storefront_rounded),
+    tooltip: 'Laden',
   ),
 );
 

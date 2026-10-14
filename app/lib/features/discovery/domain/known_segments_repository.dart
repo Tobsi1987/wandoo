@@ -6,4 +6,7 @@ abstract interface class KnownSegmentsRepository {
 
   /// Meldet die bekannten Abschnitte jetzt und nach jeder Änderung.
   Stream<Set<String>> watchKnownIds();
+
+  /// Vergisst alle Abschnitte: Jede Straße ist wieder neu.
+  Future<void> forgetAll();
 }

@@ -21,6 +21,7 @@ const _pages = [
   '/datenschutz',
   '/erfolge',
   '/hoehle',
+  '/laden',
   '/karte',
   '/puzzle',
   '/schatzkiste',

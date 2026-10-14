@@ -39,6 +39,8 @@ import 'package:wandoo/features/scent/data/in_memory_scent_repository.dart';
 import 'package:wandoo/features/scent/scent.dart';
 import 'package:wandoo/features/share/data/share_plus_image_sharer.dart';
 import 'package:wandoo/features/share/share.dart';
+import 'package:wandoo/features/shop/data/in_memory_shop_repository.dart';
+import 'package:wandoo/features/shop/shop.dart';
 import 'package:wandoo/features/sounds/data/audioplayers_sound_player.dart';
 import 'package:wandoo/features/sounds/data/in_memory_sound_settings_repository.dart';
 import 'package:wandoo/features/sounds/sounds.dart';
@@ -49,6 +51,7 @@ import 'package:wandoo/features/treasure/data/in_memory_treasure_repository.dart
 import 'package:wandoo/features/treasure/treasure.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
 import 'package:wandoo/features/world/world.dart';
+import 'package:wandoo/flows/shop/shop_offers_provider.dart';
 
 /// Wie `appOverrides`, aber alles im Speicher und ohne Gerät: eine erfundene
 /// Stadt, simulierte Gänge, keine Datenbank, kein Netz.
@@ -58,6 +61,8 @@ List<Override> demoOverrides() {
   return [
     privacyRepositoryProvider.overrideWithValue(privacy),
     dataWiperProvider.overrideWithValue(DemoWiper(privacy)),
+    shopRepositoryProvider.overrideWithValue(InMemoryShopRepository()),
+    shopOffersProvider.overrideWith((ref) => ref.watch(liveShopOffersProvider)),
     ..._stores(),
     scentRepositoryProvider.overrideWithValue(scents),
     soundPlayerProvider.overrideWithValue(AudioplayersSoundPlayer()),

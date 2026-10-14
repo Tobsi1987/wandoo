@@ -44,6 +44,8 @@ import 'package:wandoo/features/scent/data/drift_scent_repository.dart';
 import 'package:wandoo/features/scent/scent.dart';
 import 'package:wandoo/features/share/data/share_plus_image_sharer.dart';
 import 'package:wandoo/features/share/share.dart';
+import 'package:wandoo/features/shop/data/drift_shop_repository.dart';
+import 'package:wandoo/features/shop/shop.dart';
 import 'package:wandoo/features/sounds/data/audioplayers_sound_player.dart';
 import 'package:wandoo/features/sounds/data/drift_sound_settings_repository.dart';
 import 'package:wandoo/features/sounds/sounds.dart';
@@ -58,6 +60,7 @@ import 'package:wandoo/features/walk_summary/walk_summary.dart';
 import 'package:wandoo/features/world/data/cached_weather_source.dart';
 import 'package:wandoo/features/world/data/open_meteo_weather_source.dart';
 import 'package:wandoo/features/world/world.dart';
+import 'package:wandoo/flows/shop/shop_offers_provider.dart';
 
 /// Kompositionswurzel: Hier und nur hier werden Schnittstellen mit
 /// Umsetzungen verbunden.
@@ -101,6 +104,8 @@ Future<List<Override>> appOverrides() async {
     progressRepositoryProvider.overrideWithValue(DriftProgressRepository(db)),
     statsRepositoryProvider.overrideWithValue(DriftStatsRepository(db)),
     roomRepositoryProvider.overrideWithValue(DriftRoomRepository(db)),
+    shopRepositoryProvider.overrideWithValue(DriftShopRepository(db)),
+    shopOffersProvider.overrideWith((ref) => ref.watch(liveShopOffersProvider)),
     ...await _network(db, reminders),
   ];
 }
