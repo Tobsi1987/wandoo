@@ -21,7 +21,8 @@ class HungerExtra implements WalkExtra {
     final before = belly.fillAt(now);
     final after = belly.eat(outcome.summary.distanceMeters, now);
     await bellies.save(after);
-    if (before >= 1 || outcome.summary.distanceMeters <= 0) return const [];
+    // War es schon (fast) satt, gibt es nichts zu erzählen.
+    if (before > 0.98 || outcome.summary.distanceMeters <= 0) return const [];
     final name = SpeciesCatalog.byId(creature.speciesId).name;
     final fill = after.fillAt(now);
     final line = fill >= 1
