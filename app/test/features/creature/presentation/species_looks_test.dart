@@ -49,6 +49,6 @@ void main() {
     expect(stageModelOf('funkel', 2), (id: 'funkel2', missing: 0));
     expect(stageModelOf('funkel', 3), (id: 'funkel3', missing: 0));
     expect(stageModelOf('test', 3), (id: 'test', missing: 2));
-    expect(stageModelOf('moosel', 3), (id: 'moosel', missing: 2));
+    expect(stageModelOf('zapfi', 3), (id: 'zapfi', missing: 2));
   });
 }

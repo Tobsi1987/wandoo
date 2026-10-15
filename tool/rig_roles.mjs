@@ -5,11 +5,22 @@ import * as THREE from 'three';
 
 const CENTRAL = 0.03;
 
+/// Die Mitte des Körpers in x: meist die Mitte der Box. Ragt etwas weit zur
+/// Seite (ein Schwanz nach links), liegt sie dort, wo der Wurzelknochen
+/// steht, also auf der Wirbelsäule.
+export function centerX(root, bounds) {
+  const box = (bounds.max[0] + bounds.min[0]) / 2;
+  const joints = root.listSkins()[0].listJoints();
+  const kids = new Set(joints.flatMap((j) => j.listChildren()));
+  const spine = joints.find((j) => !kids.has(j))?.getWorldTranslation()[0] ?? box;
+  return Math.abs(spine - box) > CENTRAL * (bounds.max[1] - bounds.min[1]) ? spine : box;
+}
+
 export function findRoles(root, bounds) {
   const joints = root.listSkins()[0].listJoints();
   const isJoint = new Set(joints);
   const height = bounds.max[1] - bounds.min[1];
-  const mid = [(bounds.max[0] + bounds.min[0]) / 2, bounds.min[1], (bounds.max[2] + bounds.min[2]) / 2];
+  const mid = [centerX(root, bounds), bounds.min[1], (bounds.max[2] + bounds.min[2]) / 2];
   const pos = new Map(joints.map((j) => {
     const w = j.getWorldTranslation();
     return [j, new THREE.Vector3(...w.map((v, i) => (v - mid[i]) / height))];

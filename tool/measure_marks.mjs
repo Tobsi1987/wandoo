@@ -3,11 +3,13 @@
 // jeder Treffer wird ein Punkt mit Normale. Ergebnis:
 // app/assets/creatures/marks.json.
 //
-//   npm i @gltf-transform/core@4.1.1
+//   npm i @gltf-transform/core@4.1.1 @gltf-transform/extensions meshoptimizer
 //   node tool/measure_marks.mjs
 //
 // Neu nötig, wenn ein Modell oder `model_anchors.dart` sich ändert.
 import {NodeIO} from '@gltf-transform/core';
+import {ALL_EXTENSIONS} from '@gltf-transform/extensions';
+import {MeshoptDecoder} from 'meshoptimizer';
 import fs from 'node:fs';
 
 const dir = 'app/assets/creatures';
@@ -126,7 +128,9 @@ function measure(tris, a) {
   return {top: flat(top), back: flat(back), ring: flat(ring), shoulders: flat(shoulders), low: flat(low)};
 }
 
-const io = new NodeIO();
+await MeshoptDecoder.ready;
+const io = new NodeIO().registerExtensions(ALL_EXTENSIONS)
+  .registerDependencies({'meshopt.decoder': MeshoptDecoder});
 const out = {};
 for (const id of Object.keys(anchors).sort()) {
   const doc = await io.read(`${dir}/${id}.glb`);
