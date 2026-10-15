@@ -19,7 +19,8 @@ import * as THREE from 'three';
 import {centerX, findRoles} from './rig_roles.mjs';
 import {motions} from './rig_motions.mjs';
 
-const [,, inp, out, ratio = '1'] = process.argv;
+// still=arms,ears: diese Glieder bleiben ruhig (z. B. wenn sie am Körper festgewachsen sind).
+const [,, inp, out, ratio = '1', still = ''] = process.argv;
 await MeshoptEncoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS)
   .registerDependencies({'meshopt.encoder': MeshoptEncoder});
@@ -30,6 +31,7 @@ const root = doc.getRoot();
 const scene = root.getDefaultScene();
 const bounds = getBounds(scene);
 const roles = findRoles(root, bounds);
+for (const k of still.replace('still=', '').split(',').filter(Boolean)) roles[k] = [];
 
 const parentOf = new Map();
 for (const n of root.listNodes()) for (const c of n.listChildren()) parentOf.set(c, n);
