@@ -52,6 +52,7 @@ final Map<String, SpeciesLook> speciesLooks = {
 const stageModels = <String, Map<int, String>>{
   'funkel': {2: 'funkel2', 3: 'funkel3'},
   'moosel': {2: 'moosel2', 3: 'moosel3'},
+  'pfuetzling': {2: 'pfuetzling2'},
 };
 
 /// Welches Modell [species] auf [stage] trägt und wie viele Stufen ihm
