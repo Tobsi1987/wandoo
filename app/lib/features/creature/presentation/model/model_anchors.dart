@@ -68,6 +68,8 @@ const modelAnchors = <String, ModelAnchors>{
   'moosel3': ModelAnchors.measured(.63, .12, .12, .44, .07, .08),
   'nebelfuchs': ModelAnchors.measured(.84, .45, .26, .32, .14, .40),
   'pfuetzling': ModelAnchors.measured(.88, 0, .44, .40, .25),
+  'pfuetzling2': ModelAnchors.measured(.78, .05, .21, .37, .09, .08),
+  'pfuetzling3': ModelAnchors.measured(.88, .17, .12, .69, .06, .19),
   'pilzling': ModelAnchors.measured(.98, 0, .43, .30, .18),
   'pustel': ModelAnchors.measured(.73, .03, .24, .32, .19, .12),
   'schnirp': ModelAnchors.measured(.73, .14, .20, .32, .18),
