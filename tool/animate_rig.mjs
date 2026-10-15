@@ -3,22 +3,26 @@
 //
 //   node tool/animate_rig.mjs rig.glb app/assets/creatures/<id>.glb [anteil]
 //   (anteil < 1 vereinfacht das Netz auf diesen Anteil der Dreiecke)
-//   (Pakete wie bei prepare_model.mjs, dazu three@0.169.0)
+//   (Pakete wie bei prepare_model.mjs, dazu three@0.169.0 und
+//   @gltf-transform/extensions)
 //
 // Meshy-Skelette sind je Wesen anders gebaut und haben nur Nummern als Namen.
 // Welche Knochen Beine, Arme, Flügel, Ohren, Schwanz und Kopf sind, ergibt
 // sich deshalb aus ihrer Lage (siehe rig_roles.mjs). Das Modell steht danach
 // wie bei prepare_model.mjs mit den Füßen auf y = 0 in einer 1×1-Box.
 import {NodeIO} from '@gltf-transform/core';
-import {getBounds, simplify, textureCompress, weld} from '@gltf-transform/functions';
-import {MeshoptSimplifier} from 'meshoptimizer';
+import {ALL_EXTENSIONS} from '@gltf-transform/extensions';
+import {getBounds, meshopt, simplify, textureCompress, weld} from '@gltf-transform/functions';
+import {MeshoptEncoder, MeshoptSimplifier} from 'meshoptimizer';
 import sharp from 'sharp';
 import * as THREE from 'three';
-import {findRoles} from './rig_roles.mjs';
+import {centerX, findRoles} from './rig_roles.mjs';
 import {motions} from './rig_motions.mjs';
 
 const [,, inp, out, ratio = '1'] = process.argv;
-const io = new NodeIO();
+await MeshoptEncoder.ready;
+const io = new NodeIO().registerExtensions(ALL_EXTENSIONS)
+  .registerDependencies({'meshopt.encoder': MeshoptEncoder});
 const doc = await io.read(inp);
 await doc.transform(textureCompress({encoder: sharp, targetFormat: 'jpeg', resize: [1024, 1024]}));
 if (+ratio < 1) await doc.transform(weld(), simplify({simplifier: MeshoptSimplifier, ratio: +ratio, error: 0.01, lockBorder: true}));
@@ -77,13 +81,17 @@ function addAnim({name, dur, bones, lift}, fps = 24) {
 
 for (const m of motions(roles)) addAnim(m);
 
-// Füße auf y = 0, mittig, größte Seite (Höhe oder Breite) = 1.
-const k = 1 / Math.max(bounds.max[1] - bounds.min[1], bounds.max[0] - bounds.min[0]);
-const cx = (bounds.max[0] + bounds.min[0]) / 2, cz = (bounds.max[2] + bounds.min[2]) / 2;
+// Füße auf y = 0, mittig (Wirbelsäule auf x = 0), größte Seite = 1.
+const cx = centerX(root, bounds), cz = (bounds.max[2] + bounds.min[2]) / 2;
+const halfWidth = Math.max(bounds.max[0] - cx, cx - bounds.min[0]);
+const k = 1 / Math.max(bounds.max[1] - bounds.min[1], 2 * halfWidth);
 for (const n of scene.listChildren()) {
   const [x, y, z] = n.getTranslation();
   n.setScale(n.getScale().map((v) => v * k));
   n.setTranslation([(x - cx) * k, (y - bounds.min[1]) * k, (z - cz) * k]);
 }
+// Netz und Animationen gepackt (EXT_meshopt_compression, flutter_scene
+// entpackt das): ein Drittel der Größe, ohne Dreiecke wegzulassen.
+await doc.transform(meshopt({encoder: MeshoptEncoder, level: 'medium'}));
 await io.write(out, doc);
 console.log(out, roles.summary);
