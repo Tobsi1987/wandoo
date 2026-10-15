@@ -55,6 +55,7 @@ const stageModels = <String, Map<int, String>>{
   'pfuetzling': {2: 'pfuetzling2', 3: 'pfuetzling3'},
   'kieselchen': {2: 'kieselchen2', 3: 'kieselchen3'},
   'schnirp': {2: 'schnirp2', 3: 'schnirp3'},
+  'pustel': {2: 'pustel2', 3: 'pustel3'},
 };
 
 /// Welches Modell [species] auf [stage] trägt und wie viele Stufen ihm
