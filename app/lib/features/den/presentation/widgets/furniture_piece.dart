@@ -34,6 +34,7 @@ const Map<Furniture, _Build> _builders = {
 /// Möbel, für die es ein fertiges 3D-Modell gibt; die anderen werden aus
 /// einfachen Formen gebaut.
 const Map<Furniture, String> _models = {
+  Furniture.shellGarland: 'assets/den/shellGarland.glb',
   Furniture.leafWreath: 'assets/den/leafWreath.glb',
   Furniture.glowJar: 'assets/den/glowJar.glb',
   Furniture.flowerPot: 'assets/den/flowerPot.glb',
