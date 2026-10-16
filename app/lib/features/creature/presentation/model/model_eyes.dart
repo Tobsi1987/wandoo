@@ -120,4 +120,6 @@ const modelEyes = <String, EyeSpot>{
   'wellenwal': EyeSpot(173, 428, 392, 46, 56, 330, 125, 0xFF8CCAC6),
   'wolkenwuff': EyeSpot(146, 375, 376, 44, 66, 480, 10, 0xFFF0F2F4),
   'zapfi': EyeSpot(147, 499, 335, 46, 67, 495, 25, 0xFFE9B99A),
+  'zapfi2': EyeSpot(85, 571, 225, 40, 46, 300, 70, 0xFFCE9668),
+  'zapfi3': EyeSpot(83, 695, 380, 30, 28, 310, 100, 0xFFBFA47A),
 };
