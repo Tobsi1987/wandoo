@@ -34,6 +34,7 @@ const Map<Furniture, _Build> _builders = {
 /// Möbel, für die es ein fertiges 3D-Modell gibt; die anderen werden aus
 /// einfachen Formen gebaut.
 const Map<Furniture, String> _models = {
+  Furniture.waterLily: 'assets/den/waterLily.glb',
   Furniture.toyBoat: 'assets/den/toyBoat.glb',
   Furniture.waveRug: 'assets/den/waveRug.glb',
   Furniture.starRug: 'assets/den/starRug.glb',
