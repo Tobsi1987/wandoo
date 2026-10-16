@@ -8,6 +8,7 @@ import 'package:wandoo/features/creature/domain/growth_stage.dart';
 import 'package:wandoo/features/creature/domain/outfit.dart';
 import 'package:wandoo/features/creature/domain/species_catalog.dart';
 import 'package:wandoo/features/creature/domain/world_mark.dart';
+import 'package:wandoo/features/creature/presentation/egg/egg_model.dart';
 import 'package:wandoo/features/creature/presentation/marks/creature_mud.dart';
 import 'package:wandoo/features/creature/presentation/marks/world_marks_shown.dart';
 import 'package:wandoo/features/creature/presentation/model/creature_model.dart';
@@ -23,12 +24,9 @@ import 'package:wandoo/features/creature/presentation/widgets/creature_evolution
 import 'package:wandoo/features/creature/presentation/widgets/evolution_sparkles.dart';
 import 'package:wandoo/features/world/world.dart';
 
-/// Die Figur des Wesens: das 3D-Modell der Art, sonst animiertes 3D aus
-/// `shaders/creature.frag`.
-///
-/// Der einzige Ort, der entscheidet, wie das Wesen aussieht. Eier, Umrisse
-/// und Arten ohne Modell zeichnet der Shader; solange der Shader lädt oder
-/// fehlt, zeigt es die 2D-Figur.
+/// Die Figur des Wesens und der einzige Ort, der entscheidet, wie es
+/// aussieht: das 3D-Modell der Art, als Ei [EggModel]. Umrisse und Arten
+/// ohne Modell zeichnet `shaders/creature.frag`, bis er lädt die 2D-Figur.
 class CreatureFigure extends StatefulWidget {
   const CreatureFigure({
     required this.creature,
@@ -125,12 +123,15 @@ class _CreatureFigureState extends State<CreatureFigure>
   @override
   Widget build(BuildContext context) {
     final sleepy = !widget.awake && widget.creature.isSluggish(DateTime.now());
-    final drawn = _drawn(sleepy);
-    if (widget.silhouette || !CreatureFigure.hasModel(widget.creature)) {
-      return drawn;
-    }
     final c = widget.creature;
     final night = widget.world?.night ?? false;
+    final moving = CreatureFigure.animate && !widget.still;
+    if (!widget.silhouette && CreatureFigure.models && !c.hatched) {
+      final (size, world) = (widget.size, widget.world);
+      return EggModel.of(c, size: size, world: world, animate: moving);
+    }
+    final drawn = _drawn(sleepy);
+    if (widget.silhouette || !CreatureFigure.hasModel(c)) return drawn;
     final stage = CreatureEvolution.of(context, c);
     final species = SpeciesCatalog.byId(c.speciesId).id;
     final (:id, :missing) = stageModelOf(species, stage);
@@ -139,7 +140,11 @@ class _CreatureFigureState extends State<CreatureFigure>
       look: ModelLook(
         species: id,
         anchors: ModelAnchors.of(id),
-        outfit: Outfit(hat: c.hat, neck: c.neck, gear: _gear()),
+        outfit: Outfit(
+          hat: c.hat,
+          neck: c.neck,
+          gear: weatherGear(widget.world?.weather),
+        ),
         mark: WorldMarksShown.of(context) ? WorldMark.of(c) : null,
         mud: CreatureMud.of(context, c),
         eyes: modelEyes[id],
@@ -153,22 +158,16 @@ class _CreatureFigureState extends State<CreatureFigure>
       scale:
           (c.stage == GrowthStage.adult ? 1.0 : 0.8) *
           CreatureEvolution.scaleFor(stage: stage, missing: missing),
-      animate: CreatureFigure.animate && !widget.still,
+      animate: moving,
     );
+    final size = widget.size;
     return EvolutionSparkles.around(
       model,
       stage: missing + 1,
-      size: widget.size,
-      animate: CreatureFigure.animate && !widget.still,
+      size: size,
+      animate: moving,
     );
   }
-
-  /// Bei Regen ein Schirm, bei Schnee eine Mütze.
-  WeatherGear? _gear() => switch (widget.world?.weather) {
-    Weather.rain || Weather.storm => WeatherGear.umbrella,
-    Weather.snow => WeatherGear.beanie,
-    _ => null,
-  };
 
   Widget _drawn(bool sleepy) {
     final shader = _shader;

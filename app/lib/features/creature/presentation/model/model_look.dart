@@ -3,6 +3,14 @@ import 'package:wandoo/features/creature/domain/outfit.dart';
 import 'package:wandoo/features/creature/domain/world_mark.dart';
 import 'package:wandoo/features/creature/presentation/model/model_anchors.dart';
 import 'package:wandoo/features/creature/presentation/model/model_eyes.dart';
+import 'package:wandoo/features/world/world.dart';
+
+/// Bei Regen ein Schirm, bei Schnee eine Mütze.
+WeatherGear? weatherGear(Weather? weather) => switch (weather) {
+  Weather.rain || Weather.storm => WeatherGear.umbrella,
+  Weather.snow => WeatherGear.beanie,
+  _ => null,
+};
 
 /// Alles, was zusätzlich an einem Modell sitzt: die Spur der Welt, Hut,
 /// Halsschmuck, Wetter-Sachen und im Schlaf die Lider.
