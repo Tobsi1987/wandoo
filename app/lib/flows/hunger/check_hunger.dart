@@ -9,12 +9,16 @@ class CheckHunger {
     required this.creatures,
     required this.bellies,
     required this.clock,
+    this.drain = 1,
     this.release = const ReleaseCreature(),
   });
 
   final CreatureRepository creatures;
   final BellyRepository bellies;
   final DateTime Function() clock;
+
+  /// Wie schnell der Balken leerer wird (Möbel in der Höhle).
+  final double drain;
   final ReleaseCreature release;
 
   /// Gibt den Brief zurück, wenn das Wesen ausgezogen ist.
@@ -27,7 +31,7 @@ class CheckHunger {
       await bellies.save(Belly.full(creature.lineKey, now));
       return null;
     }
-    if (!belly.leavesBy(now)) return null;
+    if (!belly.slowed(drain).leavesBy(now)) return null;
     final letter = Farewell(speciesId: creature.speciesId ?? '', at: now);
     await bellies.leaveLetter(letter);
     await creatures.save(release.runAway(creature, now));

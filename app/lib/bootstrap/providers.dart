@@ -62,6 +62,7 @@ import 'package:wandoo/features/walk_summary/walk_summary.dart';
 import 'package:wandoo/features/world/data/cached_weather_source.dart';
 import 'package:wandoo/features/world/data/open_meteo_weather_source.dart';
 import 'package:wandoo/features/world/world.dart';
+import 'package:wandoo/flows/den_perks/hunger_drain_provider.dart';
 import 'package:wandoo/flows/friends/my_card_provider.dart';
 import 'package:wandoo/flows/shop/shop_offers_provider.dart';
 
@@ -110,6 +111,9 @@ Future<List<Override>> appOverrides() async {
     shopRepositoryProvider.overrideWithValue(DriftShopRepository(db)),
     friendsRepositoryProvider.overrideWithValue(DriftFriendsRepository(db)),
     myCardProvider.overrideWith((ref) => ref.watch(liveMyCardProvider)),
+    hungerDrainProvider.overrideWith(
+      (ref) => ref.watch(liveHungerDrainProvider),
+    ),
     shopOffersProvider.overrideWith((ref) => ref.watch(liveShopOffersProvider)),
     ...await _network(db, reminders),
   ];

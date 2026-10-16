@@ -69,6 +69,7 @@ final processWalkProvider = Provider<ProcessWalk>(
       HungerExtra(
         ref.watch(bellyRepositoryProvider),
         clock: ref.watch(hungerClockProvider),
+        drain: ref.watch(hungerDrainProvider),
       ),
       WeatherExtra(
         chests: ref.watch(treasureRepositoryProvider),

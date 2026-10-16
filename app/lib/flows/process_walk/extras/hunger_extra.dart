@@ -4,19 +4,23 @@ import 'package:wandoo/flows/process_walk/walk_extra.dart';
 
 /// Jeder Meter Gehen füllt den Hungerbalken, auch auf bekannten Straßen.
 class HungerExtra implements WalkExtra {
-  HungerExtra(this.bellies, {required this.clock});
+  HungerExtra(this.bellies, {required this.clock, this.drain = 1});
 
   final BellyRepository bellies;
   final DateTime Function() clock;
+
+  /// Wie schnell der Balken leerer wird (Möbel in der Höhle).
+  final double drain;
 
   @override
   Future<List<String>> onWalk(WalkOutcome outcome) async {
     final creature = outcome.after;
     if (!creature.hatched) return const [];
     final now = clock();
-    final belly =
+    final stored =
         await bellies.load(creature.lineKey) ??
         Belly.full(creature.lineKey, now);
+    final belly = stored.slowed(drain);
     final before = belly.fillAt(now);
     final after = belly.eat(outcome.summary.distanceMeters, now);
     await bellies.save(after);

@@ -48,4 +48,12 @@ void main() {
     await gain(_moosel, 5, announce: true);
     expect((await levels.load('erstes')).news, hasLength(1));
   });
+
+  test('Möbel-Bonus gibt mehr Erfahrung', () async {
+    final levels = InMemoryProgressRepository();
+    final chests = InMemoryTreasureRepository();
+    final gain = GainXp(levels: levels, chests: chests, boost: () => 1.1);
+    await gain(_moosel, 100);
+    expect((await levels.load('erstes')).xp, 110);
+  });
 }

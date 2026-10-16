@@ -25,6 +25,15 @@ void main() {
     expect(belly.leavesBy(_start.add(const Duration(days: 7))), isTrue);
   });
 
+  test('langsamer hungrig: mit 0.9 erst nach 5,5 Tagen leer', () {
+    final belly = Belly.full('erstes', _start).slowed(0.9);
+    final empty = belly.emptyAt.difference(_start).inHours;
+    expect(empty, closeTo(5000 / 900 * 24, 1));
+    final later = _start.add(const Duration(days: 1));
+    expect(belly.metersAt(later), closeTo(4100, 1));
+    expect(belly.eat(100, later).drain, 0.9);
+  });
+
   test('Datenbank merkt sich Balken und Brief', () async {
     final repo = DriftBellyRepository(testDatabase());
     expect(await repo.load('erstes'), isNull);
