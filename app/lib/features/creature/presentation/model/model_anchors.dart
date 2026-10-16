@@ -86,6 +86,8 @@ const modelAnchors = <String, ModelAnchors>{
   'sternschnuppe': ModelAnchors.measured(.92, 0, .36, .32, .20),
   'wellenwal': ModelAnchors.measured(.82, .10, .25, .30, .35),
   'wolkenwuff': ModelAnchors.measured(.71, .13, .32, .27, .20),
+  'wolkenwuff2': ModelAnchors.measured(.95, .50, .17, .72, .09, .55),
+  'wolkenwuff3': ModelAnchors.measured(.69, .35, .17, .42, .10, .35),
   'zapfi': ModelAnchors.measured(.86, .22, .26, .42, .17),
   'zapfi2': ModelAnchors.measured(.82, .05, .19, .42, .08, 0),
   'zapfi3': ModelAnchors.measured(.88, .22, .14, .62, .14, .20),

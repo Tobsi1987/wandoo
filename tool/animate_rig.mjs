@@ -20,7 +20,12 @@ import {centerX, findRoles} from './rig_roles.mjs';
 import {motions} from './rig_motions.mjs';
 
 // still=arms,ears: diese Glieder bleiben ruhig (z. B. wenn sie am Körper festgewachsen sind).
-const [,, inp, out, ratio = '1', still = ''] = process.argv;
+// turn=90: ein quer stehendes Wesen um so viele Grad (um y) nach vorne drehen;
+// der Kopf dreht sich dabei zurück zur Kamera. head=15: nur den Kopf so weit drehen.
+const [,, inp, out, ...rest] = process.argv;
+const opt = Object.fromEntries(rest.filter((a) => a.includes('=')).map((a) => a.split('=')));
+const ratio = rest.find((a) => !a.includes('=')) ?? '1';
+const still = opt.still ?? '';
 await MeshoptEncoder.ready;
 const io = new NodeIO().registerExtensions(ALL_EXTENSIONS)
   .registerDependencies({'meshopt.encoder': MeshoptEncoder});
@@ -29,9 +34,11 @@ await doc.transform(textureCompress({encoder: sharp, targetFormat: 'jpeg', resiz
 if (+ratio < 1) await doc.transform(weld(), simplify({simplifier: MeshoptSimplifier, ratio: +ratio, error: 0.01, lockBorder: true}));
 const root = doc.getRoot();
 const scene = root.getDefaultScene();
-const bounds = getBounds(scene);
-const roles = findRoles(root, bounds);
-for (const k of still.replace('still=', '').split(',').filter(Boolean)) roles[k] = [];
+const Y = new THREE.Vector3(0, 1, 0);
+const turn = new THREE.Quaternion().setFromAxisAngle(Y, ((+opt.turn || 0) * Math.PI) / 180);
+const bounds = turned(getBounds(scene), turn);
+for (const n of scene.listChildren()) n.setRotation(turn.clone().multiply(new THREE.Quaternion(...n.getRotation())).toArray());
+let roles = findRoles(root, bounds);
 
 const parentOf = new Map();
 for (const n of root.listNodes()) for (const c of n.listChildren()) parentOf.set(c, n);
@@ -81,6 +88,18 @@ function addAnim({name, dur, bones, lift}, fps = 24) {
   }
 }
 
+// Kopf und Hals drehen je zur Hälfte zurück, damit der Kopf zur Kamera schaut.
+const twist = +(opt.head ?? -(opt.turn ?? 0));
+if (twist && roles.head) {
+  for (const n of [roles.head, roles.head.listChildren().find((c) => parentOf.get(c) === roles.head && c.listChildren().length)]) {
+    const P = worldRot(parentOf.get(n));
+    const D = new THREE.Quaternion().setFromAxisAngle(Y, (twist * Math.PI) / 360);
+    n.setRotation(P.clone().invert().multiply(D).multiply(P).multiply(local(n)).toArray());
+  }
+  roles = findRoles(root, bounds);
+}
+for (const k of still.split(',').filter(Boolean)) roles[k] = [];
+
 for (const m of motions(roles)) addAnim(m);
 
 // Füße auf y = 0, mittig (Wirbelsäule auf x = 0), größte Seite = 1.
@@ -96,4 +115,12 @@ for (const n of scene.listChildren()) {
 // entpackt das): ein Drittel der Größe, ohne Dreiecke wegzulassen.
 await doc.transform(meshopt({encoder: MeshoptEncoder, level: 'medium'}));
 await io.write(out, doc);
+
+/// Die Box nach der Drehung (um y) als neue achsenparallele Box.
+function turned({min, max}, q) {
+  const pts = [0, 1, 2, 3, 4, 5, 6, 7].map((i) =>
+    new THREE.Vector3(i & 1 ? max[0] : min[0], i & 2 ? max[1] : min[1], i & 4 ? max[2] : min[2]).applyQuaternion(q));
+  return {min: [0, 1, 2].map((a) => Math.min(...pts.map((p) => p.getComponent(a)))),
+    max: [0, 1, 2].map((a) => Math.max(...pts.map((p) => p.getComponent(a))))};
+}
 console.log(out, roles.summary);
