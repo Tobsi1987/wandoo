@@ -59,6 +59,17 @@ const stageModels = <String, Map<int, String>>{
   'brummli': {2: 'brummli2', 3: 'brummli3'},
   'zapfi': {2: 'zapfi2', 3: 'zapfi3'},
   'laternchen': {2: 'laternchen2', 3: 'laternchen3'},
+  'wolkenwuff': {2: 'wolkenwuff2', 3: 'wolkenwuff3'},
+  'blitzmaus': {2: 'blitzmaus2', 3: 'blitzmaus3'},
+  'blaetterdrache': {2: 'blaetterdrache2', 3: 'blaetterdrache3'},
+  'pilzling': {2: 'pilzling2', 3: 'pilzling3'},
+  'kristallis': {2: 'kristallis2', 3: 'kristallis3'},
+  'fluffeule': {2: 'fluffeule2', 3: 'fluffeule3'},
+  'nebelfuchs': {2: 'nebelfuchs2', 3: 'nebelfuchs3'},
+  'glutling': {2: 'glutling2', 3: 'glutling3'},
+  'wellenwal': {2: 'wellenwal2', 3: 'wellenwal3'},
+  'aurora': {2: 'aurora2', 3: 'aurora3'},
+  'sternschnuppe': {2: 'sternschnuppe2', 3: 'sternschnuppe3'},
 };
 
 /// Welches Modell [species] auf [stage] trägt und wie viele Stufen ihm

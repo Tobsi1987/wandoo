@@ -30,7 +30,10 @@ export function findRoles(root, bounds) {
   for (const j of joints) for (const c of kids(j)) parent.set(c, j);
   const rootJoint = joints.find((j) => !parent.has(j));
   const below = (j) => [j, ...kids(j).flatMap(below)];
-  const central = (j) => Math.abs(pos.get(j).x) < CENTRAL;
+  // Ein Knochen, der sich in mehrere Glieder teilt (Becken), den Kopf trägt
+  // oder Glieder auf beiden Seiten hält, gehört zum Rumpf.
+  const spans = (j) => below(j).some((b) => pos.get(b).x > 0.05) && below(j).some((b) => pos.get(b).x < -0.05);
+  const central = (j) => Math.abs(pos.get(j).x) < CENTRAL || kids(j).length > 1 || holdsHead(j) || spans(j);
   const tip = (j) => below(j).reduce((a, b) => (pos.get(b).distanceTo(pos.get(j)) > pos.get(a).distanceTo(pos.get(j)) ? b : a));
   const dir = (j) => pos.get(tip(j)).clone().sub(pos.get(j));
   const chain = (j) => [j, ...(kids(j).length ? chain(kids(j)[0]) : [])];
@@ -46,14 +49,14 @@ export function findRoles(root, bounds) {
   if (head === rootJoint || (parent.get(head) === rootJoint && pos.get(head).y < 0.2)) head = null;
   const headY = head ? pos.get(head).y : 1;
   const inHead = new Set(head ? below(head) : []);
+  const holdsHead = (j) => head && below(j).includes(head);
 
   const limbs = {legs: [], arms: [], wings: [], ears: [], tails: []};
-  const holdsHead = (j) => head && below(j).includes(head);
   const isTail = (j) => {
     const d = dir(j);
     const thin = below(j).every((b) => kids(b).length <= 1) || below(j).every((b) => Math.abs(pos.get(b).x) < 0.06);
     return j !== rootJoint && kids(j).length && thin && !holdsHead(j) && Math.abs(pos.get(j).x) < 0.06 &&
-      d.z < -0.3 * d.length() && pos.get(j).y < Math.min(headY + 0.1, 0.5);
+      d.z < -0.3 * d.length() && pos.get(j).y < Math.min(headY + 0.1, 0.62);
   };
   const visit = (j) => {
     const p = pos.get(j);
@@ -66,7 +69,10 @@ export function findRoles(root, bounds) {
       const side = Math.sign(p.x);
       const limb = {bone: j, side, dir: d, chain: chain(j)};
       const lowest = Math.min(...below(j).map((b) => pos.get(b).y));
-      if (lowest < 0.12 && p.y < 0.3) limbs.legs.push(limb);
+      // Lange Beine (Windhund) setzen weit oben an, reichen aber bis zum Boden.
+      // Ein Schwanz, der seitlich über den Boden läuft, ist kein Bein.
+      if (lowest < 0.12 && Math.abs(d.x) > Math.abs(d.y) && d.length() > 0.25) limbs.tails.push(limb);
+      else if (lowest < 0.12 && (p.y < 0.3 || p.y - lowest > 0.3)) limbs.legs.push(limb);
       else if (p.y > 0.55 || (inHead.has(j) && p.y > headY + 0.1)) limbs.ears.push(limb);
       else if (d.z < -0.4 * d.length() || d.y > 0.04) limbs.wings.push(limb);
       else limbs.arms.push(limb);
