@@ -31,6 +31,26 @@ const Map<Furniture, _Build> _builders = {
   Furniture.toyBoat: toyBoat,
 };
 
+/// Möbel, für die es ein fertiges 3D-Modell gibt; die anderen werden aus
+/// einfachen Formen gebaut.
+const Map<Furniture, String> _models = {
+  Furniture.leafWreath: 'assets/den/leafWreath.glb',
+  Furniture.glowJar: 'assets/den/glowJar.glb',
+};
+
+final Future<bool> _ready = Scene.initializeStaticResources().then(
+  (_) => true,
+  onError: (Object _) => false,
+);
+
+final _loaded = <String, Future<Node?>>{};
+
+Future<Node?> _load(String asset) => _loaded[asset] ??= _ready.then(
+  (ok) => ok
+      ? Node.fromGlbAsset(asset).then<Node?>((n) => n, onError: (_) => null)
+      : null,
+);
+
 /// Ein Möbelstück in 3D, in einem Quadrat: steht unten auf dem Boden.
 class FurniturePiece extends StatefulWidget {
   const FurniturePiece({
@@ -55,24 +75,34 @@ class _FurniturePieceState extends State<FurniturePiece> {
   @override
   void initState() {
     super.initState();
-    if (FurniturePiece.render) _scene = _build(widget.furniture);
+    _show(widget.furniture);
   }
 
   @override
   void didUpdateWidget(FurniturePiece old) {
     super.didUpdateWidget(old);
-    if (old.furniture != widget.furniture && FurniturePiece.render) {
-      _scene = _build(widget.furniture);
-    }
+    if (old.furniture != widget.furniture) _show(widget.furniture);
   }
 
-  static Scene _build(Furniture f) {
-    final root = Node();
-    _builders[f]!(root);
-    return Scene()
-      ..exposure = 1.3
-      ..add(root);
+  void _show(Furniture f) {
+    if (!FurniturePiece.render) return;
+    final asset = _models[f];
+    if (asset == null) {
+      final root = Node();
+      _builders[f]!(root);
+      _scene = _stage(root);
+      return;
+    }
+    _scene = null;
+    _load(asset).then((node) {
+      if (!mounted || widget.furniture != f || node == null) return;
+      setState(() => _scene = _stage(node.clone()));
+    }).ignore();
   }
+
+  static Scene _stage(Node root) => Scene()
+    ..exposure = 1.3
+    ..add(root);
 
   @override
   Widget build(BuildContext context) => SizedBox.square(
