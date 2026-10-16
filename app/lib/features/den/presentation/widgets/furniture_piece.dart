@@ -34,6 +34,7 @@ const Map<Furniture, _Build> _builders = {
 /// Möbel, für die es ein fertiges 3D-Modell gibt; die anderen werden aus
 /// einfachen Formen gebaut.
 const Map<Furniture, String> _models = {
+  Furniture.shellBed: 'assets/den/shellBed.glb',
   Furniture.moonLamp: 'assets/den/moonLamp.glb',
   Furniture.mushroomLamp: 'assets/den/mushroomLamp.glb',
   Furniture.starPicture: 'assets/den/starPicture.glb',
@@ -53,6 +54,7 @@ const Map<Furniture, double> _scales = {
   Furniture.starPicture: 0.78,
   Furniture.flowerPot: 0.8,
   Furniture.ball: 0.65,
+  Furniture.shellBed: 0.55,
 };
 
 final Future<bool> _ready = Scene.initializeStaticResources().then(
