@@ -34,6 +34,9 @@ const Map<Furniture, _Build> _builders = {
 /// Möbel, für die es ein fertiges 3D-Modell gibt; die anderen werden aus
 /// einfachen Formen gebaut.
 const Map<Furniture, String> _models = {
+  Furniture.moonLamp: 'assets/den/moonLamp.glb',
+  Furniture.mushroomLamp: 'assets/den/mushroomLamp.glb',
+  Furniture.starPicture: 'assets/den/starPicture.glb',
   Furniture.shellGarland: 'assets/den/shellGarland.glb',
   Furniture.leafWreath: 'assets/den/leafWreath.glb',
   Furniture.glowJar: 'assets/den/glowJar.glb',
@@ -42,8 +45,12 @@ const Map<Furniture, String> _models = {
   Furniture.ball: 'assets/den/ball.glb',
 };
 
+/// Was zu einem fertigen Modell noch dazukommt.
+const Map<Furniture, _Build> _extras = {Furniture.starPicture: starPictureSky};
+
 /// Fertige Modelle, die kleiner stehen sollen als ihr Platz.
 const Map<Furniture, double> _scales = {
+  Furniture.starPicture: 0.78,
   Furniture.flowerPot: 0.8,
   Furniture.ball: 0.65,
 };
@@ -110,6 +117,7 @@ class _FurniturePieceState extends State<FurniturePiece> {
       final root = Node(
         localTransform: vm.Matrix4.diagonal3Values(scale, scale, scale),
       )..add(node.clone());
+      _extras[f]?.call(root);
       setState(() => _scene = _stage(root));
     }).ignore();
   }

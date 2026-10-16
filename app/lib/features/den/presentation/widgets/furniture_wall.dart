@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter_scene/scene.dart';
 import 'package:wandoo/features/den/presentation/widgets/piece_parts.dart';
 
@@ -137,5 +139,41 @@ void moonLamp(Node root) {
   final star = paint(0xFFE07A, glow: 1.5);
   for (final (x, y) in [(-0.27, 0.66), (0.26, 0.36), (0.22, 0.72)]) {
     root.add(piece(ball(0.03), star, V(x, y, 0)));
+  }
+}
+
+/// Nachthimmel mit Sternen für den gekauften Goldrahmen
+/// (`assets/den/starPicture.glb`: 1,13 breit, 1 hoch, Öffnung in der Mitte).
+void starPictureSky(Node root) {
+  root.add(piece(box(0.84, 0.66, 0.01), paint(0x23305E), V(0, 0.51, -0.01)));
+  final glow = paint(0xFFE07A, glow: 1.4);
+  const dots = [
+    (-0.3, 0.68, 0.025),
+    (-0.18, 0.36, 0.02),
+    (0.28, 0.7, 0.02),
+    (0.3, 0.34, 0.025),
+    (-0.32, 0.46, 0.015),
+    (0.12, 0.74, 0.015),
+  ];
+  for (final (x, y, r) in dots) {
+    root.add(piece(ball(r), glow, V(x, y, 0.005)));
+  }
+  _star(root, V(0, 0.51, 0.04), 0.17, glow);
+}
+
+/// Ein dicker, leuchtender Stern aus fünf Zacken.
+void _star(Node root, V center, double size, Material material) {
+  root.add(piece(ball(size * 0.42), material, center, scale: V(1, 1, 0.5)));
+  for (var i = 0; i < 5; i++) {
+    final a = i / 5 * 2 * math.pi;
+    root.add(
+      piece(
+        tube(size * 0.28, size * 0.75, top: size * 0.04),
+        material,
+        center + V(math.sin(a), math.cos(a), 0) * (size * 0.55),
+        scale: V(1, 1, 0.45),
+        rotation: turn(V(0, 0, 1), -a),
+      ),
+    );
   }
 }
