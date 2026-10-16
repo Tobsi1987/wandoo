@@ -75,11 +75,10 @@ class CreatureAvatar extends StatelessWidget {
   }
 
   String get _subtitle {
-    final walked =
-        '👣 ${distanceLabel(creature.walkedMeters)} zusammen gelaufen';
-    if (!creature.hatched) return walked;
+    final walked = '👣 ${distanceLabel(creature.walkedMeters)}';
+    if (!creature.hatched) return '$walked zusammen gelaufen';
     final rarity = SpeciesCatalog.byId(creature.speciesId).rarity;
-    return '${stageLabel(creature.stage)} · ${rarityLabel(rarity)}\n$walked';
+    return '${stageLabel(creature.stage)} · ${rarityLabel(rarity)} · $walked';
   }
 
   @override
@@ -93,9 +92,7 @@ class CreatureAvatar extends StatelessWidget {
               // Unten, damit das Wesen auf der Wiese steht.
               builder: (context, box) => Align(
                 alignment: Alignment.bottomCenter,
-                child: _labelled(
-                  _figure(math.min(figureSize, box.maxHeight * 0.9)),
-                ),
+                child: _labelled(_figure(math.min(figureSize, box.maxHeight))),
               ),
             ),
           ),
@@ -127,7 +124,7 @@ class CreatureAvatar extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+        padding: const EdgeInsets.fromLTRB(14, 6, 14, 8),
         child: column,
       ),
     );
@@ -138,10 +135,12 @@ class CreatureAvatar extends StatelessWidget {
     return [
       Text(
         _title,
-        style: text.headlineMedium?.copyWith(fontWeight: FontWeight.w600),
+        style: (inScene ? text.titleLarge : text.headlineMedium)?.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
       ),
       Text(_subtitle, style: text.bodySmall, textAlign: TextAlign.center),
-      const SizedBox(height: 8),
+      SizedBox(height: inScene ? 2 : 8),
       Wrap(
         spacing: 6,
         runSpacing: 6,

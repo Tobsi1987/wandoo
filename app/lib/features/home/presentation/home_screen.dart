@@ -135,11 +135,18 @@ class HomeScreen extends ConsumerWidget {
     figureSize: _figureSize(box),
     figureWrap: (figure) =>
         Pettable(asleep: (world.night || sleepy) && !walking, child: figure),
-    below: const [HeartsBar(), HungerBar(), LevelBar()],
+    below: const [
+      Wrap(
+        spacing: 14,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        alignment: WrapAlignment.center,
+        children: [HeartsBar(), HungerBar(), LevelBar()],
+      ),
+    ],
     release: false,
     fill: true,
   );
 
   static double _figureSize(BoxConstraints box) =>
-      math.min(box.maxWidth * 0.7, box.maxHeight * 0.38);
+      math.min(box.maxWidth * 1.05, box.maxHeight * 0.62);
 }
