@@ -8,7 +8,7 @@ void main() {
   testWidgets('entdeckte Arten mit Namen, die anderen als Umriss', (
     tester,
   ) async {
-    tester.view.physicalSize = const Size(800, 4000);
+    tester.view.physicalSize = const Size(400, 8000);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     final repo = InMemoryCreatureRepository();
@@ -28,11 +28,17 @@ void main() {
     await tester.pumpAndSettle();
     final total = SpeciesCatalog.all.length;
     expect(find.text('2 von $total Tieren entdeckt'), findsOneWidget);
-    expect(find.text('Pfützling'), findsOneWidget);
-    expect(find.text('???'), findsNWidgets(total - 2));
+    expect(
+      find.textContaining('Pfützling', findRichText: true),
+      findsOneWidget,
+    );
+    expect(
+      find.textContaining('???', findRichText: true),
+      findsNWidgets(total - 2),
+    );
     final silhouettes = tester
         .widgetList<CreatureFigure>(find.byType(CreatureFigure))
         .where((f) => f.silhouette);
-    expect(silhouettes, hasLength(total - 2));
+    expect(silhouettes, hasLength((total - 2) * 3));
   });
 }
