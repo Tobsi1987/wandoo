@@ -102,6 +102,8 @@ const modelEyes = <String, EyeSpot>{
   'kieselchen3': EyeSpot(104, 678, 197, 23, 22, 135, 90, 0xFFD7D0C6),
   'kristallis': EyeSpot(142, 488, 248, 50, 54, 290, 135, 0xFFE1C5AE),
   'laternchen': EyeSpot(136, 556, 238, 57, 66, 455, 10, 0xFFFEE0AC),
+  'laternchen2': EyeSpot(100, 576, 210, 53, 50, 300, 150, 0xFF2C3766),
+  'laternchen3': EyeSpot(107, 528, 244, 42, 42, 300, 190, 0xFF4E5F79),
   'moosel': EyeSpot(220, 581, 420, 74, 84, 335, 5, 0xFFB0E1B4),
   'moosel2': EyeSpot(102, 660, 259, 20, 30, 250, 110, 0xFFA9CB94),
   'moosel3': EyeSpot(90, 562, 230, 13, 23, 870, 25, 0xFFACB88F),
@@ -120,4 +122,6 @@ const modelEyes = <String, EyeSpot>{
   'wellenwal': EyeSpot(173, 428, 392, 46, 56, 330, 125, 0xFF8CCAC6),
   'wolkenwuff': EyeSpot(146, 375, 376, 44, 66, 480, 10, 0xFFF0F2F4),
   'zapfi': EyeSpot(147, 499, 335, 46, 67, 495, 25, 0xFFE9B99A),
+  'zapfi2': EyeSpot(85, 571, 225, 40, 46, 300, 70, 0xFFCE9668),
+  'zapfi3': EyeSpot(83, 695, 380, 30, 28, 310, 100, 0xFFBFA47A),
 };
