@@ -36,6 +36,15 @@ const Map<Furniture, _Build> _builders = {
 const Map<Furniture, String> _models = {
   Furniture.leafWreath: 'assets/den/leafWreath.glb',
   Furniture.glowJar: 'assets/den/glowJar.glb',
+  Furniture.flowerPot: 'assets/den/flowerPot.glb',
+  Furniture.flowerRug: 'assets/den/flowerRug.glb',
+  Furniture.ball: 'assets/den/ball.glb',
+};
+
+/// Fertige Modelle, die kleiner stehen sollen als ihr Platz.
+const Map<Furniture, double> _scales = {
+  Furniture.flowerPot: 0.8,
+  Furniture.ball: 0.65,
 };
 
 final Future<bool> _ready = Scene.initializeStaticResources().then(
@@ -96,7 +105,11 @@ class _FurniturePieceState extends State<FurniturePiece> {
     _scene = null;
     _load(asset).then((node) {
       if (!mounted || widget.furniture != f || node == null) return;
-      setState(() => _scene = _stage(node.clone()));
+      final scale = _scales[f] ?? 1.0;
+      final root = Node(
+        localTransform: vm.Matrix4.diagonal3Values(scale, scale, scale),
+      )..add(node.clone());
+      setState(() => _scene = _stage(root));
     }).ignore();
   }
 
