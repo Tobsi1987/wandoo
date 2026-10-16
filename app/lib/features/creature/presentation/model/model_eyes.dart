@@ -87,6 +87,8 @@ PhysicallyBasedMaterial _material(Color c) {
 /// Gemessene Augen je Art.
 const modelEyes = <String, EyeSpot>{
   'aurora': EyeSpot(124, 582, 322, 62, 80, 285, -5, 0xFFE0D8D6),
+  'aurora2': EyeSpot(65, 686, 331, 26, 30, 400, 100, 0xFFD0D0D1),
+  'aurora3': EyeSpot(65, 710, 310, 20, 20, 450, 100, 0xFFE6E0DA),
   'blaetterdrache': EyeSpot(163, 632, 255, 46, 59, 495, 110, 0xFF8DC84C),
   'blaetterdrache2': EyeSpot(112, 721, 236, 24, 45, 630, 250, 0xFF9BBA6E),
   'blaetterdrache3': EyeSpot(97, 704, 361, 16, 26, 700, 100, 0xFFA0C28E),

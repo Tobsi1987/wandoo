@@ -52,6 +52,8 @@ class ModelAnchors {
 /// Abgemessene Punkte je Art: Hut y, z, Kopfradius, Hals y, Halsradius.
 const modelAnchors = <String, ModelAnchors>{
   'aurora': ModelAnchors.measured(.86, .15, .22, .36, .21, .05),
+  'aurora2': ModelAnchors.measured(.86, .20, .11, .50, .07, .22),
+  'aurora3': ModelAnchors.measured(.80, .25, .12, .58, .08, .28),
   'blaetterdrache': ModelAnchors.measured(.88, .10, .28, .44, .20, .15),
   'blaetterdrache2': ModelAnchors.measured(.92, .05, .16, .50, .08, .15),
   'blaetterdrache3': ModelAnchors.measured(.87, .25, .14, .56, .10, .23),

@@ -22,6 +22,7 @@ import {motions} from './rig_motions.mjs';
 // still=arms,ears: diese Glieder bleiben ruhig (z. B. wenn sie am Körper festgewachsen sind).
 // turn=90: ein quer stehendes Wesen um so viele Grad (um y) nach vorne drehen;
 // der Kopf dreht sich dabei zurück zur Kamera. head=15: nur den Kopf so weit drehen.
+// center=head: den Kopf statt der Wirbelsäule auf x = 0 stellen.
 const [,, inp, out, ...rest] = process.argv;
 const opt = Object.fromEntries(rest.filter((a) => a.includes('=')).map((a) => a.split('=')));
 const ratio = rest.find((a) => !a.includes('=')) ?? '1';
@@ -103,7 +104,8 @@ for (const k of still.split(',').filter(Boolean)) roles[k] = [];
 for (const m of motions(roles)) addAnim(m);
 
 // Füße auf y = 0, mittig (Wirbelsäule auf x = 0), größte Seite = 1.
-const cx = centerX(root, bounds), cz = (bounds.max[2] + bounds.min[2]) / 2;
+const cx = opt.center === 'head' && roles.head ? roles.head.getWorldTranslation()[0] : centerX(root, bounds);
+const cz = (bounds.max[2] + bounds.min[2]) / 2;
 const halfWidth = Math.max(bounds.max[0] - cx, cx - bounds.min[0]);
 const k = 1 / Math.max(bounds.max[1] - bounds.min[1], 2 * halfWidth);
 for (const n of scene.listChildren()) {
