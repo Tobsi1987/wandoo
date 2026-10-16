@@ -23,6 +23,7 @@ import {motions} from './rig_motions.mjs';
 // turn=90: ein quer stehendes Wesen um so viele Grad (um y) nach vorne drehen;
 // der Kopf dreht sich dabei zurück zur Kamera. head=15: nur den Kopf so weit drehen.
 // center=head: den Kopf statt der Wirbelsäule auf x = 0 stellen.
+// wide=1.5: so viel breiter als hoch darf das Wesen sein (große Flügel).
 const [,, inp, out, ...rest] = process.argv;
 const opt = Object.fromEntries(rest.filter((a) => a.includes('=')).map((a) => a.split('=')));
 const ratio = rest.find((a) => !a.includes('=')) ?? '1';
@@ -107,7 +108,7 @@ for (const m of motions(roles)) addAnim(m);
 const cx = opt.center === 'head' && roles.head ? roles.head.getWorldTranslation()[0] : centerX(root, bounds);
 const cz = (bounds.max[2] + bounds.min[2]) / 2;
 const halfWidth = Math.max(bounds.max[0] - cx, cx - bounds.min[0]);
-const k = 1 / Math.max(bounds.max[1] - bounds.min[1], 2 * halfWidth);
+const k = 1 / Math.max(bounds.max[1] - bounds.min[1], (2 * halfWidth) / (+opt.wide || 1));
 for (const n of scene.listChildren()) {
   const [x, y, z] = n.getTranslation();
   n.setScale(n.getScale().map((v) => v * k));

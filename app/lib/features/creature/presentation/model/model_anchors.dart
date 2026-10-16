@@ -100,6 +100,8 @@ const modelAnchors = <String, ModelAnchors>{
   'schnirp2': ModelAnchors.measured(.70, .22, .15, .47, .08, .15),
   'schnirp3': ModelAnchors.measured(.80, .14, .10, .58, .06, .10),
   'sternschnuppe': ModelAnchors.measured(.92, 0, .36, .32, .20),
+  'sternschnuppe2': ModelAnchors.measured(.77, .15, .15, .50, .07, .13),
+  'sternschnuppe3': ModelAnchors.measured(.62, .38, .14, .38, .14, .38),
   'wellenwal': ModelAnchors.measured(.82, .10, .25, .30, .35),
   'wellenwal2': ModelAnchors.measured(.55, .35, .22, .28, .25, .40),
   'wellenwal3': ModelAnchors.measured(.52, .35, .22, .26, .25, .40),
