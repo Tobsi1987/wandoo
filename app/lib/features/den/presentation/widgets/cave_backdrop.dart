@@ -1,86 +1,119 @@
-import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
-/// Die gemütliche Höhle hinter den Möbeln: Felswand, rundes Fenster,
-/// ein Regalbrett rechts und ein heller Boden.
+import 'package:flutter/material.dart';
+import 'package:wandoo/features/den/presentation/widgets/cave_decor.dart';
+
+/// Die gemütliche Erdhöhle hinter den Möbeln: Gewölbe aus Lehm mit
+/// Steinen, Wurzeln an der Decke, Lichterkette, rundes Fenster, ein
+/// Regalbrett und ein Holzboden mit Tiefe. Nachts leuchtet es warm.
 class CaveBackdrop extends CustomPainter {
-  const CaveBackdrop({required this.night, required this.floorAt});
+  const CaveBackdrop({required this.night, required this.stage});
 
   final bool night;
 
-  /// Wo die Wand in den Boden übergeht, als Anteil der Höhe.
-  final double floorAt;
+  /// Der Bereich, in dem die Möbel stehen; der Boden beginnt in seiner
+  /// Mitte. Darüber geht die Wand einfach weiter.
+  final Rect stage;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
+    final colors = CaveColors(night: night);
+    final floorY = stage.top + stage.height * 0.5;
     final rect = Offset.zero & size;
-    final floorY = h * floorAt;
+    canvas.drawRect(rect, Paint()..color = colors.earth);
+    final archTop = math
+        .min(stage.top - stage.width * 0.05, size.height * 0.06)
+        .clamp(0.0, floorY);
+    final arch = _arch(size, archTop, floorY);
     canvas
-      ..drawRect(rect, Paint()..color = _c(0xFF5B3B26, 0xFF241A22))
-      ..drawRRect(
-        RRect.fromLTRBAndCorners(
-          w * 0.03,
-          h * 0.02,
-          w * 0.97,
-          floorY + 20,
-          topLeft: Radius.circular(w * 0.45),
-          topRight: Radius.circular(w * 0.45),
-        ),
+      ..save()
+      ..clipPath(arch)
+      ..drawRect(
+        rect,
         Paint()
           ..shader = LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [_c(0xFFE9C79A, 0xFF4A3B52), _c(0xFFD7A874, 0xFF3A2E44)],
+            colors: [colors.wallTop, colors.wall],
           ).createShader(rect),
       );
-    _window(canvas, Offset(w * 0.5, h * 0.17), w * 0.11);
-    _floor(canvas, size, floorY);
-    // Regalbrett für das Licht.
-    canvas.drawRRect(
-      RRect.fromLTRBR(
-        w * 0.68,
-        h * 0.335,
-        w * 0.95,
-        h * 0.355,
-        const Radius.circular(4),
-      ),
-      Paint()..color = _c(0xFF9C6B3F, 0xFF5E4536),
+    stones(canvas, Rect.fromLTRB(0, 0, size.width, floorY), colors);
+    _shelf(canvas, colors);
+    window(
+      canvas,
+      Offset(stage.center.dx, stage.top + stage.width * 0.2),
+      stage.width * 0.12,
+      colors,
+    );
+    canvas.restore();
+    _floor(canvas, size, floorY, colors);
+    _baseboard(canvas, size, floorY);
+    rim(canvas, arch, colors);
+    roots(canvas, size, archTop, colors);
+    garland(canvas, size, stage, colors);
+    _glow(canvas, size, colors);
+  }
+
+  /// Schatten, wo die Wand auf den Boden trifft.
+  void _baseboard(Canvas canvas, Size size, double floorY) {
+    final base = Rect.fromLTRB(
+      0,
+      floorY,
+      size.width,
+      floorY + stage.width * 0.06,
+    );
+    canvas.drawRect(
+      base,
+      Paint()
+        ..shader = const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0x40000000), Color(0x00000000)],
+        ).createShader(base),
     );
   }
 
-  void _window(Canvas canvas, Offset center, double r) {
-    canvas
-      ..drawCircle(center, r + 6, Paint()..color = _c(0xFFB07A45, 0xFF5E4536))
-      ..drawCircle(center, r, Paint()..color = _c(0xFF9FD3F5, 0xFF1C2550));
-    if (night) {
-      canvas
-        ..drawCircle(
-          center + Offset(r * 0.25, -r * 0.2),
-          r * 0.35,
-          Paint()..color = const Color(0xFFFFF1B8),
-        )
-        ..drawCircle(
-          center + Offset(r * 0.4, -r * 0.3),
-          r * 0.3,
-          Paint()..color = const Color(0xFF1C2550),
-        );
-    } else {
-      canvas
-        ..drawCircle(
-          center + Offset(-r * 0.2, r * 0.25),
-          r * 0.35,
-          Paint()..color = Colors.white,
-        )
-        ..drawCircle(
-          center + Offset(r * 0.2, r * 0.3),
-          r * 0.3,
-          Paint()..color = Colors.white,
-        );
-    }
+  /// Das Gewölbe: oben rund, unten bis zum Boden.
+  Path _arch(Size size, double top, double floorY) {
+    final w = size.width;
+    final r = Radius.elliptical(w * 0.5, (floorY - top) * 0.55);
+    return Path()..addRRect(
+      RRect.fromLTRBAndCorners(
+        w * 0.02,
+        top,
+        w * 0.98,
+        floorY + 4,
+        topLeft: r,
+        topRight: r,
+      ),
+    );
   }
 
-  void _floor(Canvas canvas, Size size, double y) {
+  void _shelf(Canvas canvas, CaveColors colors) {
+    final w = stage.width;
+    final y = stage.top + w * 0.385;
+    final board = Rect.fromLTRB(
+      stage.left + w * 0.68,
+      y,
+      stage.left + w * 0.96,
+      y + w * 0.025,
+    );
+    canvas
+      ..drawRRect(
+        RRect.fromRectAndRadius(
+          board.shift(const Offset(0, 4)),
+          const Radius.circular(4),
+        ),
+        Paint()..color = const Color(0x33000000),
+      )
+      ..drawRRect(
+        RRect.fromRectAndRadius(board, const Radius.circular(4)),
+        Paint()..color = colors.wood,
+      );
+  }
+
+  /// Holzdielen, die nach hinten zusammenlaufen, mit dunklen Rändern.
+  void _floor(Canvas canvas, Size size, double y, CaveColors colors) {
     final floor = Rect.fromLTRB(0, y, size.width, size.height);
     canvas.drawRect(
       floor,
@@ -88,21 +121,51 @@ class CaveBackdrop extends CustomPainter {
         ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [_c(0xFFC28A55, 0xFF4B3A40), _c(0xFFDDAA72, 0xFF5A4650)],
+          colors: [colors.floorBack, colors.floorFront],
         ).createShader(floor),
     );
     final line = Paint()
-      ..color = _c(0x22000000, 0x33000000)
-      ..strokeWidth = 2;
-    for (var i = 1; i < 5; i++) {
-      final ly = y + (size.height - y) * i / 5;
-      canvas.drawLine(Offset(0, ly), Offset(size.width, ly), line);
+      ..color = colors.plank
+      ..strokeWidth = 1.5;
+    // Fluchtpunkt weit über dem Boden: die Dielen laufen leicht zusammen.
+    final vanish = Offset(size.width / 2, y - (size.height - y) * 2.5);
+    final t = (y - vanish.dy) / (size.height - vanish.dy);
+    Offset back(double x) => Offset(vanish.dx + (x - vanish.dx) * t, y);
+    final light = Paint()..color = const Color(0x14FFFFFF);
+    for (var i = -7; i <= 7; i++) {
+      final x = size.width / 2 + i * size.width * 0.13;
+      if (i.isEven) {
+        final next = x + size.width * 0.13;
+        canvas.drawPath(
+          Path()
+            ..moveTo(back(x).dx, y)
+            ..lineTo(back(next).dx, y)
+            ..lineTo(next, size.height)
+            ..lineTo(x, size.height)
+            ..close(),
+          light,
+        );
+      }
+      canvas.drawLine(back(x), Offset(x, size.height), line);
     }
   }
 
-  Color _c(int day, int nightColor) => Color(night ? nightColor : day);
+  /// Warmes Licht in der Mitte, dunklere Ecken.
+  void _glow(Canvas canvas, Size size, CaveColors colors) {
+    final rect = Offset.zero & size;
+    canvas.drawRect(
+      rect,
+      Paint()
+        ..shader = RadialGradient(
+          center: Alignment(0, stage.center.dy / size.height * 2 - 1),
+          radius: 0.9,
+          colors: [colors.light, const Color(0x00000000), colors.shade],
+          stops: const [0, 0.55, 1],
+        ).createShader(rect),
+    );
+  }
 
   @override
   bool shouldRepaint(CaveBackdrop old) =>
-      old.night != night || old.floorAt != floorAt;
+      old.night != night || old.stage != stage;
 }

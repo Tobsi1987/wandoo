@@ -34,5 +34,5 @@ String furnitureName(Furniture f) => switch (f) {
 /// Kurz, was das Möbelstück bringt, z. B. „⭐ +10 % Erfahrung“.
 String perkLabel(Furniture f) => switch (f.perk) {
   Perk.xp => '⭐ +${f.percent} % Erfahrung',
-  Perk.hunger => '🍎 ${f.percent} % langsamer hungrig',
+  Perk.hunger => '🍎 ${f.percent} % weniger Hunger',
 };
