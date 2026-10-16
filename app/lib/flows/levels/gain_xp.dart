@@ -6,10 +6,16 @@ import 'package:wandoo/flows/levels/level_rewards.dart';
 /// Gibt einem geschlüpften Wesen Erfahrung. Für jedes neue Level kommt
 /// die Belohnung in die Schatzkiste.
 class GainXp {
-  GainXp({required this.levels, required this.chests, this.boost = _none});
+  GainXp({
+    required this.levels,
+    required this.chests,
+    required this.album,
+    this.boost = _none,
+  });
 
   final ProgressRepository levels;
   final TreasureRepository chests;
+  final StageAlbumRepository album;
 
   /// Faktor auf jede Erfahrung, z. B. 1.1 durch Möbel in der Höhle.
   final double Function() boost;
@@ -48,6 +54,7 @@ class GainXp {
       lines.add('⬆️ Level $level! 🎁 ${gifts.join(', ')}');
       final stage = LevelCurve.stageFor(level);
       if (stage > LevelCurve.stageFor(level - 1)) {
+        await album.reach(SpeciesCatalog.byId(creature.speciesId).id, stage);
         lines.add('🌟 $name ist jetzt Stufe $stage!');
       }
       if (level == LevelCurve.stage3At) {

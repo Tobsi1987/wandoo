@@ -8,6 +8,7 @@ final gainXpProvider = Provider<GainXp>(
   (ref) => GainXp(
     levels: ref.watch(progressRepositoryProvider),
     chests: ref.watch(treasureRepositoryProvider),
+    album: ref.watch(stageAlbumRepositoryProvider),
     boost: () {
       final room = ref.read(roomProvider).value ?? const DenRoom();
       return 1 + room.percent(Perk.xp) / 100;

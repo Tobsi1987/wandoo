@@ -5,7 +5,7 @@ import 'package:wandoo/features/creature/domain/species_catalog.dart';
 import 'package:wandoo/features/creature/presentation/widgets/album_row.dart';
 
 /// Sammelalbum: alle Arten untereinander, je mit ihren drei Stufen;
-/// entdeckte in Farbe, die anderen als grauer Umriss.
+/// erreichte Stufen in Farbe, alles andere bleibt ein grauer Umriss.
 class AlbumScreen extends ConsumerWidget {
   const AlbumScreen({this.actions = const [], super.key});
 
@@ -17,6 +17,7 @@ class AlbumScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final seen = ref.watch(creatureProvider).value?.discoveredSpecies ?? {};
+    final stages = ref.watch(reachedStagesProvider);
     const all = SpeciesCatalog.all;
     final found = all.where((s) => seen.contains(s.id)).length;
     return Scaffold(
@@ -35,7 +36,10 @@ class AlbumScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               children: [
                 for (final s in all)
-                  AlbumRow(species: s, seen: seen.contains(s.id)),
+                  AlbumRow(
+                    species: s,
+                    reached: seen.contains(s.id) ? stages[s.id] ?? 1 : 0,
+                  ),
               ],
             ),
           ),

@@ -5,7 +5,7 @@ import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/creature/data/in_memory_creature_repository.dart';
 
 void main() {
-  testWidgets('entdeckte Arten mit Namen, die anderen als Umriss', (
+  testWidgets('nur erreichte Stufen in Farbe, Unentdecktes ohne Namen', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(400, 8000);
@@ -21,7 +21,10 @@ void main() {
     );
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [creatureRepositoryProvider.overrideWithValue(repo)],
+        overrides: [
+          creatureRepositoryProvider.overrideWithValue(repo),
+          reachedStagesProvider.overrideWithValue({'moosel': 3}),
+        ],
         child: const MaterialApp(home: AlbumScreen()),
       ),
     );
@@ -39,6 +42,7 @@ void main() {
     final silhouettes = tester
         .widgetList<CreatureFigure>(find.byType(CreatureFigure))
         .where((f) => f.silhouette);
-    expect(silhouettes, hasLength((total - 2) * 3));
+    // Moosel hat alle drei Stufen, Pfützling nur die erste.
+    expect(silhouettes, hasLength((total - 2) * 3 + 2));
   });
 }

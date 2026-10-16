@@ -37,3 +37,7 @@ final marksSettingRepositoryProvider = Provider<MarksSettingRepository>(
 final marksShownProvider = StreamProvider<bool>(
   (ref) => ref.watch(marksSettingRepositoryProvider).watchShown(),
 );
+
+/// Art → höchste je erreichte Stufe; das Sammelalbum zeigt nur diese in
+/// Farbe. Belegt in `bootstrap/providers.dart` aus `levels`.
+final reachedStagesProvider = Provider<Map<String, int>>((ref) => const {});
