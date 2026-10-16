@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wandoo/features/creature/application/creature_providers.dart';
 import 'package:wandoo/features/creature/domain/species_catalog.dart';
-import 'package:wandoo/features/creature/presentation/widgets/album_tile.dart';
+import 'package:wandoo/features/creature/presentation/widgets/album_row.dart';
 
-/// Sammelalbum: alle Arten, entdeckte in Farbe, die anderen als Umriss.
+/// Sammelalbum: alle Arten untereinander, je mit ihren drei Stufen;
+/// entdeckte in Farbe, die anderen als grauer Umriss.
 class AlbumScreen extends ConsumerWidget {
   const AlbumScreen({this.actions = const [], super.key});
 
@@ -30,13 +31,11 @@ class AlbumScreen extends ConsumerWidget {
             ),
           ),
           Expanded(
-            child: GridView.extent(
-              maxCrossAxisExtent: 200,
-              childAspectRatio: 0.8,
+            child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               children: [
                 for (final s in all)
-                  AlbumTile(species: s, seen: seen.contains(s.id)),
+                  AlbumRow(species: s, seen: seen.contains(s.id)),
               ],
             ),
           ),
