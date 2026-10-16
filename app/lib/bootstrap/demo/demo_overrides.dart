@@ -32,6 +32,7 @@ import 'package:wandoo/features/home_widget/home_widget.dart';
 import 'package:wandoo/features/hunger/data/in_memory_belly_repository.dart';
 import 'package:wandoo/features/hunger/hunger.dart';
 import 'package:wandoo/features/levels/data/in_memory_progress_repository.dart';
+import 'package:wandoo/features/levels/data/in_memory_stage_album_repository.dart';
 import 'package:wandoo/features/levels/levels.dart';
 import 'package:wandoo/features/petting/data/in_memory_friendship_repository.dart';
 import 'package:wandoo/features/petting/petting.dart';
@@ -86,6 +87,12 @@ List<Override> demoOverrides() {
     ),
     bellyRepositoryProvider.overrideWithValue(
       InMemoryBellyRepository([?demoBelly()]),
+    ),
+    stageAlbumRepositoryProvider.overrideWithValue(
+      InMemoryStageAlbumRepository(),
+    ),
+    reachedStagesProvider.overrideWith(
+      (ref) => ref.watch(liveReachedStagesProvider),
     ),
     progressRepositoryProvider.overrideWithValue(
       InMemoryProgressRepository([?demoProgress()]),

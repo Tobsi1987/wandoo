@@ -7,12 +7,17 @@ import 'package:wandoo/features/creature/presentation/widgets/creature_evolution
 import 'package:wandoo/features/creature/presentation/widgets/creature_figure.dart';
 
 /// Eine Art im Sammelalbum: Name und Seltenheit, darunter ihre drei
-/// Entwicklungsstufen nebeneinander. Noch nicht entdeckt: nur graue Umrisse.
+/// Entwicklungsstufen nebeneinander. Was noch nicht erreicht ist, bleibt
+/// ein grauer Umriss, eine unentdeckte Art auch ohne Namen.
 class AlbumRow extends StatelessWidget {
-  const AlbumRow({required this.species, required this.seen, super.key});
+  const AlbumRow({required this.species, required this.reached, super.key});
 
   final Species species;
-  final bool seen;
+
+  /// Höchste erreichte Stufe; 0 heißt: noch nie geschlüpft.
+  final int reached;
+
+  bool get seen => reached > 0;
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +70,7 @@ class AlbumRow extends StatelessWidget {
           child: CreatureFigure(
             creature: model,
             size: 140,
-            silhouette: !seen,
+            silhouette: stage > reached,
             still: true,
           ),
         ),

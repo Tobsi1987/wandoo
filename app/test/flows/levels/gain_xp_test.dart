@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/levels/data/in_memory_progress_repository.dart';
+import 'package:wandoo/features/levels/data/in_memory_stage_album_repository.dart';
 import 'package:wandoo/features/levels/levels.dart';
 import 'package:wandoo/features/treasure/data/in_memory_treasure_repository.dart';
 import 'package:wandoo/features/treasure/treasure.dart';
@@ -26,7 +27,8 @@ void main() {
   test('Aufstieg bis Level 10: Belohnungen in der Kiste, Stufe 2', () async {
     final levels = InMemoryProgressRepository();
     final chests = InMemoryTreasureRepository();
-    final gain = GainXp(levels: levels, chests: chests);
+    final album = InMemoryStageAlbumRepository();
+    final gain = GainXp(levels: levels, chests: chests, album: album);
     final lines = await gain(_moosel, LevelCurve.xpFor(10));
     expect(lines.first, startsWith('⬆️ Level 2! 🎁 '));
     expect(lines, contains('⬆️ Level 5! 🎁 🎀 Eichelhütchen'));
@@ -37,11 +39,16 @@ void main() {
     expect(chest.plans, {Accessory.knitScarf, Accessory.bunnyEars});
     expect(chest.count(Find.starShard), 3 + 2);
     expect((await levels.load('erstes')).news, isEmpty);
+    expect(await album.watch().first, {'moosel': 2});
   });
 
   test('beim Streicheln gemerkt, bei Eiern nichts', () async {
     final levels = InMemoryProgressRepository();
-    final gain = GainXp(levels: levels, chests: InMemoryTreasureRepository());
+    final gain = GainXp(
+      levels: levels,
+      chests: InMemoryTreasureRepository(),
+      album: InMemoryStageAlbumRepository(),
+    );
     expect(await gain(const Creature(), 500), isEmpty);
     await gain(_moosel, 80, announce: true);
     expect((await levels.load('erstes')).news, hasLength(1));
@@ -52,7 +59,12 @@ void main() {
   test('Möbel-Bonus gibt mehr Erfahrung', () async {
     final levels = InMemoryProgressRepository();
     final chests = InMemoryTreasureRepository();
-    final gain = GainXp(levels: levels, chests: chests, boost: () => 1.1);
+    final gain = GainXp(
+      levels: levels,
+      chests: chests,
+      album: InMemoryStageAlbumRepository(),
+      boost: () => 1.1,
+    );
     await gain(_moosel, 100);
     expect((await levels.load('erstes')).xp, 110);
   });

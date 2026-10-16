@@ -34,6 +34,7 @@ import 'package:wandoo/features/home_widget/home_widget.dart';
 import 'package:wandoo/features/hunger/data/drift_belly_repository.dart';
 import 'package:wandoo/features/hunger/hunger.dart';
 import 'package:wandoo/features/levels/data/drift_progress_repository.dart';
+import 'package:wandoo/features/levels/data/drift_stage_album_repository.dart';
 import 'package:wandoo/features/levels/levels.dart';
 import 'package:wandoo/features/petting/data/drift_friendship_repository.dart';
 import 'package:wandoo/features/petting/petting.dart';
@@ -105,19 +106,29 @@ Future<List<Override>> appOverrides() async {
     ),
     starCatchRepositoryProvider.overrideWithValue(DriftStarCatchRepository(db)),
     bellyRepositoryProvider.overrideWithValue(DriftBellyRepository(db)),
+    stageAlbumRepositoryProvider.overrideWithValue(
+      DriftStageAlbumRepository(db),
+    ),
     progressRepositoryProvider.overrideWithValue(DriftProgressRepository(db)),
     statsRepositoryProvider.overrideWithValue(DriftStatsRepository(db)),
     roomRepositoryProvider.overrideWithValue(DriftRoomRepository(db)),
     shopRepositoryProvider.overrideWithValue(DriftShopRepository(db)),
     friendsRepositoryProvider.overrideWithValue(DriftFriendsRepository(db)),
-    myCardProvider.overrideWith((ref) => ref.watch(liveMyCardProvider)),
-    hungerDrainProvider.overrideWith(
-      (ref) => ref.watch(liveHungerDrainProvider),
-    ),
-    shopOffersProvider.overrideWith((ref) => ref.watch(liveShopOffersProvider)),
+    ..._live,
     ...await _network(db, reminders),
   ];
 }
+
+/// Werte, die Features voneinander brauchen, berechnet in `flows/` oder
+/// im liefernden Feature.
+final List<Override> _live = [
+  myCardProvider.overrideWith((ref) => ref.watch(liveMyCardProvider)),
+  hungerDrainProvider.overrideWith((ref) => ref.watch(liveHungerDrainProvider)),
+  shopOffersProvider.overrideWith((ref) => ref.watch(liveShopOffersProvider)),
+  reachedStagesProvider.overrideWith(
+    (ref) => ref.watch(liveReachedStagesProvider),
+  ),
+];
 
 /// Alles, was ins Netz geht, und der Datenschutz, der es steuert.
 Future<List<Override>> _network(
