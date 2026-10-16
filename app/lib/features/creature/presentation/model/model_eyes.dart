@@ -116,6 +116,8 @@ const modelEyes = <String, EyeSpot>{
   'moosel2': EyeSpot(102, 660, 259, 20, 30, 250, 110, 0xFFA9CB94),
   'moosel3': EyeSpot(90, 562, 230, 13, 23, 870, 25, 0xFFACB88F),
   'nebelfuchs': EyeSpot(133, 502, 642, 59, 62, 135, 15, 0xFFBCCEDC),
+  'nebelfuchs2': EyeSpot(86, 704, 438, 30, 32, 265, 325, 0xFFA9BDD0),
+  'nebelfuchs3': EyeSpot(63, 481, 336, 27, 36, 400, 270, 0xFFA7BEDE),
   'pfuetzling': EyeSpot(228, 554, 313, 86, 102, 410, 30, 0xFFB4ECF4),
   'pfuetzling2': EyeSpot(151, 560, 300, 60, 67, 440, -25, 0xFFACDAE3),
   'pfuetzling3': EyeSpot(51, 786, 283, 18, 21, 480, 75, 0xFFD1FCFB),

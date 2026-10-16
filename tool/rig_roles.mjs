@@ -72,7 +72,7 @@ export function findRoles(root, bounds) {
       // Lange Beine (Windhund) setzen weit oben an, reichen aber bis zum Boden.
       // Ein Schwanz, der seitlich über den Boden läuft, ist kein Bein.
       if (lowest < 0.12 && Math.abs(d.x) > Math.abs(d.y)) limbs.tails.push(limb);
-      else if (lowest < 0.12 && (p.y < 0.3 || p.y - lowest > 0.4)) limbs.legs.push(limb);
+      else if (lowest < 0.12 && (p.y < 0.3 || p.y - lowest > 0.3)) limbs.legs.push(limb);
       else if (p.y > 0.55 || (inHead.has(j) && p.y > headY + 0.1)) limbs.ears.push(limb);
       else if (d.z < -0.4 * d.length() || d.y > 0.04) limbs.wings.push(limb);
       else limbs.arms.push(limb);
