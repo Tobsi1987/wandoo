@@ -17,6 +17,7 @@ class _Street implements MapDataSource {
     for (var i = 0; i < 10; i++)
       RoadSegment(
         id: 's$i',
+        streetId: 'Lindenweg',
         start: GeoPoint(50.005, 8 + i * 0.001),
         end: GeoPoint(50.005, 8 + (i + 1) * 0.001),
       ),
@@ -46,5 +47,13 @@ void main() {
     expect(find.text('Wildnis'), findsNWidgets(24));
     expect(find.text('📍'), findsOneWidget);
     expect(find.text('Geschafft'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Geschafft'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Geschafft'));
+    await tester.pumpAndSettle();
+    expect(find.text('Straßen in diesem Viertel'), findsOneWidget);
+    expect(find.text('Lindenweg'), findsOneWidget);
+    expect(find.text('80 %'), findsOneWidget);
   });
 }

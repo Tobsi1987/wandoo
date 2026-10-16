@@ -7,5 +7,5 @@ Abzeichen und das Puzzleteil liegt. Viertel fast ohne Wege sind Wildnis.
 **Bekommt:** Kartendaten (`core/map_data`) und bekannte Abschnitte
 (`discovery`).
 
-**Liefert:** `PuzzleScreen`, `DistrictProgress.newBadges` für die
+**Liefert:** `PuzzleScreen` (Teile antippen zeigt Skizze und Straßen des Viertels), `DistrictProgress.newBadges` für die
 Zusammenfassung nach dem Gang, `districtName`.
