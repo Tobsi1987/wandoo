@@ -31,6 +31,53 @@ const Map<Furniture, _Build> _builders = {
   Furniture.toyBoat: toyBoat,
 };
 
+/// Möbel, für die es ein fertiges 3D-Modell gibt; die anderen werden aus
+/// einfachen Formen gebaut.
+const Map<Furniture, String> _models = {
+  Furniture.cloudBed: 'assets/den/cloudBed.glb',
+  Furniture.hayNest: 'assets/den/hayNest.glb',
+  Furniture.waterLily: 'assets/den/waterLily.glb',
+  Furniture.toyBoat: 'assets/den/toyBoat.glb',
+  Furniture.waveRug: 'assets/den/waveRug.glb',
+  Furniture.starRug: 'assets/den/starRug.glb',
+  Furniture.spinningTop: 'assets/den/spinningTop.glb',
+  Furniture.fern: 'assets/den/fern.glb',
+  Furniture.shellBed: 'assets/den/shellBed.glb',
+  Furniture.moonLamp: 'assets/den/moonLamp.glb',
+  Furniture.mushroomLamp: 'assets/den/mushroomLamp.glb',
+  Furniture.starPicture: 'assets/den/starPicture.glb',
+  Furniture.shellGarland: 'assets/den/shellGarland.glb',
+  Furniture.leafWreath: 'assets/den/leafWreath.glb',
+  Furniture.glowJar: 'assets/den/glowJar.glb',
+  Furniture.flowerPot: 'assets/den/flowerPot.glb',
+  Furniture.flowerRug: 'assets/den/flowerRug.glb',
+  Furniture.ball: 'assets/den/ball.glb',
+};
+
+/// Was zu einem fertigen Modell noch dazukommt.
+const Map<Furniture, _Build> _extras = {Furniture.starPicture: starPictureSky};
+
+/// Fertige Modelle, die kleiner stehen sollen als ihr Platz.
+const Map<Furniture, double> _scales = {
+  Furniture.starPicture: 0.78,
+  Furniture.flowerPot: 0.8,
+  Furniture.ball: 0.65,
+  Furniture.shellBed: 0.55,
+};
+
+final Future<bool> _ready = Scene.initializeStaticResources().then(
+  (_) => true,
+  onError: (Object _) => false,
+);
+
+final _loaded = <String, Future<Node?>>{};
+
+Future<Node?> _load(String asset) => _loaded[asset] ??= _ready.then(
+  (ok) => ok
+      ? Node.fromGlbAsset(asset).then<Node?>((n) => n, onError: (_) => null)
+      : null,
+);
+
 /// Ein Möbelstück in 3D, in einem Quadrat: steht unten auf dem Boden.
 class FurniturePiece extends StatefulWidget {
   const FurniturePiece({
@@ -55,24 +102,39 @@ class _FurniturePieceState extends State<FurniturePiece> {
   @override
   void initState() {
     super.initState();
-    if (FurniturePiece.render) _scene = _build(widget.furniture);
+    _show(widget.furniture);
   }
 
   @override
   void didUpdateWidget(FurniturePiece old) {
     super.didUpdateWidget(old);
-    if (old.furniture != widget.furniture && FurniturePiece.render) {
-      _scene = _build(widget.furniture);
-    }
+    if (old.furniture != widget.furniture) _show(widget.furniture);
   }
 
-  static Scene _build(Furniture f) {
-    final root = Node();
-    _builders[f]!(root);
-    return Scene()
-      ..exposure = 1.3
-      ..add(root);
+  void _show(Furniture f) {
+    if (!FurniturePiece.render) return;
+    final asset = _models[f];
+    if (asset == null) {
+      final root = Node();
+      _builders[f]!(root);
+      _scene = _stage(root);
+      return;
+    }
+    _scene = null;
+    _load(asset).then((node) {
+      if (!mounted || widget.furniture != f || node == null) return;
+      final scale = _scales[f] ?? 1.0;
+      final root = Node(
+        localTransform: vm.Matrix4.diagonal3Values(scale, scale, scale),
+      )..add(node.clone());
+      _extras[f]?.call(root);
+      setState(() => _scene = _stage(root));
+    }).ignore();
   }
+
+  static Scene _stage(Node root) => Scene()
+    ..exposure = 1.3
+    ..add(root);
 
   @override
   Widget build(BuildContext context) => SizedBox.square(

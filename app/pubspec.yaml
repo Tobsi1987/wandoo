@@ -47,5 +47,7 @@ flutter:
     - assets/world/
     - assets/ui/
     - assets/sounds/
+    - assets/bath/
+    - assets/den/
   shaders:
     - lib/features/creature/presentation/shaders/creature.frag

@@ -88,8 +88,8 @@ class _BathScreenState extends ConsumerState<BathScreen> {
   Widget _tubWithCreature(Creature creature, double width) {
     final tub = width * 0.86;
     final size = width * 0.85;
-    // Die Füße liegen etwa auf halber Höhe der Wanne, unter dem Wasser.
-    final feet = tub * Tub.ratio * 0.45;
+    // Die Füße stehen tief in der Wanne, der Bauch im Wasser.
+    final feet = tub * Tub.ratio * 0.18;
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [

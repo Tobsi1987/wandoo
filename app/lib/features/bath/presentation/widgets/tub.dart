@@ -1,122 +1,100 @@
-import 'package:flutter/material.dart';
+import 'dart:math' as math;
 
-/// Eine runde Holzwanne in zwei Hälften: [Tub.back] liegt hinter dem Wesen
-/// (Rand und Wasserfläche), [Tub.front] davor (Wasser, Schaum und Wand).
-/// So sitzt das Wesen wirklich im Wasser statt hinter der Wanne.
-class Tub extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter_scene/scene.dart';
+import 'package:vector_math/vector_math.dart' as vm;
+import 'package:wandoo/features/bath/presentation/widgets/tub_water.dart';
+
+/// Die Badewanne (3D-Modell) in zwei Ebenen: [Tub.back] liegt hinter dem
+/// Wesen (ganze Wanne und Wasserfläche), [Tub.front] davor (nur die
+/// vordere Wand unter dem Rand, dazu Wasser und Schaum). So sitzt das
+/// Wesen wirklich im Wasser.
+class Tub extends StatefulWidget {
   const Tub.back({required this.width, super.key}) : front = false;
   const Tub.front({required this.width, super.key}) : front = true;
 
   final double width;
   final bool front;
 
-  /// Höhe der Wanne im Verhältnis zur Breite.
-  static const ratio = 0.5;
+  /// Höhe im Verhältnis zur Breite.
+  static const ratio = 0.62;
 
-  /// Wo die Wasserlinie liegt, als Anteil der Höhe von oben.
-  static const waterAt = 0.17;
+  /// Wo der vordere Rand in der Mitte liegt, als Anteil der Höhe.
+  static const double rimAt = TubWater.rimAt;
+
+  static const asset = 'assets/bath/tub.glb';
+
+  static final Future<Node?> _model = Scene.initializeStaticResources()
+      .then((_) => Node.fromGlbAsset(asset))
+      .then<Node?>((n) => n, onError: (Object _) => null);
 
   @override
-  Widget build(BuildContext context) => CustomPaint(
-    size: Size(width, width * ratio),
-    painter: front ? _FrontPainter() : _BackPainter(),
-  );
+  State<Tub> createState() => _TubState();
 }
 
-const _rim = Color(0xFF8C5A33);
-const _wood = Color(0xFFB07A4A);
-const _band = Color(0xFF6D4528);
-const _water = Color(0xFF8FD0EE);
+class _TubState extends State<Tub> {
+  Scene? _scene;
 
-Rect _rimRect(Size s) => Rect.fromLTWH(0, 0, s.width, s.height * 0.34);
-Rect _waterRect(Size s) => Rect.fromLTWH(
-  s.width * 0.05,
-  s.height * 0.05,
-  s.width * 0.9,
-  s.height * 0.24,
-);
-
-class _BackPainter extends CustomPainter {
   @override
-  void paint(Canvas canvas, Size size) {
-    canvas
-      ..drawOval(_rimRect(size), Paint()..color = _rim)
-      ..drawOval(_waterRect(size), Paint()..color = _water);
+  void initState() {
+    super.initState();
+    Tub._model.then((node) {
+      if (!mounted || node == null) return;
+      setState(
+        () => _scene = Scene()
+          ..exposure = 1.5
+          ..add(node.clone()),
+      );
+    }).ignore();
   }
 
   @override
-  bool shouldRepaint(_BackPainter old) => false;
-}
+  Widget build(BuildContext context) {
+    final size = Size(widget.width, widget.width * Tub.ratio);
+    final scene = _scene;
+    final model = scene == null
+        ? const SizedBox.shrink()
+        : SceneView(scene, autoTick: false, camera: _camera);
+    return SizedBox.fromSize(
+      size: size,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (widget.front)
+            ClipRect(clipper: const _BelowRim(), child: model)
+          else
+            model,
+          CustomPaint(painter: TubWater(front: widget.front)),
+        ],
+      ),
+    );
+  }
 
-class _FrontPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-    final water = _waterRect(size);
-    // Vordere Hälfte der Wasserfläche: halb durchsichtig über dem Bauch.
-    canvas
-      ..save()
-      ..clipRect(Rect.fromLTRB(0, water.center.dy, w, h))
-      ..drawOval(water, Paint()..color = _water.withValues(alpha: 0.85))
-      ..restore();
-    _foam(canvas, water);
-    final body = Path()
-      ..moveTo(0, h * 0.17)
-      ..arcTo(_rimRect(size), 3.1416, -3.1416, false)
-      ..lineTo(w, h * 0.17)
-      ..quadraticBezierTo(w * 0.97, h, w * 0.5, h)
-      ..quadraticBezierTo(w * 0.03, h, 0, h * 0.17)
-      ..close();
-    canvas.drawPath(body, Paint()..color = _wood);
-    final band = Paint()
-      ..color = _band
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = h * 0.05;
-    canvas
-      ..save()
-      ..clipPath(body);
-    for (final y in [0.55, 0.82]) {
-      canvas.drawLine(Offset(0, h * y), Offset(w, h * y), band);
-    }
-    // Vorderer Rand als dunkler Bogen.
-    canvas
-      ..restore()
-      ..drawArc(
-        _rimRect(size).deflate(h * 0.02),
+  /// Leicht von oben, die ganze Wanne im Bild.
+  static final PerspectiveCamera _camera = () {
+    const pitch = 0.42;
+    const distance = 3.0;
+    const look = 0.24;
+    return PerspectiveCamera(
+      position: vm.Vector3(
         0,
-        3.1416,
-        false,
-        Paint()
-          ..color = _rim
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = h * 0.06,
-      );
-  }
+        look + distance * math.sin(pitch),
+        distance * math.cos(pitch),
+      ),
+      target: vm.Vector3(0, look, 0),
+      fovRadiansY: 2 * math.atan(0.34 / distance),
+    );
+  }();
+}
 
-  /// Schaumberge entlang der vorderen Wasserlinie, weich schattiert.
-  void _foam(Canvas canvas, Rect water) {
-    final r = water.height * 0.3;
-    for (var i = 0; i < 14; i++) {
-      final t = i / 13;
-      final x = water.left + water.width * (0.06 + 0.88 * t);
-      final dip = 1 - (2 * t - 1) * (2 * t - 1);
-      final y =
-          water.center.dy + water.height * 0.36 * dip - (i.isOdd ? r * 0.5 : 0);
-      final size = r * (0.7 + 0.5 * ((i * 7) % 5) / 4);
-      final c = Offset(x, y);
-      canvas.drawCircle(
-        c,
-        size,
-        Paint()
-          ..shader = const RadialGradient(
-            center: Alignment(-0.4, -0.5),
-            colors: [Color(0xFFFFFFFF), Color(0xFFDCEFF8)],
-          ).createShader(Rect.fromCircle(center: c, radius: size)),
-      );
-    }
-  }
+/// Nur was unter dem vorderen Rand liegt: die Außenwand der Wanne.
+class _BelowRim extends CustomClipper<Rect> {
+  const _BelowRim();
 
   @override
-  bool shouldRepaint(_FrontPainter old) => false;
+  Rect getClip(Size size) =>
+      Rect.fromLTRB(0, size.height * Tub.rimAt, size.width, size.height);
+
+  @override
+  bool shouldReclip(_BelowRim old) => false;
 }
