@@ -53,6 +53,8 @@ class ModelAnchors {
 const modelAnchors = <String, ModelAnchors>{
   'aurora': ModelAnchors.measured(.86, .15, .22, .36, .21, .05),
   'blaetterdrache': ModelAnchors.measured(.88, .10, .28, .44, .20, .15),
+  'blaetterdrache2': ModelAnchors.measured(.92, .05, .16, .50, .08, .15),
+  'blaetterdrache3': ModelAnchors.measured(.87, .25, .14, .56, .10, .23),
   'blitzmaus': ModelAnchors.measured(.74, 0, .29, .33, .21, 0),
   'blitzmaus2': ModelAnchors.measured(.71, .02, .16, .40, .08, .02),
   'blitzmaus3': ModelAnchors.measured(.74, .08, .15, .44, .12, .08),
