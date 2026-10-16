@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wandoo/features/districts/application/district_providers.dart';
 import 'package:wandoo/features/districts/domain/district_name.dart';
 import 'package:wandoo/features/districts/domain/puzzle.dart';
+import 'package:wandoo/features/districts/presentation/widgets/district_sheet.dart';
 import 'package:wandoo/features/districts/presentation/widgets/puzzle_piece.dart';
 
 /// Viertel-Puzzle: Jedes Viertel der Gegend ist ein Teil. Ab 80 %
@@ -48,7 +49,8 @@ class _PuzzleBody extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           'Du bist im ${districtName(puzzle.here)}. Entdecke 80 % der Wege '
-          'eines Viertels, dann bekommst du sein Abzeichen.',
+          'eines Viertels, dann bekommst du sein Abzeichen. Tippe ein Teil '
+          'an, um seine Straßen zu sehen.',
         ),
         const SizedBox(height: 16),
         GridView.count(
@@ -59,7 +61,11 @@ class _PuzzleBody extends StatelessWidget {
           crossAxisSpacing: 4,
           children: [
             for (final piece in puzzle.pieces)
-              PuzzlePiece(state: piece, here: piece.district == puzzle.here),
+              PuzzlePiece(
+                state: piece,
+                here: piece.district == puzzle.here,
+                onTap: () => showDistrictSheet(context, puzzle, piece),
+              ),
           ],
         ),
       ],
