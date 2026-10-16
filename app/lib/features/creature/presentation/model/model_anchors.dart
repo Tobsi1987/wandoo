@@ -54,6 +54,8 @@ const modelAnchors = <String, ModelAnchors>{
   'aurora': ModelAnchors.measured(.86, .15, .22, .36, .21, .05),
   'blaetterdrache': ModelAnchors.measured(.88, .10, .28, .44, .20, .15),
   'blitzmaus': ModelAnchors.measured(.74, 0, .29, .33, .21, 0),
+  'blitzmaus2': ModelAnchors.measured(.71, .02, .16, .40, .08, .02),
+  'blitzmaus3': ModelAnchors.measured(.74, .08, .15, .44, .12, .08),
   'brummli': ModelAnchors.measured(.85, .13, .28, .36, .23),
   'brummli2': ModelAnchors.measured(.76, .07, .21, .40, .09, .07),
   'brummli3': ModelAnchors.measured(.80, .12, .14, .55, .06, .11),

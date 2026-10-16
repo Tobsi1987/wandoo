@@ -89,6 +89,8 @@ const modelEyes = <String, EyeSpot>{
   'aurora': EyeSpot(124, 582, 322, 62, 80, 285, -5, 0xFFE0D8D6),
   'blaetterdrache': EyeSpot(163, 632, 255, 46, 59, 495, 110, 0xFF8DC84C),
   'blitzmaus': EyeSpot(134, 507, 212, 36, 50, 385, 180, 0xFF77B4BA),
+  'blitzmaus2': EyeSpot(85, 535, 155, 31, 36, 500, 0, 0xFF8F9EA0),
+  'blitzmaus3': EyeSpot(94, 550, 210, 38, 40, 400, 150, 0xFF4A8C94),
   'brummli': EyeSpot(147, 520, 282, 71, 76, 340, 240, 0xFFD9C07E),
   'brummli2': EyeSpot(112, 603, 251, 60, 64, 300, 220, 0xFFEDD79B),
   'brummli3': EyeSpot(96, 682, 210, 36, 38, 430, 115, 0xFFECA88A),
