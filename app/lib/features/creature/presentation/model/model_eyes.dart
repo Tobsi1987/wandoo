@@ -105,6 +105,8 @@ const modelEyes = <String, EyeSpot>{
   'kieselchen2': EyeSpot(128, 605, 262, 45, 54, 170, 90, 0xFFD0C5BD),
   'kieselchen3': EyeSpot(104, 678, 197, 23, 22, 135, 90, 0xFFD7D0C6),
   'kristallis': EyeSpot(142, 488, 248, 50, 54, 290, 135, 0xFFE1C5AE),
+  'kristallis2': EyeSpot(108, 564, 258, 26, 34, 250, 110, 0xFFDEC4B4),
+  'kristallis3': EyeSpot(78, 660, 220, 35, 35, 300, 100, 0xFFC89696),
   'laternchen': EyeSpot(136, 556, 238, 57, 66, 455, 10, 0xFFFEE0AC),
   'laternchen2': EyeSpot(100, 576, 210, 53, 50, 300, 150, 0xFF2C3766),
   'laternchen3': EyeSpot(107, 528, 244, 42, 42, 300, 190, 0xFF4E5F79),
