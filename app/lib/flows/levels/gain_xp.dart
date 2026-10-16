@@ -6,20 +6,26 @@ import 'package:wandoo/flows/levels/level_rewards.dart';
 /// Gibt einem geschlüpften Wesen Erfahrung. Für jedes neue Level kommt
 /// die Belohnung in die Schatzkiste.
 class GainXp {
-  GainXp({required this.levels, required this.chests});
+  GainXp({required this.levels, required this.chests, this.boost = _none});
 
   final ProgressRepository levels;
   final TreasureRepository chests;
+
+  /// Faktor auf jede Erfahrung, z. B. 1.1 durch Möbel in der Höhle.
+  final double Function() boost;
+
+  static double _none() => 1;
 
   /// Gibt die Zeilen zu neuen Leveln zurück. Mit [announce] werden sie
   /// auch als Nachricht für den Startbildschirm gemerkt (wenn keine
   /// Zusammenfassung sie zeigt).
   Future<List<String>> call(
     Creature creature,
-    int xp, {
+    int base, {
     bool announce = false,
   }) async {
-    if (!creature.hatched || xp <= 0) return const [];
+    if (!creature.hatched || base <= 0) return const [];
+    final xp = (base * boost()).round();
     final before = await levels.load(creature.lineKey);
     final after = before.copyWith(xp: before.xp + xp);
     final lines = await _rewards(creature, before.level, after.level);

@@ -1,4 +1,5 @@
 import 'package:wandoo/features/den/domain/furniture.dart';
+import 'package:wandoo/features/den/domain/furniture_perk.dart';
 
 String spotName(Spot s) => switch (s) {
   Spot.wall => 'Wand',
@@ -28,4 +29,10 @@ String furnitureName(Furniture f) => switch (f) {
   Furniture.ball => 'Wasserball',
   Furniture.spinningTop => 'Kreisel',
   Furniture.toyBoat => 'Spielzeugboot',
+};
+
+/// Kurz, was das Möbelstück bringt, z. B. „⭐ +10 % Erfahrung“.
+String perkLabel(Furniture f) => switch (f.perk) {
+  Perk.xp => '⭐ +${f.percent} % Erfahrung',
+  Perk.hunger => '🍎 ${f.percent} % weniger Hunger',
 };

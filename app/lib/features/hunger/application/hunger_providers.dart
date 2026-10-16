@@ -15,6 +15,10 @@ final hungerClockProvider = Provider<DateTime Function()>(
   (ref) => DateTime.now,
 );
 
+/// Wie schnell der Balken leerer wird (1 = normal). Belegt in
+/// `flows/den_perks` mit den Möbeln der Höhle.
+final hungerDrainProvider = Provider<double>((ref) => 1);
+
 final StreamProviderFamily<Belly?, String> _bellyProvider =
     StreamProvider.family<Belly?, String>(
       (ref, lineKey) => ref.watch(bellyRepositoryProvider).watch(lineKey),
@@ -30,8 +34,10 @@ final currentBellyProvider = Provider<Belly?>((ref) {
   final creature = ref.watch(creatureProvider).value;
   if (creature == null || !creature.hatched) return null;
   final belly = ref.watch(_bellyProvider(creature.lineKey)).value;
-  return belly ??
-      Belly.full(creature.lineKey, ref.watch(hungerClockProvider)());
+  final drain = ref.watch(hungerDrainProvider);
+  return (belly ??
+          Belly.full(creature.lineKey, ref.watch(hungerClockProvider)()))
+      .slowed(drain);
 });
 
 /// Ob das Wesen gerade hungrig ist (Balken leer): dann ist es müde und

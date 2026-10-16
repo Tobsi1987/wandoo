@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:wandoo/features/creature/creature.dart';
 import 'package:wandoo/features/den/domain/den_room.dart';
@@ -39,29 +41,52 @@ class DenRoomView extends StatelessWidget {
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, box) {
-      final w = box.maxWidth;
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(28),
-        child: SizedBox(
-          width: w,
-          height: w * aspect,
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: CustomPaint(
-                  painter: CaveBackdrop(night: world.night, floorAt: 0.5),
-                ),
-              ),
-              for (final spot in Spot.values.where((s) => s != Spot.toy))
-                _spot(spot, w),
-              _creature(w),
-              _spot(Spot.toy, w),
-            ],
+      final w = math.min(box.maxWidth, box.maxHeight / aspect);
+      final stage = Rect.fromLTWH(
+        (box.maxWidth - w) / 2,
+        box.maxHeight - w * aspect,
+        w,
+        w * aspect,
+      );
+      return Stack(
+        children: [
+          Positioned.fill(
+            child: CustomPaint(
+              painter: CaveBackdrop(night: world.night, stage: stage),
+            ),
           ),
-        ),
+          Positioned.fromRect(
+            rect: stage,
+            child: Stack(
+              children: [
+                for (final spot in _grounded) _shadow(spot, w),
+                _creatureShadow(w),
+                for (final spot in Spot.values.where((s) => s != Spot.toy))
+                  _spot(spot, w),
+                _creature(w),
+                _spot(Spot.toy, w),
+              ],
+            ),
+          ),
+        ],
       );
     },
   );
+
+  /// Plätze, die auf dem Boden stehen und einen Schatten werfen.
+  static const List<Spot> _grounded = [Spot.bed, Spot.plant, Spot.toy];
+
+  Widget _shadow(Spot spot, double w) {
+    if (room.at(spot) == null) return const SizedBox.shrink();
+    final (left, top, size) = _boxes[spot]!;
+    return _Shadow(
+      center: Offset((left + size / 2) * w, (top + size * 0.93) * w),
+      width: size * w * 0.8,
+    );
+  }
+
+  Widget _creatureShadow(double w) =>
+      _Shadow(center: Offset(0.5 * w, 0.93 * w), width: 0.32 * w);
 
   Widget _spot(Spot spot, double w) {
     final (left, top, size) = _boxes[spot]!;
@@ -100,6 +125,30 @@ class DenRoomView extends StatelessWidget {
   );
 }
 
+/// Ein weicher, ovaler Schatten auf dem Boden.
+class _Shadow extends StatelessWidget {
+  const _Shadow({required this.center, required this.width});
+
+  final Offset center;
+  final double width;
+
+  @override
+  Widget build(BuildContext context) => Positioned(
+    left: center.dx - width / 2,
+    top: center.dy - width * 0.12,
+    width: width,
+    height: width * 0.24,
+    child: const DecoratedBox(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.elliptical(200, 50)),
+        boxShadow: [
+          BoxShadow(color: Color(0x40000000), blurRadius: 12, spreadRadius: -2),
+        ],
+      ),
+    ),
+  );
+}
+
 /// Ein freier Platz: ein heller Kreis mit Plus.
 class _EmptySpot extends StatelessWidget {
   const _EmptySpot({required this.label});
@@ -114,22 +163,33 @@ class _EmptySpot extends StatelessWidget {
         DecoratedBox(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.white.withValues(alpha: 0.35),
-            border: Border.all(color: Colors.white70, width: 2),
+            color: Colors.white.withValues(alpha: 0.55),
+            border: Border.all(color: Colors.white, width: 2),
+            boxShadow: const [
+              BoxShadow(color: Color(0x55FFF3C4), blurRadius: 14),
+            ],
           ),
           child: const Padding(
             padding: EdgeInsets.all(6),
-            child: Icon(Icons.add_rounded, color: Colors.white, size: 22),
+            child: Icon(Icons.add_rounded, color: Color(0xFF8C5A33), size: 22),
           ),
         ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            shadows: [Shadow(blurRadius: 3)],
+        const SizedBox(height: 4),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: const Color(0xFF5B3B26).withValues(alpha: 0.7),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            child: Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ),
       ],

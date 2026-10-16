@@ -8,5 +8,6 @@ final checkHungerProvider = Provider<CheckHunger>(
     creatures: ref.watch(creatureRepositoryProvider),
     bellies: ref.watch(bellyRepositoryProvider),
     clock: ref.watch(hungerClockProvider),
+    drain: ref.watch(hungerDrainProvider),
   ),
 );

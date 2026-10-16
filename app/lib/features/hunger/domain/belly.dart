@@ -4,7 +4,12 @@ import 'dart:math';
 /// 1 km leerer, und jeder Meter Gehen füllt ihn wieder auf. Ist er zwei
 /// Tage lang leer, zieht das Wesen aus.
 class Belly {
-  const Belly({required this.lineKey, required this.meters, required this.at});
+  const Belly({
+    required this.lineKey,
+    required this.meters,
+    required this.at,
+    this.drain = 1,
+  });
 
   factory Belly.full(String lineKey, DateTime now) =>
       Belly(lineKey: lineKey, meters: fullMeters, at: now);
@@ -20,9 +25,18 @@ class Belly {
   final double meters;
   final DateTime at;
 
+  /// Wie schnell der Balken leerer wird; Möbel in der Höhle senken das.
+  final double drain;
+
+  double get _perDay => metersPerDay * drain;
+
+  /// Derselbe Balken, der nur mit dem Anteil [drain] leerer wird.
+  Belly slowed(double drain) =>
+      Belly(lineKey: lineKey, meters: meters, at: at, drain: drain);
+
   double metersAt(DateTime now) {
     final days = now.difference(at).inSeconds / Duration.secondsPerDay;
-    return (meters - metersPerDay * max(0, days)).clamp(0, fullMeters);
+    return (meters - _perDay * max(0, days)).clamp(0, fullMeters);
   }
 
   /// Zwischen 0 (leer) und 1 (voll).
@@ -30,7 +44,7 @@ class Belly {
 
   /// Wann der Balken leer ist (oder war).
   DateTime get emptyAt => at.add(
-    Duration(seconds: (meters / metersPerDay * Duration.secondsPerDay).round()),
+    Duration(seconds: (meters / _perDay * Duration.secondsPerDay).round()),
   );
 
   bool isEmpty(DateTime now) => metersAt(now) <= 0;
@@ -45,5 +59,6 @@ class Belly {
     lineKey: lineKey,
     meters: min(fullMeters, metersAt(now) + walked),
     at: now,
+    drain: drain,
   );
 }

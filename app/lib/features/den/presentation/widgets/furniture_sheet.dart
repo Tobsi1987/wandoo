@@ -84,6 +84,13 @@ class _FurnitureSheet extends ConsumerWidget {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   Text(
+                    perkLabel(f),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
                     owned ? (placed ? 'Steht im Zuhause' : 'Im Lager') : needs,
                   ),
                 ],

@@ -54,6 +54,7 @@ import 'package:wandoo/features/treasure/data/in_memory_treasure_repository.dart
 import 'package:wandoo/features/treasure/treasure.dart';
 import 'package:wandoo/features/walk_summary/walk_summary.dart';
 import 'package:wandoo/features/world/world.dart';
+import 'package:wandoo/flows/den_perks/hunger_drain_provider.dart';
 import 'package:wandoo/flows/friends/my_card_provider.dart';
 import 'package:wandoo/flows/shop/shop_offers_provider.dart';
 
@@ -71,6 +72,9 @@ List<Override> demoOverrides() {
       InMemoryFriendsRepository(friends: demoFriends()),
     ),
     myCardProvider.overrideWith((ref) => ref.watch(liveMyCardProvider)),
+    hungerDrainProvider.overrideWith(
+      (ref) => ref.watch(liveHungerDrainProvider),
+    ),
     ..._stores(),
     scentRepositoryProvider.overrideWithValue(scents),
     soundPlayerProvider.overrideWithValue(AudioplayersSoundPlayer()),
