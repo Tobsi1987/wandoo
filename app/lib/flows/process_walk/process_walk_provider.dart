@@ -75,10 +75,11 @@ final processWalkProvider = Provider<ProcessWalk>(
         chests: ref.watch(treasureRepositoryProvider),
         weather: () => ref.read(worldStateProvider).weather,
       ),
-      MudExtra(
-        ref.watch(mudRepositoryProvider),
-        weather: () => ref.read(worldStateProvider).weather,
-      ),
+      if (bathEnabled)
+        MudExtra(
+          ref.watch(mudRepositoryProvider),
+          weather: () => ref.read(worldStateProvider).weather,
+        ),
       WeekExtra(ref.watch(friendsRepositoryProvider)),
       AchievementExtra(
         stats: ref.watch(statsRepositoryProvider),

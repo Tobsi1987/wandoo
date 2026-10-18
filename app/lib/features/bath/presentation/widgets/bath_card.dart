@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wandoo/features/bath/application/bath_providers.dart';
+import 'package:wandoo/features/bath/domain/bath_switch.dart';
 import 'package:wandoo/features/bath/presentation/bath_screen.dart';
 
 /// Hinweis im Zuhause, sobald das Wesen schmutzig ist: ab in die Wanne.
@@ -12,6 +13,7 @@ class BathCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (!bathEnabled) return const SizedBox.shrink();
     final mud = ref.watch(currentMudProvider);
     if (mud == 0) return const SizedBox.shrink();
     const words = ['etwas schmutzig', 'schmutzig', 'ganz matschig'];
