@@ -7,9 +7,12 @@ import 'package:wandoo/features/walk_summary/presentation/summary_page_view.dart
 
 /// Zeigt nach einem Gang, was er gebracht hat, Seite für Seite: erst die
 /// Zahlen, dann was unterwegs passiert ist, dann Level. "Weiter" blättert,
-/// auf der letzten Seite schließt "Fertig".
+/// auf der letzten Seite schließt "Fertig". [lastPageExtra] steht nur auf
+/// der letzten Seite unter "Fertig".
 class WalkSummaryCard extends ConsumerWidget {
-  const WalkSummaryCard({super.key});
+  const WalkSummaryCard({this.lastPageExtra, super.key});
+
+  final Widget? lastPageExtra;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,6 +21,7 @@ class WalkSummaryCard extends ConsumerWidget {
     return _Pages(
       key: ValueKey(summary.walkId),
       summary: summary,
+      extra: lastPageExtra,
       onDone: () =>
           ref.read(walkSummaryRepositoryProvider).markSeen(summary.walkId),
     );
@@ -25,10 +29,16 @@ class WalkSummaryCard extends ConsumerWidget {
 }
 
 class _Pages extends StatefulWidget {
-  const _Pages({required this.summary, required this.onDone, super.key});
+  const _Pages({
+    required this.summary,
+    required this.onDone,
+    this.extra,
+    super.key,
+  });
 
   final WalkSummary summary;
   final VoidCallback onDone;
+  final Widget? extra;
 
   @override
   State<_Pages> createState() => _PagesState();
@@ -78,6 +88,10 @@ class _PagesState extends State<_Pages> {
                   child: Text(_last ? 'Fertig' : 'Weiter'),
                 ),
               ),
+              if (_last && widget.extra != null) ...[
+                const SizedBox(height: 8),
+                widget.extra!,
+              ],
             ],
           ),
         ),
