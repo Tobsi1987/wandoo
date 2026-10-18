@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Kleine „z“, die über dem Kopf eines schlafenden Wesens aufsteigen und
-/// verblassen, damit man die geschlossenen Augen als Schlaf erkennt.
+/// verblassen, damit man den Schlaf erkennt.
 class SleepZs extends CustomPainter {
   SleepZs(this.time) : super(repaint: time);
 

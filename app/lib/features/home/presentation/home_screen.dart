@@ -39,7 +39,8 @@ class HomeScreen extends ConsumerWidget {
           automaticallyImplyLeading: false,
           titleSpacing: 12,
           toolbarHeight: 64,
-          title: const HomeTopBar(),
+          // Während der Zusammenfassung nur Wesen und Karte, sonst nichts.
+          title: showSummary ? null : const HomeTopBar(),
           backgroundColor: Colors.transparent,
           surfaceTintColor: Colors.transparent,
           scrolledUnderElevation: 0,
@@ -52,7 +53,12 @@ class HomeScreen extends ConsumerWidget {
             CelebrationStage(
               hold: processing || showSummary,
               onPlay: (moment, c) => _cheer(ref, moment, c),
-              child: _main(world, walking: walking, sleepy: starving),
+              child: _main(
+                world,
+                walking: walking,
+                sleepy: starving,
+                calm: showSummary,
+              ),
             ),
             if (showSummary) ..._summary(),
           ],
@@ -66,6 +72,7 @@ class HomeScreen extends ConsumerWidget {
     WorldState world, {
     required bool walking,
     required bool sleepy,
+    bool calm = false,
   }) => SafeArea(
     child: Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
@@ -80,10 +87,12 @@ class HomeScreen extends ConsumerWidget {
                 box: box,
               ),
             ),
-            const LevelUpBanner(),
-            const FarewellLetter(),
-            const SniffBubble(),
-            const WalkPanel(),
+            if (!calm) ...const [
+              LevelUpBanner(),
+              FarewellLetter(),
+              SniffBubble(),
+              WalkPanel(),
+            ],
           ],
         ),
       ),

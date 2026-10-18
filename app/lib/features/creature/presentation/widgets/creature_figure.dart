@@ -148,7 +148,6 @@ class _CreatureFigureState extends State<CreatureFigure>
         mark: WorldMarksShown.of(context) ? WorldMark.of(c) : null,
         mud: CreatureMud.of(context, c),
         eyes: modelEyes[id],
-        eyesClosed: night && !widget.awake,
       ),
       walking: widget.awake,
       size: widget.size,
