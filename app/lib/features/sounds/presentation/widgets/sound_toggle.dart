@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wandoo/features/sounds/application/sound_providers.dart';
+import 'package:wandoo/features/sounds/domain/sound_switch.dart';
 import 'package:wandoo/ui_kit/bar_button.dart';
 
 /// Schaltet die Töne an oder aus: ein runder Knopf für die Leiste.
