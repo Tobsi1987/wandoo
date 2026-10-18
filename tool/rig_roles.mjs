@@ -67,7 +67,7 @@ export function findRoles(root, bounds) {
     if (!central(j)) {
       const d = dir(j);
       const side = Math.sign(p.x);
-      const limb = {bone: j, side, dir: d, chain: chain(j)};
+      const limb = {bone: j, side, dir: d, chain: chain(j), hip: p.y};
       const lowest = Math.min(...below(j).map((b) => pos.get(b).y));
       // Lange Beine (Windhund) setzen weit oben an, reichen aber bis zum Boden.
       // Ein Schwanz, der seitlich über den Boden läuft, ist kein Bein.
@@ -82,10 +82,11 @@ export function findRoles(root, bounds) {
   };
   visit(rootJoint);
 
-  // Vierbeiner: vordere Beine stehen deutlich weiter vorn.
+  // Vierbeiner: vordere Beine stehen deutlich weiter vorn (drei reichen, wenn
+  // ein Bein im Rig fehlt).
   const legZ = limbs.legs.map((l) => pos.get(l.bone).z);
   const midZ = (Math.max(...legZ) + Math.min(...legZ)) / 2;
-  const quad = legZ.length >= 4 && Math.max(...legZ) - Math.min(...legZ) > 0.12;
+  const quad = legZ.length >= 3 && Math.max(...legZ) - Math.min(...legZ) > 0.12;
   for (const l of limbs.legs) l.front = quad ? (pos.get(l.bone).z > midZ ? 1 : -1) : 1;
 
   const name = (l) => l.bone.getName().replace('Bone_', '');

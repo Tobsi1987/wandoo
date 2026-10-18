@@ -22,7 +22,6 @@ class CreatureCelebration extends StatefulWidget {
     required this.creature,
     required this.size,
     required this.builder,
-    this.cheer = false,
     super.key,
   });
 
@@ -31,9 +30,6 @@ class CreatureCelebration extends StatefulWidget {
 
   /// Baut die Figur; beim Schlüpfen kurz noch für das alte Ei.
   final Widget Function(Creature creature) builder;
-
-  /// Hüpft immer wieder vor Freude, zum Beispiel während eines Gangs.
-  final bool cheer;
 
   @override
   State<CreatureCelebration> createState() => _CreatureCelebrationState();
@@ -48,15 +44,6 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
   /// Das Ei vor dem Schlüpfen, solange es noch zu sehen ist.
   Creature? _egg;
 
-  /// Nächster Freudenhüpfer beim Jubeln.
-  Timer? _again;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.cheer) _pending = CelebrationMoment.jump;
-  }
-
   @override
   void didUpdateWidget(CreatureCelebration old) {
     super.didUpdateWidget(old);
@@ -67,8 +54,6 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
       _egg = before;
     } else if (now.food > before.food && _pending == null) {
       _pending = CelebrationMoment.hop;
-    } else if (widget.cheer && !old.cheer && _pending == null) {
-      _pending = CelebrationMoment.jump;
     }
     _maybeStart();
   }
@@ -109,13 +94,12 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
     );
   }
 
-  /// Mitjubeln beim Laufen wartet nie, die großen Momente schon.
   bool _held(CelebrationMoment moment) =>
       !TickerMode.valuesOf(context).enabled ||
-      (moment.big && CelebrationStage.holding(context));
+      CelebrationStage.holding(context);
 
   void _announce(CelebrationMoment moment) {
-    if (moment.big) CelebrationStage.played(context, moment, widget.creature);
+    CelebrationStage.played(context, moment, widget.creature);
   }
 
   void _done() {
@@ -124,19 +108,10 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
       if (_playing == CelebrationMoment.hatch) _egg = null;
       _playing = null;
     });
-    if (widget.cheer) {
-      _again?.cancel();
-      _again = Timer(const Duration(milliseconds: 450), () {
-        if (!mounted || !widget.cheer || _pending != null) return;
-        _pending = CelebrationMoment.jump;
-        _maybeStart();
-      });
-    }
   }
 
   @override
   void dispose() {
-    _again?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -151,7 +126,6 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
         final pose = switch (_playing) {
           CelebrationMoment.hatch => CelebrationPose.hatch(t),
           CelebrationMoment.hop => CelebrationPose.hop(t),
-          CelebrationMoment.jump => CelebrationPose.jump(t),
           null ||
           CelebrationMoment.evolve => CelebrationPose(egg: _egg != null),
         };
@@ -175,11 +149,8 @@ class _CreatureCelebrationState extends State<CreatureCelebration>
   }
 
   Motion? _motion(CelebrationPose pose) => switch (_playing) {
-    _ when widget.cheer => null,
     CelebrationMoment.hatch => pose.greeting > 0 ? Motion.wave : Motion.happy,
-    CelebrationMoment.hop ||
-    CelebrationMoment.jump ||
-    CelebrationMoment.evolve => Motion.happy,
+    CelebrationMoment.hop || CelebrationMoment.evolve => Motion.happy,
     null => null,
   };
 
