@@ -4,6 +4,11 @@ import 'package:wandoo/features/sounds/domain/sound_player.dart';
 import 'package:wandoo/features/sounds/domain/sound_settings_repository.dart';
 import 'package:wandoo/features/sounds/domain/voice.dart';
 
+/// Hauptschalter: vorerst alle Töne aus, bis neue Sounds da sind.
+/// Code und Dateien bleiben; einschalten mit
+/// `--dart-define=WANDOO_SOUNDS=true`.
+const soundsEnabled = bool.fromEnvironment('WANDOO_SOUNDS');
+
 /// Wird in `bootstrap/providers.dart` mit einer Umsetzung belegt.
 final soundPlayerProvider = Provider<SoundPlayer>(
   (ref) => throw UnimplementedError('In bootstrap/providers.dart setzen.'),

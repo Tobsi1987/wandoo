@@ -51,6 +51,7 @@ import 'package:wandoo/features/shop/data/drift_shop_repository.dart';
 import 'package:wandoo/features/shop/shop.dart';
 import 'package:wandoo/features/sounds/data/audioplayers_sound_player.dart';
 import 'package:wandoo/features/sounds/data/drift_sound_settings_repository.dart';
+import 'package:wandoo/features/sounds/data/silent_sound_player.dart';
 import 'package:wandoo/features/sounds/sounds.dart';
 import 'package:wandoo/features/star_catch/data/drift_star_catch_repository.dart';
 import 'package:wandoo/features/star_catch/star_catch.dart';
@@ -100,7 +101,9 @@ Future<List<Override>> appOverrides() async {
       DriftFriendshipRepository(db),
     ),
     scentRepositoryProvider.overrideWithValue(DriftScentRepository(db)),
-    soundPlayerProvider.overrideWithValue(AudioplayersSoundPlayer()),
+    soundPlayerProvider.overrideWithValue(
+      soundsEnabled ? AudioplayersSoundPlayer() : const OffSoundPlayer(),
+    ),
     soundSettingsRepositoryProvider.overrideWithValue(
       DriftSoundSettingsRepository(db),
     ),

@@ -47,6 +47,7 @@ import 'package:wandoo/features/shop/data/in_memory_shop_repository.dart';
 import 'package:wandoo/features/shop/shop.dart';
 import 'package:wandoo/features/sounds/data/audioplayers_sound_player.dart';
 import 'package:wandoo/features/sounds/data/in_memory_sound_settings_repository.dart';
+import 'package:wandoo/features/sounds/data/silent_sound_player.dart';
 import 'package:wandoo/features/sounds/sounds.dart';
 import 'package:wandoo/features/star_catch/data/in_memory_star_catch_repository.dart';
 import 'package:wandoo/features/star_catch/star_catch.dart';
@@ -78,7 +79,9 @@ List<Override> demoOverrides() {
     ),
     ..._stores(),
     scentRepositoryProvider.overrideWithValue(scents),
-    soundPlayerProvider.overrideWithValue(AudioplayersSoundPlayer()),
+    soundPlayerProvider.overrideWithValue(
+      soundsEnabled ? AudioplayersSoundPlayer() : const OffSoundPlayer(),
+    ),
     soundSettingsRepositoryProvider.overrideWithValue(
       InMemorySoundSettingsRepository(),
     ),
