@@ -9,3 +9,11 @@ class SilentSoundPlayer implements SoundPlayer {
   @override
   Future<void> play(Cue cue, Voice voice) async => played.add((cue, voice));
 }
+
+/// Spielt gar nichts. Wird genutzt, solange `soundsEnabled` aus ist.
+class OffSoundPlayer implements SoundPlayer {
+  const OffSoundPlayer();
+
+  @override
+  Future<void> play(Cue cue, Voice voice) async {}
+}
