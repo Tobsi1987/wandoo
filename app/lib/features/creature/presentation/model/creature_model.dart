@@ -130,6 +130,7 @@ class _CreatureModelState extends State<CreatureModel> {
     t,
     scale: widget.scale,
     sleepy: widget.sleepy,
+    walking: widget.walking && _motion == null,
     turn: _spin + _drag.value,
   );
 

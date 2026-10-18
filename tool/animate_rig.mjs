@@ -17,7 +17,7 @@ import {MeshoptEncoder, MeshoptSimplifier} from 'meshoptimizer';
 import sharp from 'sharp';
 import * as THREE from 'three';
 import {centerX, findRoles} from './rig_roles.mjs';
-import {motions} from './rig_motions.mjs';
+import {addMotions, parents} from './rig_anim.mjs';
 
 // still=arms,ears: diese Glieder bleiben ruhig (z. B. wenn sie am Körper festgewachsen sind).
 // turn=90: ein quer stehendes Wesen um so viele Grad (um y) nach vorne drehen;
@@ -42,53 +42,7 @@ const bounds = turned(getBounds(scene), turn);
 for (const n of scene.listChildren()) n.setRotation(turn.clone().multiply(new THREE.Quaternion(...n.getRotation())).toArray());
 let roles = findRoles(root, bounds);
 
-const parentOf = new Map();
-for (const n of root.listNodes()) for (const c of n.listChildren()) parentOf.set(c, n);
-const local = (n) => new THREE.Quaternion(...n.getRotation());
-function worldRot(n) {
-  let q = new THREE.Quaternion();
-  for (let p = n; p; p = parentOf.get(p)) q = local(p).multiply(q);
-  return q;
-}
-
-// Drehungen kommen als [Achse, Winkel] in Weltachsen und werden in die
-// lokale Drehung des Knochens umgerechnet: L' = P⁻¹·D·P·L.
-function addAnim({name, dur, bones, lift}, fps = 24) {
-  const anim = doc.createAnimation(name);
-  const buf = root.listBuffers()[0];
-  const frames = Math.round(dur * fps);
-  const times = Array.from({length: frames + 1}, (_, i) => (i / frames) * dur);
-  const input = doc.createAccessor().setType('SCALAR').setArray(new Float32Array(times)).setBuffer(buf);
-  const channel = (node, path, type, vals) => {
-    const output = doc.createAccessor().setType(type).setArray(new Float32Array(vals)).setBuffer(buf);
-    const s = doc.createAnimationSampler().setInput(input).setOutput(output).setInterpolation('LINEAR');
-    anim.addSampler(s).addChannel(doc.createAnimationChannel().setTargetNode(node).setTargetPath(path).setSampler(s));
-  };
-  const merged = new Map();
-  for (const [node, fn] of bones) {
-    const before = merged.get(node);
-    merged.set(node, before ? (t) => [...before(t), ...fn(t)] : fn);
-  }
-  for (const [node, fn] of merged) {
-    const P = parentOf.get(node) ? worldRot(parentOf.get(node)) : new THREE.Quaternion();
-    const Pi = P.clone().invert();
-    const rest = local(node);
-    const vals = [];
-    for (const t of times) {
-      let D = new THREE.Quaternion();
-      for (const [axis, a] of fn(t)) D = new THREE.Quaternion().setFromAxisAngle(axis, a).multiply(D);
-      const q = Pi.clone().multiply(D).multiply(P).multiply(rest);
-      vals.push(q.x, q.y, q.z, q.w);
-    }
-    channel(node, 'rotation', 'VEC4', vals);
-  }
-  if (lift && roles.root) {
-    const [x, y, z] = roles.root.getTranslation();
-    const vals = [];
-    for (const t of times) vals.push(x, y + lift(t) * roles.height, z);
-    channel(roles.root, 'translation', 'VEC3', vals);
-  }
-}
+const {parentOf, local, worldRot} = parents(root);
 
 // Kopf und Hals drehen je zur Hälfte zurück, damit der Kopf zur Kamera schaut.
 const twist = +(opt.head ?? -(opt.turn ?? 0));
@@ -102,7 +56,7 @@ if (twist && roles.head) {
 }
 for (const k of still.split(',').filter(Boolean)) roles[k] = [];
 
-for (const m of motions(roles)) addAnim(m);
+addMotions(doc, roles);
 
 // Füße auf y = 0, mittig (Wirbelsäule auf x = 0), größte Seite = 1.
 const cx = opt.center === 'head' && roles.head ? roles.head.getWorldTranslation()[0] : centerX(root, bounds);

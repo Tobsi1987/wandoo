@@ -57,7 +57,6 @@ class CreatureAvatar extends StatelessWidget {
     final figure = CreatureCelebration(
       creature: creature,
       size: size,
-      cheer: walking,
       builder: (c) => EvolutionMoment(
         creature: c,
         size: size,

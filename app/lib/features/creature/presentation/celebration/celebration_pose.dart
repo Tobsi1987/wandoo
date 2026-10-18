@@ -88,12 +88,6 @@ class CelebrationPose {
     );
   }
 
-  /// Ein ruhiger Sprung ohne Stauchen, zum Beispiel beim Laufen.
-  factory CelebrationPose.jump(double t) {
-    if (t <= 0 || t >= 1) return rest;
-    return CelebrationPose(lift: 0.1 * math.sin(math.pi * t));
-  }
-
   /// Noch das alte Ei zeigen.
   final bool egg;
 
