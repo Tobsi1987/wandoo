@@ -57,7 +57,7 @@ class DenScreen extends ConsumerWidget {
   }
 }
 
-/// Der Bereich unter der Höhle: Boni, Bad und Winterschlaf.
+/// Der Bereich unter der Höhle: Boni, Bad (wenn an) und Winterschlaf.
 class _Panel extends StatelessWidget {
   const _Panel({required this.children});
 
