@@ -84,32 +84,42 @@ class HomeScreen extends ConsumerWidget {
                 world,
                 walking: walking,
                 sleepy: sleepy,
+                calm: calm,
                 box: box,
               ),
             ),
-            if (!calm) ...const [
-              LevelUpBanner(),
-              FarewellLetter(),
-              SniffBubble(),
-              WalkPanel(),
-            ],
+            // Während der Zusammenfassung unsichtbar, der Platz bleibt.
+            AnimatedOpacity(
+              opacity: calm ? 0 : 1,
+              duration: const Duration(milliseconds: 200),
+              child: IgnorePointer(
+                ignoring: calm,
+                child: const Column(
+                  children: [
+                    LevelUpBanner(),
+                    FarewellLetter(),
+                    SniffBubble(),
+                    WalkPanel(),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
     ),
   );
 
-  /// Nach einem Gang: abgedunkelt, die Zusammenfassung in der Mitte.
+  /// Nach einem Gang: Das Wesen bleibt oben zu sehen, die Zusammenfassung
+  /// liegt unten, wo sonst Schild und Losgehen-Knopf sind.
   static List<Widget> _summary() => const [
-    ModalBarrier(color: Colors.black38),
+    ModalBarrier(color: Colors.black26),
     SafeArea(
-      child: Center(
+      child: Align(
+        alignment: Alignment.bottomCenter,
         child: Padding(
-          padding: EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [WalkSummaryCard(lastPageExtra: StarCatchButton())],
-          ),
+          padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: WalkSummaryCard(lastPageExtra: StarCatchButton()),
         ),
       ),
     ),
@@ -134,9 +144,11 @@ class HomeScreen extends ConsumerWidget {
     WorldState world, {
     required bool walking,
     required bool sleepy,
+    required bool calm,
     required BoxConstraints box,
   }) => CreatureCard(
     walking: walking,
+    plateShown: !calm,
     figureSize: _figureSize(box),
     figureWrap: (figure) =>
         Pettable(asleep: (world.night || sleepy) && !walking, child: figure),

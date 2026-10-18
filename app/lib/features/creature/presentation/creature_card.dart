@@ -18,8 +18,12 @@ class CreatureCard extends ConsumerWidget {
     this.actions = const [],
     this.release = true,
     this.fill = false,
+    this.plateShown = true,
     super.key,
   });
+
+  /// Siehe [CreatureAvatar.plateShown].
+  final bool plateShown;
 
   /// Während eines Gangs ist das Wesen wach und freut sich.
   final bool walking;
@@ -68,6 +72,7 @@ class CreatureCard extends ConsumerWidget {
       inScene: true,
       walking: walking,
       fill: fill,
+      plateShown: plateShown,
       figureWrap: figureWrap,
       footer: [
         ...below,
