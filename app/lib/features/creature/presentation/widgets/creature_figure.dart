@@ -131,7 +131,8 @@ class _CreatureFigureState extends State<CreatureFigure>
       return EggModel.of(c, size: size, world: world, animate: moving);
     }
     final drawn = _drawn(sleepy);
-    if (widget.silhouette || !CreatureFigure.hasModel(c)) return drawn;
+    if (!CreatureFigure.hasModel(c)) return drawn;
+    final ghost = widget.silhouette;
     final stage = CreatureEvolution.of(context, c);
     final species = SpeciesCatalog.byId(c.speciesId).id;
     final (:id, :missing) = stageModelOf(species, stage);
@@ -145,7 +146,7 @@ class _CreatureFigureState extends State<CreatureFigure>
           neck: c.neck,
           gear: weatherGear(widget.world?.weather),
         ),
-        mark: WorldMarksShown.of(context) ? WorldMark.of(c) : null,
+        mark: !ghost && WorldMarksShown.of(context) ? WorldMark.of(c) : null,
         mud: CreatureMud.of(context, c),
         eyes: modelEyes[id],
         eyesClosed: night && !widget.awake,
@@ -161,6 +162,8 @@ class _CreatureFigureState extends State<CreatureFigure>
       animate: moving,
     );
     final size = widget.size;
+    // Noch nicht erreicht: der Umriss des echten Modells, ganz in Grau.
+    if (ghost) return ColorFiltered(colorFilter: _grey, child: model);
     return EvolutionSparkles.around(
       model,
       stage: missing + 1,
@@ -168,6 +171,8 @@ class _CreatureFigureState extends State<CreatureFigure>
       animate: moving,
     );
   }
+
+  static const _grey = ColorFilter.mode(silhouetteColor, BlendMode.srcIn);
 
   Widget _drawn(bool sleepy) {
     final shader = _shader;
@@ -190,9 +195,6 @@ class _CreatureFigureState extends State<CreatureFigure>
       painter: CreaturePainter(creature: widget.creature, sluggish: sleepy),
     );
     if (!widget.silhouette) return flat;
-    return ColorFiltered(
-      colorFilter: const ColorFilter.mode(silhouetteColor, BlendMode.srcIn),
-      child: flat,
-    );
+    return ColorFiltered(colorFilter: _grey, child: flat);
   }
 }

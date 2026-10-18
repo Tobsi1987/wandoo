@@ -13,8 +13,8 @@ class StarCatchButton extends ConsumerWidget {
     if (ref.watch(starCatchWalkProvider) == null) {
       return const SizedBox.shrink();
     }
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+    return SizedBox(
+      width: double.infinity,
       child: FilledButton.tonal(
         onPressed: () => context.push(StarCatchScreen.path),
         child: const Text('🌠 Sternschnuppen fangen'),

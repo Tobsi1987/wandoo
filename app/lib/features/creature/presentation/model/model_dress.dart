@@ -5,6 +5,10 @@ import 'package:wandoo/features/creature/presentation/model/model_eyes.dart';
 import 'package:wandoo/features/creature/presentation/model/model_look.dart';
 import 'package:wandoo/features/creature/presentation/outfit/model_accessories.dart';
 
+/// Augenlider beim Schlafen: vorerst aus, sie sahen nicht gut aus. Schlaf
+/// zeigen die aufsteigenden z.
+const eyelidsShown = false;
+
 /// Zieht einem 3D-Modell alles aus [ModelLook] an.
 class ModelDress {
   final _parts = <Node>[];
@@ -25,7 +29,8 @@ class ModelDress {
         if (MarkSurface.of(look.species) case final surface? when look.mud > 0)
           ?modelMud(surface, look.mud),
         if (!look.outfit.isEmpty) modelAccessories(look.anchors, look.outfit),
-        if (look.eyes case final eyes? when look.eyesClosed) modelEyelids(eyes),
+        if (look.eyes case final eyes? when look.eyesClosed && eyelidsShown)
+          modelEyelids(eyes),
       ])
       ..forEach(pivot.add);
   }

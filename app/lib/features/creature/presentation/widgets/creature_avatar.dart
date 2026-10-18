@@ -22,10 +22,14 @@ class CreatureAvatar extends StatelessWidget {
     this.footer = const [],
     this.figureWrap,
     this.fill = false,
+    this.plateShown = true,
     super.key,
   });
 
   final Creature creature;
+
+  /// Das Schild ausblenden (Platz bleibt), z. B. während der Zusammenfassung.
+  final bool plateShown;
 
   /// Nacht und Jahreszeit für die Figur.
   final WorldState? world;
@@ -82,7 +86,14 @@ class CreatureAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final plate = _plate(context, [..._info(context), ...footer]);
+    final plate = AnimatedOpacity(
+      opacity: plateShown ? 1 : 0,
+      duration: const Duration(milliseconds: 200),
+      child: IgnorePointer(
+        ignoring: !plateShown,
+        child: _plate(context, [..._info(context), ...footer]),
+      ),
+    );
     if (fill) {
       return Column(
         children: [

@@ -21,7 +21,7 @@ final _summary = WalkSummary(
 );
 
 void main() {
-  testWidgets('Seite für Seite: Zahlen, Unterwegs, Level, dann zu', (
+  testWidgets('Seite für Seite: Zahlen, Unterwegs, Level, Extra nur am Ende', (
     tester,
   ) async {
     final repo = InMemoryWalkSummaryRepository();
@@ -29,12 +29,15 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [walkSummaryRepositoryProvider.overrideWithValue(repo)],
-        child: const MaterialApp(home: Scaffold(body: WalkSummaryCard())),
+        child: const MaterialApp(
+          home: Scaffold(body: WalkSummaryCard(lastPageExtra: Text('Extra'))),
+        ),
       ),
     );
     await tester.pumpAndSettle();
     expect(find.text('Toller Gang!'), findsOne);
     expect(find.text('3 Mohnblumen'), findsNothing);
+    expect(find.text('Extra'), findsNothing);
     await tester.tap(find.text('Weiter'));
     await tester.pumpAndSettle();
     expect(find.text('Unterwegs passiert'), findsOne);
@@ -43,6 +46,7 @@ void main() {
     await tester.tap(find.text('Weiter'));
     await tester.pumpAndSettle();
     expect(find.text('Level 2! 🎁 🐚 2 Muscheln'), findsOne);
+    expect(find.text('Extra'), findsOne);
     await tester.tap(find.text('Fertig'));
     await tester.pumpAndSettle();
     expect(find.byType(Card), findsNothing);
